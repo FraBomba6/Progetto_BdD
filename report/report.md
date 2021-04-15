@@ -76,23 +76,6 @@ Sulla base di quanto riportato, si procede alla formulazione di un glossario che
 
 La terminologia individuata appartente al dominio di interesse e correlata alla strutturazione della Base di Dati è presentata di seguito: 
 
-
-| **Termine**	| **Descrizione** |	**Sinonimi** | **Relazioni** |
-|:-----|---------------|:---:|------|
-|Dipartimento | Sottosezione organizzativa dell'ente | - | Responsabile, Richiesta d'acquisto |
-| | | | |
-| Responsabile	| Persona incaricata delle responsabilità relative a uno o più dipartimenti	| -	| Dipartimento |
-| | | | |
-| Richiesta d'acquisto | Documento riportante i dati relativi alle necessità d'acquisto | Richiesta | Dipartimento, Articolo |
-| | | | |
-| Articolo | Elemento atomico soggetto della richiesta d'acquisto	| - |Richiesta d'acquisto, Listino, Ordine|
-| | | | |
-| Fornitore | Azienda che provvede alla fornitura di articoli per l'ente | - | Listino, Ordine |
-| | | | |
-| Listino | Catalogo contenente uno o più articoli | - | Articolo, Fornitore | 
-| | | | |
-| Ordine | Insieme di articoli richiesti dall'ufficio acquisiti ad un fornitore per uno o più diparimenti | - | Articolo, Fornitore|
-
 ```{=latex}
 \begin{table}[h]
 \renewcommand{\arraystretch}{2}
@@ -116,6 +99,78 @@ Ordine & Insieme di articoli richiesti dall'ufficio acquisti ad un fornitore per
 \end{tabular}
 \end{table}
 ```
+
+\newpage
+
+## Ristesura e strutturazione dei requisiti
+
+A seguito dell'identificazione e organizzazione delle terminologie riportate nel precedente glossario, si identificano e raggruppano le frasi relative a requisiti espressi in linguaggio naturale sulla base di ciò che esse riferiscono.
+
+```{=latex}
+\begin{table}[H]
+\renewcommand{\arraystretch}{1.2}
+\centering
+\begin{tabular}{|p{0.91\textwidth}|}
+\hline
+\multicolumn{1}{|c|}{\textbf{Dipartimento}}
+\\ \hline
+\begin{itemize}
+\item Ciascuno identificato univocamente da un codice e caratterizzato da una breve descrizione e dal nominativo del responsabile
+\newline
+\item Si assuma che ogni dipartimento abbia un unico responsabile
+\newline
+\item Ogni dipartimento possa formulare delle richieste d’acquisto 
+\end{itemize}
+\\ \hline
+\multicolumn{1}{|c|}{\textbf{Responsabile}}
+\\ \hline
+\begin{itemize}
+\item Una stessa persona possa essere responsabile di più dipartimenti
+\end{itemize}
+\\ \hline
+\multicolumn{1}{|c|}{\textbf{Richiesta d'Acquisto}}
+\\ \hline
+\begin{itemize}
+\item Caratterizzata da un numero progressivo, che la identifica univocamente all’interno dell’insieme delle richieste del dipartimento, da una data, dall’insieme degli articoli da ordinare, con l’indicazione, per ciascun articolo, della quantità richiesta, e dalla data prevista di consegna
+\newline
+\item Si assuma che uno stesso dipartimento possa effettuare più richieste in una stessa data
+\end{itemize}
+\\ \hline
+\multicolumn{1}{|c|}{\textbf{Articolo}}
+\\ \hline
+\begin{itemize}
+\item Ogni articolo sia identificato univocamente da un codice articolo e sia caratterizzato da una breve descrizione, da una unità di misura e da una classe merceologica
+\end{itemize}
+\\ \hline
+\multicolumn{1}{|c|}{\textbf{Fornitore}}
+\\ \hline
+\begin{itemize}
+\item Ogni fornitore sia identificato univocamente da un codice fornitore e sia caratterizzato dalla partita IVA, dall’indirizzo, da uno o più recapiti telefonici e da un indirizzo di posta elettronica; alcuni fornitori (non necessariamente tutti) possiedano un numero di fax
+\newline
+\item Ad ogni fornitore sia associato un listino 
+\end{itemize}
+\\ \hline
+\multicolumn{1}{|c|}{\textbf{Listino}}
+\\ \hline
+\begin{itemize}
+\item Comprendente uno o piu` articoli
+\newline
+\item Per ciascun articolo appartenente ad un dato listino siano specificati il codice articolo, il prezzo unitario, il quantitativo minimo d’ordine e lo sconto applicato
+\end{itemize}
+\\ \hline
+\multicolumn{1}{|c|}{\textbf{Ordine}}
+\\ \hline
+\begin{itemize}
+\item Ogni ordine sia identificato univocamente da un codice ordine e sia caratterizzato dalla data di emissione, dal fornitore a cui viene inviato, dall’insieme degli articoli ordinati, con l’indicazione, per ciascuno di essi, della quantità ordinata, e dalla data prevista di consegna
+\newline
+\item Si assuma che un ordine possa fondere insieme piu` richieste d’acquisto dei dipartimenti
+\end{itemize}
+\\ \hline
+\end{tabular}
+\end{table}
+```
+
+\newpage
 
 # Progettazione concettuale
 
