@@ -11,7 +11,7 @@
 
 ## PRODOTTO
 
-| Codice          | Fornitore | Prezzo | Sconto | QuantMin | CodiceProdPerFornitore | 
+| CodiceArticolo  | Fornitore | Prezzo | Sconto | QuantMin | CodiceProdPerFornitore | 
 |-----------------|-----------|--------|--------|----------|------------------------|
 |  A82P4          | Gigi      | 32 	   |  13    |  5       |  KP9                   |
 |  A12P9		  | Marco 	  | 50	   |  NULL  |  1       |  K614				    |
@@ -39,10 +39,10 @@
 
 ## RICHIESTA->ARTICOLO
 
-| CodiceRichiesta | CodiceArticolo| 
-|-----------------|---------------|
-|         1       |    A82P4      |
-|         1       |    A12P9      |
+| CodiceRichiesta | CodiceArticolo| DataConsegnaPrevista |  
+|-----------------|---------------|----------------------|
+|         1       |    A82P4      |   17/03				 |
+|         1       |    A12P9      |   19/04				 |
 
 
 ## ORDINE->PRODOTTO
