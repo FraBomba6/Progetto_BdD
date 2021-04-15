@@ -93,6 +93,30 @@ La terminologia individuata appartente al dominio di interesse e correlata alla 
 | | | | |
 | Ordine | Insieme di articoli richiesti dall'ufficio acquisiti ad un fornitore per uno o più diparimenti | - | Articolo, Fornitore|
 
+```{=latex}
+\begin{table}[h]
+\renewcommand{\arraystretch}{2}
+\centering
+\begin{tabular}{|p{0.13\textwidth}|p{0.45\textwidth}|p{0.10\textwidth}|p{0.23\textwidth}|}
+\hline
+\textbf{Termine} & \textbf{Descrizione} & \textbf{Sinonimi} & \textbf{Relazioni}                 
+\\ \hline
+Dipartimento & Sottosezione organizzativa dell'ente &   & Responsabile, Richiesta d'acquisto     
+\\ \hline
+Responsabile & Persona incaricata delle responsabilità relativa ad uno o più dipartimenti &    & Dipartimento                          \\ \hline
+Richiesta d'acquisto & Documento riportante i dati relativi alle necessità d'acquisto & Richiesta & Dipartimento, Articolo             \\ \hline
+Articolo & Elemento atomico soggetto ad una o più richieste d'acquisto &   & Richiesta d'acquisto, Listino, Ordine 
+\\ \hline
+Fornitore & Azienda che provvede alla fornitura di articoli per l'ente &   & Listino, Ordine
+\\ \hline
+Listino & Catalogo contenente uno o più articoli relativi ad un fornitore &  & Articolo, Fornitore
+\\ \hline
+Ordine & Insieme di articoli richiesti dall'ufficio acquisti ad un fornitore per uno o più dipartimenti &  & Articolo, Fornitore
+\\ \hline
+\end{tabular}
+\end{table}
+```
+
 # Progettazione concettuale
 
 \newpage
