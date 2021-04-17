@@ -170,6 +170,92 @@ A seguito dell'identificazione e organizzazione delle terminologie riportate nel
 \end{table}
 ```
 
+## Inviduazione dei principali requisiti operazionali
+
+Sulla base dei requisiti individuati, si descrivono le seguenti operazioni con relativa frequenza di esecuzione all'interno della base di dati. 
+
+| **Operazione** | **Frequenza** |
+|-|-|
+|Aggiunta, modifica, rimozione di un dipartimento| 1/anno |
+|||
+|Aggiunta, modifica, rimozione di un responsabile| 1/anno |
+|||
+|Creazione od eliminazione di una richiesta d'acquisto| 3/giorno per ogni dipartimento|
+|||
+|Aggiunta, modifica, rimozione di un articolo| 1/mese |
+|||
+|Aggiunta, modifica, rimozione degli articoli del listino di un fornitore | 3/mese |
+|||
+|Aggiunta, modifica, rimozione di un fornitore| 1/anno |
+|||
+|Aggiunta o rimozione di un ordine| 3/giorno per ogni dipartimento |
+
+
+## Criteri per la rappresentazione dei concetti
+
+In seguito all'analisi preliminare svolta, è stato possibile categorizzare i seguenti concetti come entità, con rispettivi attributi: 
+
+```{=latex}
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{0.18\textwidth}|p{0.70\textwidth}|}
+\hline
+\textbf{Entità} & \textbf{Attributi}               
+\\ \hline
+Dipartimento & Codice, descrizione   
+\\ \hline
+Responsabile & Cognome, CF, data di nascta, luogo di nascita
+\\ \hline
+Richiesta d'acquisto & Numero progressivo, data di emissione
+\\ \hline
+Articolo & Codice articolo, descrizione, unità di misura, classe merceologica
+\\ \hline
+Fornitore & Codice fornitore, partita IVA, indirizzo, recapito telefonico, indirizzo e-mail, FAX
+\\ \hline
+Ordine & Codice ordine, data di emissione, data di consegna
+\\ \hline
+\end{tabular}
+\end{table}
+```
+
+\
+
+Le relazioni individuate sono, invece, le seguenti: 
+
+```{=latex}
+\begin{table}[h]
+\centering
+\begin{tabular}{|p{0.10\textwidth}|p{0.30\textwidth}|p{0.455\textwidth}|}
+\hline
+\textbf{Relazione} & \textbf{Entità coinvolte} &\textbf{Attributi}               
+\\ \hline
+Gestisce & Dipartimento, Responsabile &   
+\\ \hline
+Formula & Dipartimento, Richiesta d'acquisto & 
+\\ \hline
+Include & Richiesta, Articolo & Quantità, data di consegna prevista
+\\ \hline
+Associato a & Articolo, Fornitore & Quantità minima, prezzo unitario, codice prodotto
+\\ \hline
+Invia & Fornitore, Ordine &  
+\\ \hline
+Contiene & Ordine, Articolo & Quantità, data di consegna
+\\ \hline
+\end{tabular}
+\end{table}
+```
+
+\newpage
+
+## Diagramma ER
+
+\
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=510px]{../ER.png}
+\end{figure}
+
 \newpage
 
 # Progettazione concettuale
