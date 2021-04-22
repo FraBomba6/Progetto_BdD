@@ -13,6 +13,7 @@ header-includes:
   - \usepackage[utf8]{inputenc}
   - \usepackage[italian]{babel}
   - \usepackage{graphicx}
+  - \usepackage{xcolor}
   - \usepackage{float}
   - \usepackage{array}
   - \usepackage{multirow} 
@@ -27,7 +28,8 @@ header-includes:
 
 \captionsetup{labelformat=empty}
 \newpage
-
+\definecolor{darkgreen}{RGB}{69,151,84}
+\definecolor{lightblue}{RGB}{3,219,252}
 ```{=latex}
 % https://www.tablesgenerator.com
 ```
@@ -87,8 +89,8 @@ La terminologia individuata appartente al dominio di interesse e correlata alla 
 Dipartimento & Sottosezione organizzativa dell'ente &   & Responsabile, Richiesta d'acquisto     
 \\ \hline
 Responsabile & Persona incaricata delle responsabilità relativa ad uno o più dipartimenti &    & Dipartimento                          \\ \hline
-Richiesta d'acquisto & Documento riportante i dati relativi alle necessità d'acquisto & Richiesta & Dipartimento, Articolo             \\ \hline
-Articolo & Elemento atomico soggetto ad una o più richieste d'acquisto &   & Richiesta d'acquisto, Listino, Ordine 
+Richiesta d'acquisto & Documento, formulato da un dipartimento, riportante i riferimenti agli articoli da ordinare, con annesse specifiche & Richiesta & Dipartimento, Articolo             \\ \hline
+Articolo & Elemento atomico richiedibile ed ordinabile &   & Richiesta d'acquisto, Listino, Ordine 
 \\ \hline
 Fornitore & Azienda che provvede alla fornitura di articoli per l'ente &   & Listino, Ordine
 \\ \hline
@@ -108,7 +110,7 @@ A seguito dell'identificazione e organizzazione delle terminologie riportate nel
 
 ```{=latex}
 \begin{table}[H]
-\renewcommand{\arraystretch}{1.2}
+\renewcommand{\arraystretch}{1}
 \centering
 \begin{tabular}{|p{0.91\textwidth}|}
 \hline
@@ -140,6 +142,8 @@ A seguito dell'identificazione e organizzazione delle terminologie riportate nel
 \\ \hline
 \begin{itemize}
 \item Ogni articolo sia identificato univocamente da un codice articolo e sia caratterizzato da una breve descrizione, da una unità di misura e da una classe merceologica
+\newline
+\item Per ciascun articolo appartenente ad un dato listino siano specificati il codice articolo, il prezzo unitario, il quantitativo minimo d’ordine e lo sconto applicato
 \end{itemize}
 \\ \hline
 \multicolumn{1}{|c|}{\textbf{Fornitore}}
@@ -172,77 +176,60 @@ A seguito dell'identificazione e organizzazione delle terminologie riportate nel
 
 ## Inviduazione dei principali requisiti operazionali
 
-Sulla base dei requisiti individuati, si descrivono le seguenti operazioni con relativa frequenza di esecuzione all'interno della base di dati. 
+Sulla base dei requisiti individuati, si descrivono le principali operazioni, con rispettiva frequenza, sui dati. Si considera, per dare consistenza al conteggio, un ente costituito da trenta dipartimenti e associato ad cinque fornitori diversi. 
 
 | **Operazione** | **Frequenza** |
 |-|-|
-|Aggiunta, modifica, rimozione di un dipartimento| 1/anno |
+|Inserimento di una richiesta d'acquisto|150/settimana|
 |||
-|Aggiunta, modifica, rimozione di un responsabile| 1/anno |
+|Aggiornamento dello stato di una richiesta d'acquisto|7/settimana|
 |||
-|Creazione od eliminazione di una richiesta d'acquisto| 3/giorno per ogni dipartimento|
+|Visualizzazione delle richieste d'acquisto|60/settimana|
 |||
-|Aggiunta, modifica, rimozione di un articolo| 1/mese |
+|Inserimento di un nuovo ordine|5/settimana|
 |||
-|Aggiunta, modifica, rimozione degli articoli del listino di un fornitore | 3/mese |
+|Aggiornamento di un ordine|5/settimana|
 |||
-|Aggiunta, modifica, rimozione di un fornitore| 1/anno |
+|Modifica delle caratteristiche di un prodotto|5/mese|
 |||
-|Aggiunta o rimozione di un ordine| 3/giorno per ogni dipartimento |
+|Visualizzazione di tutti i prodotti|500/settimana|
+|||
+|Calcolo numero richieste mensili effettuate dai dipartimenti|30/mese|
+|||
+|Calcolo della spesa mensile dei dipartimenti e dell'ente|30/mese|
 
+\newpage
 
 ## Criteri per la rappresentazione dei concetti
 
-In seguito all'analisi preliminare svolta, è stato possibile categorizzare i seguenti concetti come entità, con rispettivi attributi: 
+Sulla base del documento di specifiche, si inviduano i criteri opportuni per la rappresentazione dei concetti descritti.
 
 ```{=latex}
-\begin{table}[h]
-\centering
-\begin{tabular}{|p{0.18\textwidth}|p{0.70\textwidth}|}
-\hline
-\textbf{Entità} & \textbf{Attributi}               
-\\ \hline
-Dipartimento & Codice, descrizione   
-\\ \hline
-Responsabile & Cognome, CF, data di nascta, luogo di nascita
-\\ \hline
-Richiesta d'acquisto & Numero progressivo, data di emissione
-\\ \hline
-Articolo & Codice articolo, descrizione, unità di misura, classe merceologica
-\\ \hline
-Fornitore & Codice fornitore, partita IVA, indirizzo, recapito telefonico, indirizzo e-mail, FAX
-\\ \hline
-Ordine & Codice ordine, data di emissione, data di consegna
-\\ \hline
-\end{tabular}
-\end{table}
-```
-
-\
-
-Le relazioni individuate sono, invece, le seguenti: 
-
-```{=latex}
-\begin{table}[h]
-\centering
-\begin{tabular}{|p{0.10\textwidth}|p{0.30\textwidth}|p{0.455\textwidth}|}
-\hline
-\textbf{Relazione} & \textbf{Entità coinvolte} &\textbf{Attributi}               
-\\ \hline
-Gestisce & Dipartimento, Responsabile &   
-\\ \hline
-Formula & Dipartimento, Richiesta d'acquisto & 
-\\ \hline
-Include & Richiesta, Articolo & Quantità, data di consegna prevista
-\\ \hline
-Associato a & Articolo, Fornitore & Quantità minima, prezzo unitario, codice prodotto
-\\ \hline
-Invia & Fornitore, Ordine &  
-\\ \hline
-Contiene & Ordine, Articolo & Quantità, data di consegna
-\\ \hline
-\end{tabular}
-\end{table}
+\setlength{\fboxsep}{0.6em}
+\noindent\fbox{%
+    \parbox{\textwidth}{%
+		\begin{itemize}
+			\item l'ente sia organizzato in un certo insieme di \textbf{\textcolor{red}{dipartimenti}}, ciascuno identificato univocamente da un \textbf{\textcolor{darkgreen}{codice}} e caratterizzato da una breve \textbf{\textcolor{darkgreen}{descrizione}} e dal nominativo del \textbf{\textcolor{red}{responsabile}} (si assuma che \textbf{\textcolor{blue}{ogni dipartimento abbia un unico responsabile e che una stessa persona possa essere responsabile di più dipartimenti}});
+			\\
+			\item ogni dipartimento possa formulare delle \textbf{\textcolor{red}{richieste d'acquisto}}; ogni richiesta d'acquisto \textbf{\textcolor{blue}{formulata da un dipartimento}} sia caratterizzata da un \textbf{\textcolor{darkgreen}{numero progressivo}}, che la identifica univocamente all'interno dell'insieme delle richieste del dipartimento (esempio, richiesta numero 32 formulata dal dipartimento D37), da una \textbf{\textcolor{darkgreen}{data}} (si assuma che uno stesso dipartimento possa effettuare più richieste in una stessa data), dall'\textbf{\textcolor{blue}{insieme degli articoli da ordinare}}, con l'indicazione, per ciascun \textbf{\textcolor{red}{articolo}}, della \textbf{\textcolor{lightblue}{quantità richiesta}}, e dalla \textbf{\textcolor{lightblue}{data prevista di consegna}};
+			\\
+			\item ogni articolo sia identificato univocamente da un \textbf{\textcolor{darkgreen}{codice articolo}} e sia caratterizzato da una \textbf{\textcolor{darkgreen}{breve descrizione}}, da una \textbf{\textcolor{darkgreen}{unità di misura}} e da una \textbf{\textcolor{darkgreen}{classe merceologica}};
+			\\
+			\item ogni \textbf{\textcolor{red}{fornitore}} sia identificato univocamente da un \textbf{\textcolor{darkgreen}{codice fornitore}} e sia caratterizzato dalla \textbf{\textcolor{darkgreen}{partita IVA}}, dall'\textbf{\textcolor{darkgreen}{indirizzo}}, da \textbf{\textcolor{darkgreen}{uno o più recapiti telefonici}} da un \textbf{\textcolor{darkgreen}{indirizzo di posta elettronica}}; alcuni fornitori (non necessariamente tutti) possiedano un \textbf{\textcolor{darkgreen}{numero di fax}};
+			\\
+			\item ad ogni fornitore sia \textbf{\textcolor{blue}{associato}} \textbf{\textcolor{brown}{un listino}}, \textbf{\textcolor{blue}{comprendente uno o più articoli}}; per ciascun \textbf{\textcolor{red}{articolo appartenente ad un dato listino}} siano specificati il \textbf{\textcolor{darkgreen}{codice articolo}}, il \textbf{\textcolor{darkgreen}{prezzo unitario}}, il \textbf{\textcolor{darkgreen}{quantitativo minimo d'ordine}} e lo \textbf{\textcolor{darkgreen}{sconto applicato}};
+			\\
+			\item per soddisfare le richieste provenienti dai vari dipartimenti, l'ufficio acquisti emetta degli \textbf{\textcolor{red}{ordini}}; ogni ordine sia identificato univocamente da un \textbf{\textcolor{darkgreen}{codice d'ordine}} e sia caratterizzato dalla \textbf{\textcolor{darkgreen}{data di emissione}}, dal \textbf{\textcolor{blue}{fornitore a cui viene inviato}}, dall'\textbf{\textcolor{blue}{insieme degli articoli ordinati}}, con l'indicazione, per ciascuno di essi, della \textbf{\textcolor{lightblue}{quantità ordinata}}, e dalla \textbf{\textcolor{lightblue}{data prevista di consegna}} (si assuma che un ordine possa fondere insieme più richieste d'acquisto dei dipartimenti).
+		\end{itemize}
+		\begin{table}[H]
+		\centering
+		\begin{tabular}{llllll}
+		\hline
+		\textbf{Legenda}: & \textbf{\textcolor{red}{Entità}} & \textbf{\textcolor{darkgreen}{Attributo}} & \textbf{\textcolor{brown}{???}} & \textbf{\textcolor{blue}{Relazioni}} & \textbf{\textcolor{lightblue}{Attributi di relazione}} \\ 
+		\end{tabular}
+		\end{table}
+	}%
+}
 ```
 
 \newpage
