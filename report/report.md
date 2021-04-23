@@ -228,7 +228,7 @@ Sulla base del documento di specifiche, si inviduano i criteri opportuni per la 
 		\centering
 		\begin{tabular}{llllll}
 		\hline
-		\textbf{Legenda}: & \textbf{\textcolor{red}{Entità}} & \textbf{\textcolor{darkgreen}{Attributo}} & \textbf{\textcolor{brown}{Ambiguità}} & \textbf{\textcolor{bllightblueue}{Relazioni}} & \textbf{\textcolor{lightblue}{Attributi di relazione}} \\ 
+		\textbf{Legenda}: & \textbf{\textcolor{red}{Entità}} & \textbf{\textcolor{darkgreen}{Attributo}} & \textbf{\textcolor{brown}{Ambiguità}} & \textbf{\textcolor{blue}{Relazioni}} & \textbf{\textcolor{lightblue}{Attributi di relazione}} \\ 
 		\end{tabular}
 		\end{table}
 	}%
