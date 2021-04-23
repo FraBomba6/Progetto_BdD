@@ -236,11 +236,16 @@ Sulla base del documento di specifiche, si inviduano i criteri opportuni per la 
 ```
 ### Assunzioni in merito alle ambiguità rilevate
 
-Sulla base di quanto riportato nelle specifiche sopracitate, si è osservato come il concetto di **listino** delinei l'insieme di articoli associati al rispettivo fornitore senza, però, aggiungere informazioni supplementari in merito a tale relazione. Si è, pertanto, deciso di **non** rappresentare il listino all'interno della Basi di Dati ma di, piuttosto, rappresentare l'associazione fra un singolo prodotto e il rispettivo fornitore. 
+Sulla base di quanto riportato nelle specifiche sopracitate, si è osservato come il concetto di **listino** delinei l'insieme di articoli associati al rispettivo fornitore senza, però, aggiungere informazioni supplementari in merito a tale relazione. Si è, pertanto, deciso di **non** rappresentare il listino all'interno della Basi di Dati ma di, piuttosto, rappresentare l'associazione fra un singolo articolo e il rispettivo fornitore. 
 
-Inoltre, si è osservata una fondamentale distinzione tra il concetto di **articolo** e quello di **articolo appartenente ad un dato listino**. In particolare, mentre l'articolo individua informazioni immutabili in merito ad un singolo bene acquistabile, il prodotto di un listino specifica aspetti quali prezzo, sconto e quantità minima ordinabile che variano a seconda del rispettivo fornitore. Si assume che un singolo prodotto possa provenire da diversi fornitori e che una richiesta d'acquisto relativa ad uno specifico articolo possa essere evasa con prodotti analoghi, ma provenienti da fornitori diversi. Costituisce responsabilità dell'ufficio acquisti l'individuazione del prodotto, con rispettivo fornitore, più conveniente sulla base degli articoli inclusi in una richiesta d'acquisto.  
+Si assume che un articolo possa essere fornito da un insieme di fornitori e che, di conseguenza, mentre una richiesta d'acquisto si rivolge agli articoli, è responsabilità dell'ufficio acquisti l'individuazione dello specifico fornitore, in merito ad aspetti logistici e di convenienza.
 
-Ne consegue che, a livello di dipartimento, quello che viene individuato come singolo articolo possa essere ricondotto dal personale dell'ufficio acquisti al rispettivo prodotto di uno fra diversi fornitori, sulla base di aspetti logistici e/o di convenienza.
+Si assume, inoltre, che sia di interesse dell'ente la possibilità di ricondurre un ordine alle richieste d'acquisto che esso soddisfa e una richiesta d'acquisto agli ordini che la coinvolgono.
+
+Infine, sapendo che un ordine coinvolge al più un fornitore e che gli articoli inclusi nelle richieste d'acquisto possono potenzialmente provenire da fornitori diversi si assume che:
+
+- Un singolo ordine possa soddisfare una richiesta d'acquisto anche parzialmente;
+- Per ogni articolo coinvolto, venga soddisfatta la quantità specificata. 
 
 \newpage
 
@@ -261,7 +266,9 @@ Sulla base del diagramma ER proposto, si riportano le osservazioni effettuate, i
 
 ### Vincoli aziendali
 
-Il diagramma presenta un singolo ciclo che coinvolge le entità *Ordine*, *Prodotto Listino* e *Fornitore*. Sulla base di quanto riportato nei requisiti si introduce il seguente vincolo aziendale: **il fornitore dei prodotti relativi ad un ordine deve essere il medesimo di quello associato all'ordine stesso**. 
+Il diagramma presenta un singolo ciclo che coinvolge le entità *Ordine*, *Articolo* e *Fornitore*. Sulla base di quanto riportato nei requisiti si introduce il seguente vincolo aziendale: **il fornitore degli articoli relativi ad un ordine deve essere il medesimo di quello associato all'ordine stesso**. 
+
+Inoltre, si evidenzia come la **data di consegna di un articolo** relativo ad una richiesta d'acquisto possa essere calcolata solo successivamente alla partecipazione di un ordine alla relazione. Questo è motivato dal fatto che la data prevista di consegna è valutabile conoscendo la data di emissione dell'ordine.
 
 ### Regole di derivazione
 
