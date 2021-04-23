@@ -14,6 +14,7 @@ header-includes:
   - \usepackage[italian]{babel}
   - \usepackage{graphicx}
   - \usepackage{xcolor}
+  - \usepackage[normalem]{ulem}
   - \usepackage{float}
   - \usepackage{array}
   - \usepackage{multirow} 
@@ -266,7 +267,7 @@ Sulla base del diagramma ER proposto, si riportano le osservazioni effettuate, i
 
 ### Vincoli aziendali
 
-Il diagramma presenta un singolo ciclo che coinvolge le entità *Ordine*, *Articolo* e *Fornitore*. Sulla base di quanto riportato nei requisiti si introduce il seguente vincolo aziendale: **il fornitore degli articoli relativi ad un ordine deve essere il medesimo di quello associato all'ordine stesso**. 
+Il diagramma presenta un singolo ciclo che coinvolge le entità *Ordine*, *Articolo* e *Fornitore*. Sulla base di quanto riportato nei requisiti si introduce il seguente vincolo aziendale: \emph{\textbf{il fornitore degli articoli relativi ad un ordine deve essere il medesimo di quello associato all'ordine stesso}}. 
 
 Inoltre, si evidenzia come la **data di consegna di un articolo** relativo ad una richiesta d'acquisto possa essere calcolata solo successivamente alla partecipazione di un ordine alla relazione. Questo è motivato dal fatto che la data prevista di consegna è valutabile conoscendo la data di emissione dell'ordine.
 
@@ -274,6 +275,8 @@ Inoltre, si evidenzia come la **data di consegna di un articolo** relativo ad un
 
 Gli attributi derivati, con rispettive regole di derivazione, sono riportati di seguito: 
 
+1. L'attributo **Stato Richiesta** dell'entità *Richiesta d'Acquisto* viene derivato valutando lo stato di tutti gli *Ordini* associati ad una specifica richiesta.  
+2. L'attributo **Data Consegna Articolo** della relazione *Include* viene derivato sommando al valore dell'attributo **Data Emissione** dell'entità *Ordine* quello dell'attributo **Tempo di Consegna** della relazione *Fornisce*. 
 
 ### Considerazioni
 
