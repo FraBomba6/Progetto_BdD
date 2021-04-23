@@ -178,6 +178,9 @@ A seguito dell'identificazione e organizzazione delle terminologie riportate nel
 
 Sulla base dei requisiti individuati, si descrivono le principali operazioni, con rispettiva frequenza, sui dati. Si considera, per dare consistenza al conteggio, un ente costituito da trenta dipartimenti e associato ad cinque fornitori diversi. 
 
+\
+\
+
 | **Operazione** | **Frequenza** |
 |-|-|
 |Inserimento di una richiesta d'acquisto|150/settimana|
@@ -192,7 +195,7 @@ Sulla base dei requisiti individuati, si descrivono le principali operazioni, co
 |||
 |Modifica delle caratteristiche di un prodotto|5/mese|
 |||
-|Visualizzazione di tutti i prodotti|500/settimana|
+|Visualizzazione di tutti gli articoli|500/settimana|
 |||
 |Calcolo numero richieste mensili effettuate dai dipartimenti|30/mese|
 |||
@@ -217,7 +220,7 @@ Sulla base del documento di specifiche, si inviduano i criteri opportuni per la 
 			\\
 			\item ogni \textbf{\textcolor{red}{fornitore}} sia identificato univocamente da un \textbf{\textcolor{darkgreen}{codice fornitore}} e sia caratterizzato dalla \textbf{\textcolor{darkgreen}{partita IVA}}, dall'\textbf{\textcolor{darkgreen}{indirizzo}}, da \textbf{\textcolor{darkgreen}{uno o più recapiti telefonici}} da un \textbf{\textcolor{darkgreen}{indirizzo di posta elettronica}}; alcuni fornitori (non necessariamente tutti) possiedano un \textbf{\textcolor{darkgreen}{numero di fax}};
 			\\
-			\item ad ogni fornitore sia \textbf{\textcolor{blue}{associato}} \textbf{\textcolor{brown}{un listino}}, \textbf{\textcolor{blue}{comprendente uno o più articoli}}; per ciascun \textbf{\textcolor{red}{articolo appartenente ad un dato listino}} siano specificati il \textbf{\textcolor{darkgreen}{codice articolo}}, il \textbf{\textcolor{darkgreen}{prezzo unitario}}, il \textbf{\textcolor{darkgreen}{quantitativo minimo d'ordine}} e lo \textbf{\textcolor{darkgreen}{sconto applicato}};
+			\item \textbf{\textcolor{blue}{ad ogni fornitore sia associato}} \textbf{\textcolor{brown}{un listino}}, \textbf{\textcolor{blue}{comprendente uno o più articoli}}; per ciascun articolo appartenente ad un dato listino siano specificati il \textbf{\textcolor{lightblue}{codice articolo}}, il \textbf{\textcolor{lightblue}{prezzo unitario}}, il \textbf{\textcolor{lightblue}{quantitativo minimo d'ordine}} e lo \textbf{\textcolor{lightblue}{sconto applicato}};
 			\\
 			\item per soddisfare le richieste provenienti dai vari dipartimenti, l'ufficio acquisti emetta degli \textbf{\textcolor{red}{ordini}}; ogni ordine sia identificato univocamente da un \textbf{\textcolor{darkgreen}{codice d'ordine}} e sia caratterizzato dalla \textbf{\textcolor{darkgreen}{data di emissione}}, dal \textbf{\textcolor{blue}{fornitore a cui viene inviato}}, dall'\textbf{\textcolor{blue}{insieme degli articoli ordinati}}, con l'indicazione, per ciascuno di essi, della \textbf{\textcolor{lightblue}{quantità ordinata}}, e dalla \textbf{\textcolor{lightblue}{data prevista di consegna}} (si assuma che un ordine possa fondere insieme più richieste d'acquisto dei dipartimenti).
 		\end{itemize}
@@ -225,18 +228,25 @@ Sulla base del documento di specifiche, si inviduano i criteri opportuni per la 
 		\centering
 		\begin{tabular}{llllll}
 		\hline
-		\textbf{Legenda}: & \textbf{\textcolor{red}{Entità}} & \textbf{\textcolor{darkgreen}{Attributo}} & \textbf{\textcolor{brown}{???}} & \textbf{\textcolor{blue}{Relazioni}} & \textbf{\textcolor{lightblue}{Attributi di relazione}} \\ 
+		\textbf{Legenda}: & \textbf{\textcolor{red}{Entità}} & \textbf{\textcolor{darkgreen}{Attributo}} & \textbf{\textcolor{brown}{Ambiguità}} & \textbf{\textcolor{bllightblueue}{Relazioni}} & \textbf{\textcolor{lightblue}{Attributi di relazione}} \\ 
 		\end{tabular}
 		\end{table}
 	}%
 }
 ```
+### Assunzioni in merito alle ambiguità rilevate
+
+Sulla base di quanto riportato nelle specifiche sopracitate, si è osservato come il concetto di **listino** delinei l'insieme di articoli associati al rispettivo fornitore senza, però, aggiungere informazioni supplementari in merito a tale relazione. Si è, pertanto, deciso di **non** rappresentare il listino all'interno della Basi di Dati ma di, piuttosto, rappresentare l'associazione fra un singolo prodotto e il rispettivo fornitore. 
+
+Inoltre, si è osservata una fondamentale distinzione tra il concetto di **articolo** e quello di **articolo appartenente ad un dato listino**. In particolare, mentre l'articolo individua informazioni immutabili in merito ad un singolo bene acquistabile, il prodotto di un listino specifica aspetti quali prezzo, sconto e quantità minima ordinabile che variano a seconda del rispettivo fornitore. Si assume che un singolo prodotto possa provenire da diversi fornitori e che una richiesta d'acquisto relativa ad uno specifico articolo possa essere evasa con prodotti analoghi, ma provenienti da fornitori diversi. Costituisce responsabilità dell'ufficio acquisti l'individuazione del prodotto, con rispettivo fornitore, più conveniente sulla base degli articoli inclusi in una richiesta d'acquisto.  
+
+Ne consegue che, a livello di dipartimento, quello che viene individuato come singolo articolo possa essere ricondotto dal personale dell'ufficio acquisti al rispettivo prodotto di uno fra diversi fornitori, sulla base di aspetti logistici e/o di convenienza.
 
 \newpage
 
-## Diagramma ER
+# Progettazione concettuale
 
-\
+## Diagramma ER
 
 \begin{figure}[H]
 \centering
@@ -245,7 +255,23 @@ Sulla base del documento di specifiche, si inviduano i criteri opportuni per la 
 
 \newpage
 
-# Progettazione concettuale
+## Osservazioni
+
+Sulla base del diagramma ER proposto, si riportano le osservazioni effettuate, includendo i **vincoli aziendali** individuati e le **regole di derivazione** degli attributi derivati.
+
+### Vincoli aziendali
+
+Il diagramma presenta un singolo ciclo che coinvolge le entità *Ordine*, *Prodotto Listino* e *Fornitore*. Sulla base di quanto riportato nei requisiti si introduce il seguente vincolo aziendale: **il fornitore dei prodotti relativi ad un ordine deve essere il medesimo di quello associato all'ordine stesso**. 
+
+### Regole di derivazione
+
+Gli attributi derivati, con rispettive regole di derivazione, sono riportati di seguito: 
+
+
+### Considerazioni
+
+So lillo
+
 
 \newpage
 
@@ -257,5 +283,5 @@ Sulla base del documento di specifiche, si inviduano i criteri opportuni per la 
 
 \newpage
 
-# Analisi dei dati in R
+# Analisi dei dati
 
