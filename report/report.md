@@ -4,7 +4,7 @@ author: |
         | Francesco Bombassei De Bona (144665)
         | Andrea Cantarutti (141808)
         | Lorenzo Bellina (142544)
-		| Alessandro Fabris (matricola)
+		| Alessandro Fabris (142520)
 date: "01/05/2021"
 output:
 header-includes:
@@ -47,6 +47,7 @@ Il presente elaborato espone l'attività di progettazione e implementazione di u
 
 La consegna assegnata riporta requisiti il cui **dominio di interesse** è relativo al sistema di gestione dell'*ufficio acquisti di un ente pubblico*. 
 
+
 ```{=latex}
 \setlength{\fboxsep}{1em}
 \noindent\fbox{%
@@ -70,6 +71,8 @@ seguente insieme di requisiti:
 	}%
 }
 ```
+
+\
 
 Sulla base di quanto riportato, si procede alla formulazione di un glossario che permette la definizione univoca dei concetti esposti. 
 
@@ -280,12 +283,24 @@ Gli attributi derivati, con rispettive regole di derivazione, sono riportati di 
 
 ### Considerazioni
 
-So lillo
+Si suppone che, nel caso della prima regola di derivazione esplicitata, la valutazione dell'attributo **Stato Richiesta** sia definita da una funzione che, sulla base dell'insieme dei rispettivi *ordini*, individua quello/i con *stato* meno avanzato. Una completa richiesta d'acquisto risulterà, infatti, conclusasi completamente solo quando tutti gli ordini che la soddisfano saranno giunti a destinazione presso il dipartimento.
 
+Inoltre, la partecipazione dell'entità *Ordine* alla relazione ternaria che coinvolge le entità *Richiesta d'Acquisto*, *Ordine* e *Articolo* sia **opzionale**. Quest'ultima avverrà, infatti, solamente al momento in cui l'ufficio acquisti emetterà un ordine atto a soddisfare l'articolo incluso in una specifica richiesta. 
 
 \newpage
 
 # Progettazione logica
+
+- Analisi delle ridondanze
+	- Analisi dei cicli
+	- Analisi delle ridondanze degli attributi derivabili 
+- Eliminazione delle generalizzazioni (`NO`)
+- Partizionamento e accorpamento di entità e associazioni
+	- Reifica delle relazioni ternarie
+	- Valutazione degli attributi composti
+	- Eliminazione degli attributi multivalore
+- Scelta degli identificatori primari
+- Traduzione verso il modello logico-relazionale
 
 \newpage
 
