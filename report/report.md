@@ -47,7 +47,6 @@ Il presente elaborato espone l'attività di progettazione e implementazione di u
 
 La consegna assegnata riporta requisiti il cui **dominio di interesse** è relativo al sistema di gestione dell'*ufficio acquisti di un ente pubblico*. 
 
-
 ```{=latex}
 \setlength{\fboxsep}{1em}
 \noindent\fbox{%
@@ -268,7 +267,7 @@ Infine, sapendo che un ordine coinvolge al più un fornitore e che gli articoli 
 
 Sulla base del diagramma ER proposto, si riportano le osservazioni effettuate, includendo i **vincoli aziendali** individuati e le **regole di derivazione** degli attributi derivati.
 
-### Vincoli aziendali
+### Vincoli aziendali {#vincoli}
 
 Il diagramma presenta un singolo ciclo che coinvolge le entità *Ordine*, *Articolo* e *Fornitore*. Sulla base di quanto riportato nei requisiti si introduce il seguente vincolo aziendale: \emph{\textbf{il fornitore degli articoli relativi ad un ordine deve essere il medesimo di quello associato all'ordine stesso}}. 
 
@@ -297,7 +296,7 @@ Inoltre, la partecipazione dell'entità *Ordine* alla relazione ternaria che coi
 
 Come specificato precedentemente, l'unico ciclo presente nello schema ER coinvolge le entità **Ordine**, **Articolo** e **Fornitore**. Un ordine, infatti, deve essere rivolto ad uno specifico fornitore e, pertanto, gli articoli contenuti devono necessariamente provenire tutti dallo stesso fornitore.
 
-Considerato il fatto che il medesimo articolo può essere fornito da più fornitori, al fine di poter strutturare un ordine è necessario sapere il fornitore che lo evaderà e gli articoli in esso contenuti. Non è, pertanto, possibile effettuare un'eliminazione del ciclo senza la conseguente perdita di informazione necessaria al corretto comportamento della Base di Dati. Pertanto, il ciclo viene mantenuto e vincolato utilizzando il vincolo di integrità proposto nella sezione precedente. 
+Considerato il fatto che il medesimo articolo può essere fornito da più fornitori, al fine di poter strutturare un ordine è necessario sapere il fornitore che lo evaderà e gli articoli in esso contenuti. Non è, pertanto, possibile effettuare un'eliminazione del ciclo senza la conseguente perdita di informazione necessaria al corretto comportamento della Base di Dati. Pertanto, il ciclo viene mantenuto e vincolato utilizzando il [vincolo di integrità](#vincoli) proposto in precedenza. 
 
 ### Attributi derivabili
 
