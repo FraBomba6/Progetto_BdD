@@ -291,16 +291,51 @@ Inoltre, la partecipazione dell'entità *Ordine* alla relazione ternaria che coi
 
 # Progettazione logica
 
-- Analisi delle ridondanze
-	- Analisi dei cicli
-	- Analisi delle ridondanze degli attributi derivabili 
-- Eliminazione delle generalizzazioni (`NO`)
-- Partizionamento e accorpamento di entità e associazioni
-	- Reifica delle relazioni ternarie
-	- Valutazione degli attributi composti
-	- Eliminazione degli attributi multivalore
-- Scelta degli identificatori primari
-- Traduzione verso il modello logico-relazionale
+## Analisi delle ridondanze
+
+### Analisi dei cicli
+
+Come specificato precedentemente, l'unico ciclo presente nello schema ER coinvolge le entità **Ordine**, **Articolo** e **Fornitore**. Un ordine, infatti, deve essere rivolto ad uno specifico fornitore e, pertanto, gli articoli contenuti devono necessariamente provenire tutti dallo stesso fornitore.
+
+Considerato il fatto che il medesimo articolo può essere fornito da più fornitori, al fine di poter strutturare un ordine è necessario sapere il fornitore che lo evaderà e gli articoli in esso contenuti. Non è, pertanto, possibile effettuare un'eliminazione del ciclo senza la conseguente perdita di informazione necessaria al corretto comportamento della Base di Dati. Pertanto, il ciclo viene mantenuto e vincolato utilizzando il vincolo di integrità proposto nella sezione precedente. 
+
+### Attributi derivabili
+
+Valutazione con tavole dei volumi e operazioni.
+
+## Eliminazione delle generalizzazioni
+
+Non ci sono generalizzazioni da eliminare.
+
+## Partizionamento ed accorpamento di entità e associazioni
+
+### Reifica di relazioni binarie
+
+Il diagramma presenta una relazione binaria **Fornisce** che coinvolge le entità **Articolo** e **Fornitore**, che hanno entrambe una partecipazione di tipo `(1, N)`. In particolare, per ogni coppia Articolo-Fornitore si osserva la presenza di una serie di attributi quali prezzo unitario, tempo di consegna, sconto, quantità minima ordinabile e codice articolo per il fornitore. Si sceglie, pertanto, di reificare la relazione ad un'omonima entità contenente gli attributi citati.
+
+### Reifica delle relazioni ternarie
+
+Il diagramma ER presenta una relazione ternaria **Include** che coinvolge le entità **Richiesta d'Acquisto**, **Articolo** e **Ordine**. In particolare, la partecipazione delle entità Richiesta d'Acquisto e Articolo è di tipo `(1, N)`, mentre quella dell'entità Ordine è `(0, N)`: questo perché una richiesta non può essere vuota e un articolo può essere contenuto in una o più richieste, mentre un articolo appartenente ad una richiesta può non essere necessariamente incluso in un ordine. 
+
+Al fine di eliminare la relazione ternaria, si sceglie di reificarla ad entità in relazione con **Richiesta d'Acquisto**, **Articolo** ed **Ordine**, avente come attributi quelli che precedentemente individuato rispetto alla relazione.
+
+### Valutazione degli attributi composti
+
+L'unico attributo composto presente nel diagramma è *Luogo di Nascita* in riferimento all'entità **Responsabile**. In particolare, l'attributo comprende i riferimenti relativi al Comune e alla Provincia di nascita. Vista la scarsità di interrogazioni in merito a dati anagrafici dei responsabili, si sceglie di mantenere l'attributo *Luogo di Nascita* rispetto alla separazione degli attributi *Comune* e *Provincia*. Si prevede, quindi, la presenza di un unico attributo contenente entrambe le informazioni.
+
+### Eliminazione di attributi multivalore
+
+Il diagramma presenta un attributo multivalore *Recapiti Telefonici* in riferimento all'entità **Fornitore**. Questo, infatti, può avere uno o più contatti di riferimento. L'attributo multivalore viene, conseguentemente, reificato ad un'entità.
+
+### Ristrutturazione del diagramma ER
+
+Si riporta il diagramma.
+
+\newpage
+
+## Scelta degli identificatori primari
+
+## Traduzione verso il modello logico-relazionale
 
 \newpage
 
@@ -309,4 +344,43 @@ Inoltre, la partecipazione dell'entità *Ordine* alla relazione ternaria che coi
 \newpage
 
 # Analisi dei dati
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
