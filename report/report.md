@@ -48,6 +48,8 @@ Il presente elaborato espone l'attività di progettazione e implementazione di u
 La consegna assegnata riporta requisiti il cui **dominio di interesse** è relativo al sistema di gestione dell'*ufficio acquisti di un ente pubblico*. 
 
 ```{=latex}
+% Consegna iniziale
+
 \setlength{\fboxsep}{1em}
 \noindent\fbox{%
     \parbox{\textwidth}{%
@@ -82,6 +84,8 @@ Sulla base di quanto riportato, si procede alla formulazione di un glossario che
 La terminologia individuata appartente al dominio di interesse e correlata alla strutturazione della Base di Dati è presentata di seguito: 
 
 ```{=latex}
+% glossario dei termini
+
 \begin{table}[h]
 \renewcommand{\arraystretch}{2}
 \centering
@@ -112,6 +116,9 @@ Ordine & Insieme di articoli richiesti dall'ufficio acquisti ad un fornitore per
 A seguito dell'identificazione e organizzazione delle terminologie riportate nel precedente glossario, si identificano e raggruppano le frasi relative a requisiti espressi in linguaggio naturale sulla base di ciò che esse riferiscono.
 
 ```{=latex}
+
+% requisiti ristrutturati
+
 \begin{table}[H]
 \renewcommand{\arraystretch}{1}
 \centering
@@ -177,9 +184,9 @@ A seguito dell'identificazione e organizzazione delle terminologie riportate nel
 \end{table}
 ```
 
-## Inviduazione dei principali requisiti operazionali
+## Individuazione dei principali requisiti operazionali {#op-frequenti}
 
-Sulla base dei requisiti individuati, si descrivono le principali operazioni, con rispettiva frequenza, sui dati. Si considera, per dare consistenza al conteggio, un ente costituito da trenta dipartimenti e associato ad cinque fornitori diversi. 
+Sulla base dei requisiti individuati, si descrivono le principali operazioni, con rispettiva frequenza, sui dati. Si considera, per dare consistenza al conteggio, un ente costituito da trenta dipartimenti e associato a cinque fornitori diversi. 
 
 \
 \
@@ -190,17 +197,17 @@ Sulla base dei requisiti individuati, si descrivono le principali operazioni, co
 |||
 |Aggiornamento dello stato di una richiesta d'acquisto|7/settimana|
 |||
-|Visualizzazione delle richieste d'acquisto|60/settimana|
+|Aggiornamento dello stato di un ordine|3/settimana|
+|||
+|Visualizzazione delle informazioni relative ad una richiesta d'acquisto|60/settimana|
+|||
+|Visualizzazione degli articoli contenuti in una richiesta d'acquisto|60/settimana|
+|||
+|Visualizzazione degli articoli ordinati e non consegnati|20/settimana|
 |||
 |Inserimento di un nuovo ordine|5/settimana|
 |||
-|Aggiornamento di un ordine|5/settimana|
-|||
-|Modifica delle caratteristiche di un prodotto|5/mese|
-|||
 |Visualizzazione di tutti gli articoli|500/settimana|
-|||
-|Calcolo numero richieste mensili effettuate dai dipartimenti|30/mese|
 |||
 |Calcolo della spesa mensile dei dipartimenti e dell'ente|30/mese|
 
@@ -211,6 +218,9 @@ Sulla base dei requisiti individuati, si descrivono le principali operazioni, co
 Sulla base del documento di specifiche, si inviduano i criteri opportuni per la rappresentazione dei concetti descritti.
 
 ```{=latex}
+
+% rappresentazione dei concetti
+
 \setlength{\fboxsep}{0.6em}
 \noindent\fbox{%
     \parbox{\textwidth}{%
@@ -296,11 +306,90 @@ Inoltre, la partecipazione dell'entità *Ordine* alla relazione ternaria che coi
 
 Come specificato precedentemente, l'unico ciclo presente nello schema ER coinvolge le entità **Ordine**, **Articolo** e **Fornitore**. Un ordine, infatti, deve essere rivolto ad uno specifico fornitore e, pertanto, gli articoli contenuti devono necessariamente provenire tutti dallo stesso fornitore.
 
-Considerato il fatto che il medesimo articolo può essere fornito da più fornitori, al fine di poter strutturare un ordine è necessario sapere il fornitore che lo evaderà e gli articoli in esso contenuti. Non è, pertanto, possibile effettuare un'eliminazione del ciclo senza la conseguente perdita di informazione necessaria al corretto comportamento della Base di Dati. Pertanto, il ciclo viene mantenuto e vincolato utilizzando il [vincolo di integrità](#vincoli) proposto in precedenza. 
+Considerato il fatto che il medesimo articolo può essere fornito da più fornitori, al fine di poter strutturare un ordine è necessario sapere il fornitore che lo evaderà e gli articoli in esso contenuti. Non è, pertanto, possibile effettuare un'eliminazione del ciclo senza la conseguente perdita di informazione necessaria al corretto comportamento della Base di Dati. Pertanto, il ciclo viene mantenuto e vincolato sulla base delle osservazioni effettuate al punto [3.2](#vincoli).
 
 ### Attributi derivabili
 
-Valutazione con tavole dei volumi e operazioni.
+Al fine di valutare il mantenimento o l'eliminazione delle ridondanze presenti nel diagramma ER proposto, si definisce, di seguito, la tavola dei volumi di entità e relazioni presenti nella Base di Dati.
+
+|Concetto|Tipo|Volume|
+|-|:-:|-:|
+|Responsabile|E|25|
+|Dipartimento|R|30|
+|Richiesta d'Acquisto|E|6000|
+|Articolo|E|500|
+|Ordine|E|200|
+|Fornitore|E|5|
+|Include|R|60000|
+|Fornisce|R|750|
+
+Si fa riferimento, inoltre, alle operazioni frequenti riportate al punto [2.4](#op-frequenti).
+
+Si analizzano, quindi, le ridondanze in merito agli attributi derivati **Stato Richiesta** dell'entità *Richiesta d'Acquisto* e **Data Consegna** della relazione *Include*.
+
+#### Stato Richiesta
+
+L'attributo è coinvolto nelle operazioni di **Aggiornamento dello stato di una Richiesta d'Acquisto** [`7/settimana`] e quelle di **Visualizzazione delle informazioni relative ad una Richiesta d'Acquisto** [`60/settimana`]. Si riportano, di seguito, le tavole degli accessi in presenza e assenza dell'attributo derivato, assieme alla rispettiva valutazione del costo di esecuzione.
+
+Nel caso di **presenza** dell'attributo derivato, si prevedono gli accessi seguenti:
+
+
+```{=latex}
+
+% stato richiesta d'acquisto in presenza dell'attributo
+
+\begin{table}[H]
+\caption {\textbf{Aggiornamento dello stato di una richiesta d'acquisto}}
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Concetto}    & \textbf{Tipo} & \textbf{Accessi} & \textbf{Tipo di accesso} \\ \hline
+Ordine               & E    & 5       & R               \\ \hline
+Include              & R    & 5       & R               \\ \hline
+Richiesta d'Acquisto & E    & 1       & W               \\ \hline
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\caption[Caption for LOF]{\textbf{Visualizzazione dello stato di una richiesta d'acquisto}\footnotemark}
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Concetto}    & \textbf{Tipo} & \textbf{Accessi} & \textbf{Tipo di accesso} \\ \hline
+Richiesta d'Acquisto & E             &    1             &           R               \\ \hline
+\end{tabular}
+\end{table}
+
+```
+
+\footnotetext{Lo stato è ottenuto tramite l'operazione di visualizzazione delle informazioni relative ad una richiesta d'acquisto}
+
+Considerando il costo in scrittura pari al doppio del costo in lettura e le frequenze precedentemente riportate, si osserva che il costo di **aggiornamento** è pari a $7\cdot(5\cdot1 + 5\cdot1 + 1\cdot2) = 84$ e quello di **visualizzazione** è pari a $60\cdot(1\cdot1) = 60$. Di conseguenza, il costo complessivo in presenza dell'attributo derivato è pari a $$ 84 + 60 = 144 $$ 
+
+Nel caso di **assenza** dell'attributo derivato, si prevedono gli accessi seguenti:
+
+```{=latex}
+
+% stato richiesta d'acquisto in assenza dell'attributo
+
+\begin{table}[H]
+\caption{\textbf{Visualizzazione dello stato di una richiesta d'acquisto}}
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Concetto}    & \textbf{Tipo} & \textbf{Accessi} & \textbf{Tipo di accesso} \\ \hline
+Ordine               &    E          &      5           &      R				   \\ \hline
+Include              &    R          &      5           &      R				   \\ \hline
+\end{tabular}
+\end{table}
+
+```
+
+Si osserva che non vi è alcun costo di **aggiornamento** in assenza dell'attributo e che il costo di **visualizzazione** è pari a $$ 60\cdot(5\cdot1 + 5\cdot1) = 600 $$ 
+
+Sulla base dei risultati ottenuti, si ritiene conveniente il **mantenimento** dell'attributo derivato.
+
+#### Data Consegna
 
 ## Eliminazione delle generalizzazioni
 
