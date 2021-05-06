@@ -203,8 +203,6 @@ Sulla base dei requisiti individuati, si descrivono le principali operazioni, co
 |||
 |Visualizzazione degli articoli contenuti in una richiesta d'acquisto|60/settimana|
 |||
-|Visualizzazione degli articoli ordinati e non consegnati|20/settimana|
-|||
 |Inserimento di un nuovo ordine|5/settimana|
 |||
 |Visualizzazione di tutti gli articoli|500/settimana|
@@ -247,13 +245,15 @@ Sulla base del documento di specifiche, si inviduano i criteri opportuni per la 
 	}%
 }
 ```
-### Assunzioni in merito alle ambiguità rilevate
+### Assunzioni in merito alle ambiguità rilevate {#assunzioni}
 
 Sulla base di quanto riportato nelle specifiche sopracitate, si è osservato come il concetto di **listino** delinei l'insieme di articoli associati al rispettivo fornitore senza, però, aggiungere informazioni supplementari in merito a tale relazione. Si è, pertanto, deciso di **non** rappresentare il listino all'interno della Basi di Dati ma di, piuttosto, rappresentare l'associazione fra un singolo articolo e il rispettivo fornitore. 
 
 Si assume che un articolo possa essere fornito da un insieme di fornitori e che, di conseguenza, mentre una richiesta d'acquisto si rivolge agli articoli, è responsabilità dell'ufficio acquisti l'individuazione dello specifico fornitore, in merito ad aspetti logistici e di convenienza.
 
-Si assume, inoltre, che sia di interesse dell'ente la possibilità di ricondurre un ordine alle richieste d'acquisto che esso soddisfa e una richiesta d'acquisto agli ordini che la coinvolgono.
+Si assume che sia di interesse dell'ente la possibilità di ricondurre un ordine alle richieste d'acquisto che esso soddisfa e una richiesta d'acquisto agli ordini che la coinvolgono.
+
+Si osserva, inoltre, la necessità di memorizzare il prezzo al quale ogni singolo articolo viene acquistato nell'eventualità che vengano successivamente variati lo sconto e/o il prezzo unitario.
 
 Infine, sapendo che un ordine coinvolge al più un fornitore e che gli articoli inclusi nelle richieste d'acquisto possono potenzialmente provenire da fornitori diversi si assume che:
 
@@ -294,6 +294,8 @@ Gli attributi derivati, con rispettive regole di derivazione, sono riportati di 
 
 Si suppone che, nel caso della prima regola di derivazione esplicitata, la valutazione dell'attributo **Stato Richiesta** sia definita da una funzione che, sulla base dell'insieme dei rispettivi *ordini*, individua quello/i con *stato* meno avanzato. Una completa richiesta d'acquisto risulterà, infatti, conclusasi completamente solo quando tutti gli ordini che la soddisfano saranno giunti a destinazione presso il dipartimento.
 
+La relazione **Include** prevede l'aggiunta dell'attributo **Prezzo Unitario Finale** al fine di poter stabilire, come indicato al punto [2.5.1](#assunzioni), il prezzo al quale l'articolo viene acquistato.
+
 Inoltre, la partecipazione dell'entità *Ordine* alla relazione ternaria che coinvolge le entità *Richiesta d'Acquisto*, *Ordine* e *Articolo* sia **opzionale**. Quest'ultima avverrà, infatti, solamente al momento in cui l'ufficio acquisti emetterà un ordine atto a soddisfare l'articolo incluso in una specifica richiesta. 
 
 \newpage
@@ -329,7 +331,7 @@ Si analizzano, quindi, le ridondanze in merito agli attributi derivati **Stato R
 
 #### Stato Richiesta
 
-L'attributo è coinvolto nelle operazioni di **Aggiornamento dello stato di una Richiesta d'Acquisto** [`7/settimana`] e quelle di **Visualizzazione delle informazioni relative ad una Richiesta d'Acquisto** [`60/settimana`]. Si riportano, di seguito, le tavole degli accessi in presenza e assenza dell'attributo derivato, assieme alla rispettiva valutazione del costo di esecuzione.
+L'attributo è coinvolto nelle operazioni di **Aggiornamento dello stato di una Richiesta d'Acquisto** [`7/settimana`] e quelle di **Visualizzazione delle informazioni relative ad una Richiesta d'Acquisto** [`60/settimana`]. Si riportano, di seguito, le tavole degli accessi in presenza e assenza dell'attributo derivato, assieme alla rispettiva valutazione del costo di esecuzione, assumendo che una richiesta d'acquisto sia mediamente soddisfatta da cinque ordini.
 
 Nel caso di **presenza** dell'attributo derivato, si prevedono gli accessi seguenti:
 
