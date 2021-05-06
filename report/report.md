@@ -288,7 +288,7 @@ Inoltre, si evidenzia come la **data di consegna di un articolo** relativo ad un
 Gli attributi derivati, con rispettive regole di derivazione, sono riportati di seguito: 
 
 1. L'attributo **Stato Richiesta** dell'entità *Richiesta d'Acquisto* viene derivato valutando lo stato di tutti gli *Ordini* associati ad una specifica richiesta.  
-2. L'attributo **Data Consegna Articolo** della relazione *Include* viene derivato sommando al valore dell'attributo **Data Emissione** dell'entità *Ordine* quello dell'attributo **Tempo di Consegna** della relazione *Fornisce*. 
+2. L'attributo **Data Prevista di Consegna** della relazione *Include* viene derivato sommando al valore dell'attributo **Data Emissione** dell'entità *Ordine* quello dell'attributo **Tempo di Consegna** della relazione *Fornisce*. 
 
 ### Considerazioni
 
@@ -325,7 +325,7 @@ Al fine di valutare il mantenimento o l'eliminazione delle ridondanze presenti n
 
 Si fa riferimento, inoltre, alle operazioni frequenti riportate al punto [2.4](#op-frequenti).
 
-Si analizzano, quindi, le ridondanze in merito agli attributi derivati **Stato Richiesta** dell'entità *Richiesta d'Acquisto* e **Data Consegna** della relazione *Include*.
+Si analizzano, quindi, le ridondanze in merito agli attributi derivati **Stato Richiesta** dell'entità *Richiesta d'Acquisto* e **Data Prevista di Consegna** della relazione *Include*.
 
 #### Stato Richiesta
 
@@ -389,7 +389,9 @@ Si osserva che non vi è alcun costo di **aggiornamento** in assenza dell'attrib
 
 Sulla base dei risultati ottenuti, si ritiene conveniente il **mantenimento** dell'attributo derivato.
 
-#### Data Consegna
+#### Data Prevista di Consegna
+
+
 
 ## Eliminazione delle generalizzazioni
 
