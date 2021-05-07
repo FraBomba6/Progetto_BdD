@@ -192,7 +192,7 @@ Sulla base dei requisiti individuati, si descrivono le principali operazioni, co
 \
 
 | **Operazione** | **Frequenza** |
-|-|-|
+|:-|-|
 |Inserimento di una richiesta d'acquisto|150/settimana|
 |||
 |Aggiornamento dello stato di una richiesta d'acquisto|7/settimana|
@@ -247,24 +247,19 @@ Sulla base del documento di specifiche, si inviduano i criteri opportuni per la 
 ```
 ### Assunzioni in merito alle ambiguità rilevate {#assunzioni}
 
-Sulla base di quanto riportato nelle specifiche sopracitate, si è osservato come il concetto di **listino** delinei l'insieme di articoli associati al rispettivo fornitore senza, però, aggiungere informazioni supplementari in merito a tale relazione. Si è, pertanto, deciso di **non** rappresentare il listino all'interno della Basi di Dati ma di, piuttosto, rappresentare l'associazione fra un singolo articolo e il rispettivo fornitore. 
-
-Si assume che un articolo possa essere fornito da un insieme di fornitori e che, di conseguenza, mentre una richiesta d'acquisto si rivolge agli articoli, è responsabilità dell'ufficio acquisti l'individuazione dello specifico fornitore, in merito ad aspetti logistici e di convenienza.
-
-Si assume che sia di interesse dell'ente la possibilità di ricondurre un ordine alle richieste d'acquisto che esso soddisfa e una richiesta d'acquisto agli ordini che la coinvolgono.
-
-Si osserva, inoltre, la necessità di memorizzare il prezzo al quale ogni singolo articolo viene acquistato nell'eventualità che vengano successivamente variati lo sconto e/o il prezzo unitario.
-
-Infine, sapendo che un ordine coinvolge al più un fornitore e che gli articoli inclusi nelle richieste d'acquisto possono potenzialmente provenire da fornitori diversi si assume che:
-
-- Un singolo ordine possa soddisfare una richiesta d'acquisto anche parzialmente;
-- Per ogni articolo coinvolto, venga soddisfatta la quantità specificata. 
+- Sulla base di quanto riportato nelle specifiche sopracitate, si è osservato come il concetto di **listino** delinei l'insieme di articoli associati al rispettivo fornitore senza, però, aggiungere informazioni supplementari in merito a tale relazione. Si è, pertanto, deciso di **non** rappresentare il listino all'interno della Basi di Dati ma di, piuttosto, rappresentare l'associazione fra un singolo articolo e il rispettivo fornitore. 
+- Si assume che un articolo possa essere fornito da un insieme di fornitori e che, di conseguenza, mentre una richiesta d'acquisto si rivolge agli articoli, è responsabilità dell'ufficio acquisti l'individuazione dello specifico fornitore, in merito ad aspetti logistici e di convenienza.
+- Si assume che sia di interesse dell'ente la possibilità di ricondurre un ordine alle richieste d'acquisto che esso soddisfa e una richiesta d'acquisto agli ordini che la coinvolgono.
+- Si osserva, inoltre, la necessità di memorizzare il prezzo al quale ogni singolo articolo viene acquistato nell'eventualità che vengano successivamente variati lo sconto e/o il prezzo unitario.
+- Infine, sapendo che un ordine coinvolge al più un fornitore e che gli articoli inclusi nelle richieste d'acquisto possono potenzialmente provenire da fornitori diversi si assume che:
+	- Un singolo ordine possa soddisfare una richiesta d'acquisto anche parzialmente;
+	- Per ogni articolo coinvolto, venga soddisfatta la quantità specificata. 
 
 \newpage
 
 # Progettazione concettuale
 
-## Diagramma ER
+## Diagramma ER {#er-v1}
 
 \begin{figure}[H]
 \centering
@@ -275,28 +270,27 @@ Infine, sapendo che un ordine coinvolge al più un fornitore e che gli articoli 
 
 ## Osservazioni
 
-Sulla base del diagramma ER proposto, si riportano le osservazioni effettuate, includendo i **vincoli aziendali** individuati e le **regole di derivazione** degli attributi derivati.
+Sulla base del diagramma ER proposto, si riportano le osservazioni effettuate, includendo i **vincoli aziendali** individuati e le eventuali **regole di derivazione**.
 
 ### Vincoli aziendali {#vincoli}
 
 Il diagramma presenta un singolo ciclo che coinvolge le entità *Ordine*, *Articolo* e *Fornitore*. Sulla base di quanto riportato nei requisiti si introduce il seguente vincolo aziendale: \emph{\textbf{il fornitore degli articoli relativi ad un ordine deve essere il medesimo di quello associato all'ordine stesso}}. 
 
-Inoltre, si evidenzia come la **data di consegna di un articolo** relativo ad una richiesta d'acquisto possa essere calcolata solo successivamente alla partecipazione di un ordine alla relazione. Questo è motivato dal fatto che la data prevista di consegna è valutabile conoscendo la data di emissione dell'ordine.
+Inoltre, si evidenzia come sia la **data di consegna di un articolo** che il **prezzo di acquisto di un articolo** relativamente ad una richiesta, possano essere disponibili solo in seguito alla partecipazione di un ordine alla relazione. 
 
 ### Regole di derivazione
 
-Gli attributi derivati, con rispettive regole di derivazione, sono riportati di seguito: 
-
-1. L'attributo **Stato Richiesta** dell'entità *Richiesta d'Acquisto* viene derivato valutando lo stato di tutti gli *Ordini* associati ad una specifica richiesta.  
-2. L'attributo **Data Prevista di Consegna** della relazione *Include* viene derivato sommando al valore dell'attributo **Data Emissione** dell'entità *Ordine* quello dell'attributo **Tempo di Consegna** della relazione *Fornisce*. 
+Il diagramma presenta un attributo derivato, ovvero **Stato Richiesta**. Questo viene calcolato valutando lo stato di tutti gli *Ordini* associati ad una specifica richiesta. 
 
 ### Considerazioni
 
-Si suppone che, nel caso della prima regola di derivazione esplicitata, la valutazione dell'attributo **Stato Richiesta** sia definita da una funzione che, sulla base dell'insieme dei rispettivi *ordini*, individua quello/i con *stato* meno avanzato. Una completa richiesta d'acquisto risulterà, infatti, conclusasi completamente solo quando tutti gli ordini che la soddisfano saranno giunti a destinazione presso il dipartimento.
+Si suppone che, nel caso della regola di derivazione esplicitata, la valutazione dell'attributo **Stato Richiesta** sia definita da una funzione che, sulla base dell'insieme dei rispettivi *ordini*, individua quello/i con *stato* meno avanzato. Una completa richiesta d'acquisto risulterà, infatti, conclusasi completamente solo quando tutti gli ordini che la soddisfano saranno giunti a destinazione presso il dipartimento.
 
-La relazione **Include** prevede l'aggiunta dell'attributo **Prezzo Unitario Finale** al fine di poter stabilire, come indicato al punto [2.5.1](#assunzioni), il prezzo al quale l'articolo viene acquistato.
+```{=latex}
+% La relazione **Include** prevede l'aggiunta dell'attributo **Prezzo Unitario Finale** al fine di poter stabilire, come indicato al punto [2.5.1](#assunzioni), il prezzo al quale l'articolo viene acquistato.
+```
 
-Inoltre, la partecipazione dell'entità *Ordine* alla relazione ternaria che coinvolge le entità *Richiesta d'Acquisto*, *Ordine* e *Articolo* sia **opzionale**. Quest'ultima avverrà, infatti, solamente al momento in cui l'ufficio acquisti emetterà un ordine atto a soddisfare l'articolo incluso in una specifica richiesta. 
+Inoltre, la partecipazione dell'entità *Ordine* alla relazione ternaria che coinvolge le entità *Richiesta d'Acquisto*, *Ordine* e *Articolo* è **opzionale**. Quest'ultima avverrà, infatti, solamente al momento in cui l'ufficio acquisti emetterà un ordine atto a soddisfare l'articolo incluso in una specifica richiesta. 
 
 \newpage
 
@@ -327,11 +321,7 @@ Al fine di valutare il mantenimento o l'eliminazione delle ridondanze presenti n
 
 Si fa riferimento, inoltre, alle operazioni frequenti riportate al punto [2.4](#op-frequenti).
 
-Si analizzano, quindi, le ridondanze in merito agli attributi derivati **Stato Richiesta** dell'entità *Richiesta d'Acquisto* e **Data Prevista di Consegna** della relazione *Include*.
-
-#### Stato Richiesta
-
-L'attributo è coinvolto nelle operazioni di **Aggiornamento dello stato di una Richiesta d'Acquisto** [`7/settimana`] e quelle di **Visualizzazione delle informazioni relative ad una Richiesta d'Acquisto** [`60/settimana`]. Si riportano, di seguito, le tavole degli accessi in presenza e assenza dell'attributo derivato, assieme alla rispettiva valutazione del costo di esecuzione, assumendo che una richiesta d'acquisto sia mediamente soddisfatta da cinque ordini.
+Si effettua, quindi, un'analisi delle ridondanze in merito all'attributo derivato **Stato Richiesta** dell'entità *Richiesta d'Acquisto*. Quest'ultimo è coinvolto nelle operazioni di **Aggiornamento dello stato di una Richiesta d'Acquisto** [`7/settimana`] e quelle di **Visualizzazione delle informazioni relative ad una Richiesta d'Acquisto** [`60/settimana`]. Si riportano, di seguito, le tavole degli accessi in presenza e assenza dell'attributo derivato, assieme alla rispettiva valutazione del costo di esecuzione, considerando che una richiesta d'acquisto venga mediamente soddisfatta da cinque ordini.
 
 Nel caso di **presenza** dell'attributo derivato, si prevedono gli accessi seguenti:
 
@@ -391,10 +381,6 @@ Si osserva che non vi è alcun costo di **aggiornamento** in assenza dell'attrib
 
 Sulla base dei risultati ottenuti, si ritiene conveniente il **mantenimento** dell'attributo derivato.
 
-#### Data Prevista di Consegna
-
-
-
 ## Eliminazione delle generalizzazioni
 
 Non ci sono generalizzazioni da eliminare.
@@ -403,7 +389,7 @@ Non ci sono generalizzazioni da eliminare.
 
 ### Reifica di relazioni binarie
 
-Il diagramma presenta una relazione binaria **Fornisce** che coinvolge le entità **Articolo** e **Fornitore**, che hanno entrambe una partecipazione di tipo `(1, N)`. In particolare, per ogni coppia Articolo-Fornitore si osserva la presenza di una serie di attributi quali prezzo unitario, tempo di consegna, sconto, quantità minima ordinabile e codice articolo per il fornitore. Si sceglie, pertanto, di reificare la relazione ad un'omonima entità contenente gli attributi citati.
+Il diagramma presenta una relazione binaria **Fornisce** che coinvolge le entità **Articolo** e **Fornitore**, che hanno entrambe una partecipazione di tipo `(1, N)`. In particolare, per ogni coppia Articolo-Fornitore si osserva la presenza di una serie di attributi quali prezzo unitario, sconto, quantità minima ordinabile e codice articolo per il fornitore. Si sceglie, pertanto, di reificare la relazione ad un'omonima entità contenente gli attributi citati.
 
 ### Reifica delle relazioni ternarie
 
@@ -417,17 +403,30 @@ L'unico attributo composto presente nel diagramma è *Luogo di Nascita* in rifer
 
 ### Eliminazione di attributi multivalore
 
-Il diagramma presenta un attributo multivalore *Recapiti Telefonici* in riferimento all'entità **Fornitore**. Questo, infatti, può avere uno o più contatti di riferimento. L'attributo multivalore viene, conseguentemente, reificato ad un'entità.
+Il diagramma presenta un attributo multivalore *Recapiti Telefonici* in riferimento all'entità **Fornitore**. Questo, infatti, può avere uno o più contatti di riferimento. L'attributo multivalore viene, conseguentemente, reificato ad entità.
 
 ### Ristrutturazione del diagramma ER
 
-Si riporta il diagramma.
+Sulla base delle analisi e osservazioni effettuate, si provvede alla ristrutturazione del diagramma proposto al punto [3.1](#er-v1). Ne consegue, la seguente rappresentazione: 
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=510px]{../ER_final.png}
+\end{figure}
 
 \newpage
 
 ## Scelta degli identificatori primari
 
+Non essendovi entità che presentano più indetificatori primari candidati, non si attuano decisioni aggiuntive e si sceglie di utilizzare le chiavi proposte dal diagramma.
+
 ## Traduzione verso il modello logico-relazionale
+
+```{=latex}
+
+% diagramma logico con tabellina con attributi per ogni entità e frecce direzionate
+
+```
 
 \newpage
 
@@ -436,37 +435,6 @@ Si riporta il diagramma.
 \newpage
 
 # Analisi dei dati
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
