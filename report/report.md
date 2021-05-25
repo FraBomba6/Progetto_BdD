@@ -548,6 +548,17 @@ Si osserva come non sia possibile garantire il rispetto del Vincolo di Integrit√
 
 \newpage
 
+## Modello Relazionale
+
+\
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=510px]{../Logical.png}
+\end{figure}
+
+\newpage
+
 # Implementazione e Progettazione Fisica
 
 \newpage
