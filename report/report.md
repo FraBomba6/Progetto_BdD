@@ -290,7 +290,7 @@ Si suppone che, nel caso della regola di derivazione esplicitata, la valutazione
 % La relazione **Include** prevede l'aggiunta dell'attributo **Prezzo Unitario Finale** al fine di poter stabilire, come indicato al punto [2.5.1](#assunzioni), il prezzo al quale l'articolo viene acquistato.
 ```
 
-Inoltre, la partecipazione dell'entità *Ordine* alla relazione ternaria che coinvolge le entità *Richiesta d'Acquisto*, *Ordine* e *Articolo* è **opzionale**. Quest'ultima avverrà, infatti, solamente al momento in cui l'ufficio acquisti emetterà un ordine atto a soddisfare l'articolo incluso in una specifica richiesta. 
+Inoltre, la partecipazione drll'entità *Ordine* alla relazione ternaria che coinvolge le entità *Richiesta d'Acquisto*, *Ordine* e *Articolo* è **opzionale**. Quest'ultima avverrà, infatti, solamente al momento in cui l'ufficio acquisti emetterà un ordine atto a soddisfare l'articolo incluso in una specifica richiesta. 
 
 \newpage
 
@@ -422,11 +422,129 @@ Non essendovi entità che presentano più indetificatori primari candidati, non 
 
 ## Traduzione verso il modello logico-relazionale
 
+Partendo dal diagramma ER ristrutturato, è stato prodotto il corrispondente schema relazionale, le cui traduzioni vengono di seguito suddivise in quattro categorie: 
+
+- Entità
+- Relazioni molti a molti
+- Relazioni uno a molti
+- Relazioni uno a uno
+
+| \textbf{Concetto} | \textbf{Cardinalità} |\textbf{Nome} |
+|------------------------|:--------------------:|--------------|
+|Entità| - |Responsabile|
+|Entità| - |Dipartimento|
+|Entità| - |Dichiesta d'Acquisto|
+|Entità| - |Include|
+|Entità| - |Articolo|
+|Entità| - |Ordine|
+|Entità| - |Fornisce|
+|Entità| - |Fornitore|
+|Entità| - |Recapito Telefonico|
+|Relazione|Uno a molti|Gestisce|
+|Relazione|Uno a molti|Formula|
+|Relazione|Uno a molti|I-R|
+|Relazione|Uno a molti|I-A|
+|Relazione|Uno a molti|I-O|
+|Relazione|Uno a molti|A-F|
+|Relazione|Uno a molti|F-F|
+|Relazione|Uno a molti|Evade|
+|Relazione|Uno a molti|R|
+
+### Traduzione di Entità
+
 ```{=latex}
 
-% diagramma logico con tabellina con attributi per ogni entità e frecce direzionate
+\begin{itemize}
+	\item \textbf{Responsabile}(\underline{CodiceFiscale}, Nome, Cognome, DataNascita, LuogoNascita)
+		\begin{itemize}
+			\item NotNull: Nome, Cognome, DataNascita, LuogoNascita
+		\end{itemize}
+	\item \textbf{Dipartimento}(\underline{Codice}, Descrizione)
+	\item \textbf{RichiestaAcquisto}(\underline{Numero, \emph{Dipartimento}}, DataEmissione, Stato)
+		\begin{itemize}
+			\item NotNull: DataEmissione, Stato, Dipartimento
+			\item Chiave Esterna: Dipartimento si riferisce alla chiave primaria dell'entità Dipartimento 
+		\end{itemize}
+	\item \textbf{Include}(\underline{\emph{NumeroRichiesta, Articolo, Dipartimento}}, DataConsegna, Quantità, PrezzoUnitario)
+		\begin{itemize}
+			\item NotNull: Quantità, PrezzoUnitario, NumeroRichiesta, Dipartimento, Articolo
+			\item Chiave Esterna: NumeroRichiesta e Dipartimento si riferiscono alla chiave primaria dell'entità RichiestaAcquisto, Articolo si riferisce alla chiave primaria dell'entità Articolo
+		\end{itemize}
+	\item \textbf{Articolo}(\underline{Codice}, Descrizione, Classe, UnitàDiMisura)
+		\begin{itemize}
+			\item NotNull: Descrizione, Classe, UnitàDiMisura
+		\end{itemize}
+	\item \textbf{Ordine}(\underline{Codice}, Stato, DataEmissione)
+		\begin{itemize}
+			\item NotNull: Stato, DataEmissione
+		\end{itemize}
+	\item \textbf{Fornisce}(\underline{\emph{Fornitore, Articolo}}, Sconto, PrezzoUnitario, QuantitàMinima, CodBar)
+		\begin{itemize}
+			\item NotNull: PrezzoUnitario, QuantitàMinima, CodBar, Fornitore, Articolo
+			\item Chiave Esterna: Fornitore si riferisce alla chiave primaria dell'entità Fornitore, Articolo si riferisce alla chiave primaria dell'entità Articolo
+		\end{itemize}
+	\item \textbf{Fornitore}(\underline{PartitaIVA}, Indirizzo, Email, FAX)
+		\begin{itemize}
+			\item NotNull: Indirizzo, Email 
+		\end{itemize}
+	\item \textbf{RecapitoTelefonico}(\underline{NumeroTelefono})
+\end{itemize}
 
 ```
+
+
+### Traduzione di Relazioni Uno a molti
+
+*I vincoli espressi di seguito costituiscono un'integrazione rispetto a quelli introdotti precedentemente.*
+
+```{=latex}
+\begin{itemize}
+	\item \textbf{Gestisce}
+	\begin{itemize}
+		\item Modifica: Dipartimento(\underline{Codice}, Descrizione, \emph{Responsabile})
+		\item NotNull: Responsabile 
+		\item Chiave Esterna: Responsabile si riferisce alla chiave primaria dell'entità Responsabile
+	\end{itemize}
+	\item \textbf{Formula}
+		\begin{itemize}
+			\item Codificata precedentemente in quanto Richiesta d'Acquisto è un'entità debole
+		\end{itemize}
+	\item \textbf{I-R} e \textbf{I-A}
+		\begin{itemize}
+			\item Codificate precedentemente in quanto Include è un'entità debole) 
+		\end{itemize}
+	\item \textbf{I-O}
+		\begin{itemize}
+			\item Modifica: Include(\underline{\emph{NumeroRichiesta, Articolo, Dipartimento}}, \emph{Ordine}, DataConsegna, Quantità, PrezzoUnitario)
+			\item NotNull: Non vengono introdotti vincoli aggiuntivi rispetto a quelli già individuati 
+			\item Chiave Esterna: Ordine si riferisce alla chiave primaria dell'entità Ordine
+		\end{itemize}
+	\item \textbf{A-F} e \textbf{F-F}
+		\begin{itemize}
+			\item Codificate precedentemente in quanto Fornisce è un'entità debole) 
+		\end{itemize}
+	\item \textbf{Evade}
+		\begin{itemize}
+			\item Modifica: Ordine(\underline{Codice}, Stato, DataEmissione, \emph{Fornitore})
+			\item NotNull: Fornitore
+			\item Chiave Esterna: Fornitore si riferisce alla chiave primaria dell'entità Fornitore
+		\end{itemize}
+	\item \textbf{R}
+		\begin{itemize}
+			\item Modifica: RecapitoTelefonico(\underline{NumeroTelefono}, \emph{Fornitore})
+			\item NotNull: Fornitore
+			\item Chiave Esterna: Fornitore si riferisce alla chiave primaria dell'entità Fornitore
+		\end{itemize}
+\end{itemize}
+```
+
+### Traduzione di relazioni molti a molti e uno a uno
+
+Il diagramma ER non presenta relazioni di tipo *molti a molti* e di tipo *uno a uno*. Di conseguenza non vi è necessità di codificare relazioni di questo tipo. 
+
+### Osservazioni
+
+Si osserva come non sia possibile garantire il rispetto del Vincolo di Integrità espresso al punto [3.2.1](#vincoli). Sarà, di conseguenza, necessario individuare appositi strumenti al fine di garantirne il mantenimento.
 
 \newpage
 
