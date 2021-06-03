@@ -1,0 +1,10 @@
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('FL47487213603','96 Pennsylvania Lane','acrown0@wikipedia.org',NULL);
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('FG94775641642','93 Waxwing Alley','abeernt1@harvard.edu',NULL);
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('VF41736800392','5 Crownhardt Point','srobertot2@jalbum.net',113737295);
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('VU29435478041','06 Memorial Park','ccrocetto3@sciencedirect.com',NULL);
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('RE02410242363','54 Annamark Avenue','bboliver4@ning.com',804533776);
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('FC73429547932','674 Bultman Lane','crittmeier5@google.co.jp',NULL);
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('GZ42849410684','6 Buhler Street','rdeacock6@woothemes.com',NULL);
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('GH59336716519','9518 Hintze Parkway','sbucktharp7@arizona.edu',NULL);
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('FY54652202847','1 Daystar Center','bagar8@umn.edu',NULL);
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('QK95122063201','1318 Lukken Junction','cbence9@sourceforge.net',NULL);
