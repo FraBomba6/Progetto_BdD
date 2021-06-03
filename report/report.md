@@ -290,7 +290,7 @@ Si suppone che, nel caso della regola di derivazione esplicitata, la valutazione
 % La relazione **Include** prevede l'aggiunta dell'attributo **Prezzo Unitario Finale** al fine di poter stabilire, come indicato al punto [2.5.1](#assunzioni), il prezzo al quale l'articolo viene acquistato.
 ```
 
-Inoltre, la partecipazione drll'entità *Ordine* alla relazione ternaria che coinvolge le entità *Richiesta d'Acquisto*, *Ordine* e *Articolo* è **opzionale**. Quest'ultima avverrà, infatti, solamente al momento in cui l'ufficio acquisti emetterà un ordine atto a soddisfare l'articolo incluso in una specifica richiesta. 
+Inoltre, la partecipazione dell'entità *Ordine* alla relazione ternaria che coinvolge le entità *Richiesta d'Acquisto*, *Ordine* e *Articolo* è **opzionale**. Quest'ultima avverrà, infatti, solamente al momento in cui l'ufficio acquisti emetterà un ordine atto a soddisfare l'articolo incluso in una specifica richiesta. 
 
 \newpage
 
