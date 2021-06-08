@@ -127,8 +127,11 @@ for i in range(5):
 
 listaFornisce = []
 for i in range(750):
+    offset = 0
+    if i > 499:
+        offset = 1
     art = listaArticolo[i % len(listaArticolo)]['Codice']
-    fornitore = listaFornitore[i % len(listaFornitore)]['PartitaIVA']
+    fornitore = listaFornitore[(i + offset) % len(listaFornitore)]['PartitaIVA']
     listaFornisce.append(getFornisce(art, fornitore))
 
 listaOrdine = []
