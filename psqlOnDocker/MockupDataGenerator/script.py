@@ -140,10 +140,10 @@ for i in range(200):
     listaOrdine.append(getOrdine(fornitore))
 
 listaInclude = []
-for i in range(60000):
-    richiesta = listaRichiestaAcquisto[i % len(listaRichiestaAcquisto)]
-    art = listaArticolo[i % len(listaArticolo)]['Codice']
-    listaInclude.append(getInclude(richiesta['Dipartimento'], richiesta['Numero'], art))
+for richiesta in listaRichiestaAcquisto:
+    articoli = random.sample(listaArticolo, 10)
+    for articolo in articoli:
+        listaInclude.append(getInclude(richiesta['Dipartimento'], richiesta['Numero'], articolo['Codice']))
 
 # %%
 tabelle = {
