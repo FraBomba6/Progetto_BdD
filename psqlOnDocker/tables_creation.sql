@@ -1,5 +1,13 @@
 start transaction;
 
+create type stato_richiesta as enum ('emessa', 'lavorazione', 'evasa', 'chiusa');
+
+create type classe_merceologica as enum ('cancelleria', 'libri', 'elettronica', 'informatica', 'pulizia', 'mobilia');
+
+create type unita_misura as enum ('cad', 'kg', 'm', 'l');
+
+create type stato_ordine as enum ('emesso', 'spedito', 'consegnato');
+
 create table Responsabile(
 	CodiceFiscale char(16) primary key,
 	Nome text not null,
@@ -14,7 +22,6 @@ create table Dipartimento(
 	Responsabile char(16) not null references Responsabile on update cascade on delete restrict
 );
 
-create type stato_richiesta as enum ('emessa', 'lavorazione', 'evasa', 'chiusa');
 
 create table RichiestaAcquisto(
 	Numero serial,
@@ -24,9 +31,6 @@ create table RichiestaAcquisto(
 	primary key(Numero, Dipartimento)
 );						
 
-create type classe_merceologica as enum ('cancelleria', 'libri', 'elettronica', 'informatica', 'pulizia', 'mobilia');
-
-create type unita_misura as enum ('cad', 'kg', 'm', 'l');
 
 create table Articolo(
 	Codice serial primary key,
@@ -57,7 +61,6 @@ create table Fornisce(
 	primary key (Articolo, Fornitore)
 );
 
-create type stato_ordine as enum ('emesso', 'spedito', 'consegnato');
 
 create table Ordine(
 	Codice serial primary key,
