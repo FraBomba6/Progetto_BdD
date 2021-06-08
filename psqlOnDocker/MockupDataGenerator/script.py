@@ -1,5 +1,6 @@
 # %%
 import datetime
+import pandas as pd
 import querygenerator
 from faker import Faker
 import random
@@ -34,7 +35,7 @@ def getDipartimento(responabile):
 def getRichiestaAcquisto(dipartimento):
     return {
         'Dipartimento': dipartimento,
-        'DataEmissione': fake.date_between(start_date='-2y').strftime('%Y-%m-%d')
+        'DataEmissione': fake.date_between(start_date='-365d').strftime('%Y-%m-%d')
     }
 
 
@@ -73,8 +74,7 @@ def getFornisce(articolo, fornitore):
     }
 
 
-def getOrdine(fornitore):
-    data = fake.date_between(start_date='-2y')
+def getOrdine(fornitore, data):
     stato = ''
     if data < datetime.date.today() - datetime.timedelta(days=90):
         stato = 'consegnato'
@@ -85,7 +85,7 @@ def getOrdine(fornitore):
     return {
         'Fornitore': fornitore,
         'Stato': stato,
-        'DataEmissione': data.strftime('%Y-%m-%d')
+        'DataEmissione': data
     }
 
 
@@ -133,16 +133,16 @@ for i in range(750):
     fornitore = listaFornitore[(i + offset) % len(listaFornitore)]['PartitaIVA']
     listaFornisce.append(getFornisce(art, fornitore))
 
-listaOrdine = []
-for i in range(200):
-    fornitore = listaFornitore[i % len(listaFornitore)]['PartitaIVA']
-    listaOrdine.append(getOrdine(fornitore))
+# listaOrdine = []
+# for i in range(200):
+#     fornitore = listaFornitore[i % len(listaFornitore)]['PartitaIVA']
+#     listaOrdine.append(getOrdine(fornitore))
 
 listaInclude = []
 for i in range(len(listaRichiestaAcquisto)):
     numero = i // len(listaDipartimento)
-    articoli = random.sample(listaArticolo, 10)
-    for articolo in articoli:
+    articoliDaOrdinare = random.sample(listaArticolo, 10)
+    for articolo in articoliDaOrdinare:
         listaInclude.append(getInclude(listaRichiestaAcquisto[i]['Dipartimento'], numero, articolo['Codice']))
 
 # %%
@@ -154,12 +154,72 @@ tabelle = {
         'Fornitore': listaFornitore,
         'RecapitoTelefonico': listaRecapitoTelefonico,
         'Fornisce': listaFornisce,
-        'Ordine': listaOrdine,
+        # 'Ordine': listaOrdine,
         'Include': listaInclude
     }
+
 
 for tabella, listaEntry in tabelle.items():
     queries = []
     for entry in listaEntry:
         queries.append(querygenerator.build_from_json(tabella, entry))
     querygenerator.make_sql(tabella, queries)
+
+# %%
+for i in range(len(listaRichiestaAcquisto)):
+    listaRichiestaAcquisto[i]['Numero'] = i // len(listaDipartimento)
+
+# %%
+codiceOrdine = 0
+listaOrdine = []
+# Generate Ordine
+today = datetime.date.today()
+start = today - datetime.timedelta(days=365)
+
+while start <= today:
+    orderDay = start + datetime.timedelta(days=7)
+    print(f"Week from {start} to {orderDay}")
+    richiesteValide = []
+    for richiesta in listaRichiestaAcquisto:
+        if start <= datetime.date.fromisoformat(richiesta['DataEmissione']) < orderDay:
+            richiesteValide.append((richiesta['Dipartimento'], richiesta['Numero']))
+
+    articoliDaOrdinare = []
+    for relazione in listaInclude:
+        if (relazione['Dipartimento'], relazione['NumeroRichiesta']) in richiesteValide:
+            articoliDaOrdinare.append((relazione['Articolo'], relazione['Dipartimento'], relazione['NumeroRichiesta']))
+
+    articoliForniti = []
+    for articolo in articoliDaOrdinare:
+        best_fornitore = ''
+        best_prezzoScontato = 0
+        for fornitura in listaFornisce:
+            if articolo[0] == fornitura['Articolo'] and (best_prezzoScontato == 0 or fornitura['PrezzoUnitario']*(1 - fornitura['Sconto'] * 0.01) < best_prezzoScontato):
+                best_fornitore = fornitura['Fornitore']
+        articoliForniti.append((articolo[0], best_fornitore, articolo[1], articolo[2]))
+
+    ordiniSettimanali = {}
+    for fornitore in listaFornitore:
+        for articolo in articoliForniti:
+            if fornitore['PartitaIVA'] == articolo[1]:
+                if fornitore['PartitaIVA'] not in ordiniSettimanali.keys():
+                    ordine = getOrdine(fornitore['PartitaIVA'], orderDay)
+                    ordine['Codice'] = codiceOrdine
+                    listaOrdine.append(ordine)
+                    ordiniSettimanali[fornitore['PartitaIVA']] = codiceOrdine
+                    codiceOrdine += 1
+                for i in range(articolo[3] * 300, articolo[3] * 300 + 300):
+                    if listaInclude[i]['Dipartimento'] == articolo[2] and listaInclude[i]['NumeroRichiesta'] == articolo[3] and listaInclude[i]['Articolo'] == articolo[0]:
+                        listaInclude[i]['Ordine'] = ordiniSettimanali[articolo[1]]
+                        break
+
+    start += datetime.timedelta(days=7)
+
+# %%
+queries = []
+for entry in listaOrdine:
+    queries.append(querygenerator.build_from_json('Ordine', entry))
+querygenerator.make_sql('Ordine', queries)
+for entry in listaInclude:
+    queries.append(querygenerator.build_from_json('Include', entry))
+querygenerator.make_sql('Include', queries)

@@ -1,10 +1,10 @@
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('EP37858713455','69675 Swanson Glen
-Leahhaven, MT 26222','debra36@whitaker.com','2208408733276');
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('MU59599407209','59412 Price Stream Suite 478
-Westton, MT 30981','micheal38@burns.com','1305058755585');
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('MV12773983549','303 Mitchell Branch Apt. 368
-Ryanville, KY 69225','audreyfranklin@barnes-smith.com','2767226624321');
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('QY30438162973','37535 Alexander Trail
-North Reneefort, MA 09433','klarson@walter.com','7717663976960');
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('KF09972486365','4808 Gordon Pines Apt. 542
-Pattersonmouth, LA 08716','bradleymccormick@ellis-henry.com','7722709508443');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('VT58605591154','9135 Brewer Expressway
+Stephanietown, CT 81066','carolthomas@bridges.info','9492681844810');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('ZK60662515020','USS Mendez
+FPO AP 37511','hflowers@griffin-perez.info','8398869882875');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('BL97899859794','PSC 1723, Box 0392
+APO AP 83130','ashleydavila@wright.net','5653705536130');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('JJ24705667036','7938 Hall Locks
+East Brittanyfort, AL 84271','shawn27@nichols-jones.net','2572293655008');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('IV91805752552','348 Hamilton Stravenue
+Luisville, WI 82501','kathleenmitchell@chavez-payne.com','7898212939312');
