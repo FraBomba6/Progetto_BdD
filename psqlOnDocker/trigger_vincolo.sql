@@ -29,4 +29,6 @@ create trigger controlla_fornitore
 before insert or update on Include
 for each row
 execute procedure controlla_ordine_valido();
+
 commit;
+
