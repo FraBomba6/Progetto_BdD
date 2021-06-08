@@ -1,3 +1,5 @@
+import os
+
 def build(table, **kwargs):
     keys = ','.join(kwargs.keys())
     values = ','.join(kwargs.values())
