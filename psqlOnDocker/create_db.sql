@@ -24,7 +24,7 @@ create table Dipartimento(
 
 
 create table RichiestaAcquisto(
-	Numero serial,
+	Numero integer,
 	Dipartimento char(6) not null references Dipartimento on update cascade on delete restrict,
 	DataEmissione date not null default current_date,
 	Stato stato_richiesta not null default 'emessa',
@@ -146,10 +146,12 @@ $$
 	end;
 $$;
 
+
 create trigger aggiorna_stato_richiesta
 after insert or update on Ordine
 for each row
 execute procedure aggiorna_richiesta();
+
 
 create or replace function set_numero_richiesta()
 returns trigger language plpgsql as
@@ -157,7 +159,7 @@ $$
 	declare
 		n integer;
 	begin
-		select top 1 numero into n from richiestaacquisto where dipartimento = new.dipartimento order by numero desc;
+		select numero into n from richiestaacquisto where dipartimento = new.dipartimento order by numero desc limit 1;
 		if n is null then
 			n = 0;
 		else
@@ -170,6 +172,8 @@ $$;
 
 create trigger imposta_numero_richiesta
 before insert on richiestaacquisto
+for each row
 execute procedure set_numero_richiesta();
+
 commit;
 
