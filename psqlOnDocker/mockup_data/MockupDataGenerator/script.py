@@ -1,1 +1,0 @@
-print("Mockup data generator")
