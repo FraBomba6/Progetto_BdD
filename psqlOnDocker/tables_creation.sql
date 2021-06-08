@@ -1,4 +1,4 @@
-start transaction;
+begin transaction;
 
 create type stato_richiesta as enum ('emessa', 'lavorazione', 'evasa', 'chiusa');
 
