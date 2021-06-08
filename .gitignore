@@ -1,6 +1,6 @@
 .DS_Store
 notes.txt
-./psqlOnDocker/mockup_data/MockupDataGenerator/.idea
-./psqlOnDocker/mockup_data/MockupDataGenerator/env
+psqlOnDocker/mockup_data/MockupDataGenerator/.idea
+psqlOnDocker/mockup_data/MockupDataGenerator/env
 
 
