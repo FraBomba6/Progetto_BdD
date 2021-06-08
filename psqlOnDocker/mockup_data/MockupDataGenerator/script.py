@@ -1,0 +1,1 @@
+print("Mockup data generator")
