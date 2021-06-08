@@ -31,9 +31,8 @@ def getDipartimento(responabile):
     }
 
 
-def getRichiestaAcquisto(numero, dipartimento):
+def getRichiestaAcquisto(dipartimento):
     return {
-        'Numero': numero,
         'Dipartimento': dipartimento,
         'DataEmissione': fake.date_between(start_date='-2y').strftime('%Y-%m-%d')
     }
@@ -112,7 +111,7 @@ for i in range(30):
 listaRichiestaAcquisto = []
 for i in range(6000):
     dip = listaDipartimento[i % len(listaDipartimento)]['Codice']
-    listaRichiestaAcquisto.append(getRichiestaAcquisto(i, dip))
+    listaRichiestaAcquisto.append(getRichiestaAcquisto(dip))
 
 listaArticolo = []
 for i in range(500):
@@ -140,10 +139,11 @@ for i in range(200):
     listaOrdine.append(getOrdine(fornitore))
 
 listaInclude = []
-for richiesta in listaRichiestaAcquisto:
+for i in range(len(listaRichiestaAcquisto)):
+    numero = i // len(listaDipartimento)
     articoli = random.sample(listaArticolo, 10)
     for articolo in articoli:
-        listaInclude.append(getInclude(richiesta['Dipartimento'], richiesta['Numero'], articolo['Codice']))
+        listaInclude.append(getInclude(listaRichiestaAcquisto[i]['Dipartimento'], numero, articolo['Codice']))
 
 # %%
 tabelle = {
