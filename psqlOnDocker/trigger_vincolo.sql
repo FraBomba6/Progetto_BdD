@@ -13,7 +13,7 @@ $$
 		select Fornitore into forn from Ordine where Codice = new.Ordine;
 
 		select count(*) into n
-		from Include, Fornisce, Ordine
+		from Fornisce
 		where (Fornisce.Articolo = new.Articolo) and
 			  (forn = Fornisce.Fornitore);
 

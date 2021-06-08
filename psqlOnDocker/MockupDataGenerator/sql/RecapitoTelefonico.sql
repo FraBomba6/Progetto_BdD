@@ -1,5 +1,5 @@
-INSERT INTO RecapitoTelefonico(NumeroTelefono,Fornitore) VALUES ('7359973530240','VT58605591154');
-INSERT INTO RecapitoTelefonico(NumeroTelefono,Fornitore) VALUES ('8511723170741','ZK60662515020');
-INSERT INTO RecapitoTelefonico(NumeroTelefono,Fornitore) VALUES ('3802319476899','BL97899859794');
-INSERT INTO RecapitoTelefonico(NumeroTelefono,Fornitore) VALUES ('4019322423331','JJ24705667036');
-INSERT INTO RecapitoTelefonico(NumeroTelefono,Fornitore) VALUES ('1852389730887','IV91805752552');
+INSERT INTO RecapitoTelefonico(NumeroTelefono,Fornitore) VALUES ('8426408241285','VF02022300736');
+INSERT INTO RecapitoTelefonico(NumeroTelefono,Fornitore) VALUES ('2622823396971','FM65975703940');
+INSERT INTO RecapitoTelefonico(NumeroTelefono,Fornitore) VALUES ('8416277235023','WS97557823105');
+INSERT INTO RecapitoTelefonico(NumeroTelefono,Fornitore) VALUES ('0928149487596','PO98903846298');
+INSERT INTO RecapitoTelefonico(NumeroTelefono,Fornitore) VALUES ('6465055918451','EY66419974509');

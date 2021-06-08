@@ -85,7 +85,7 @@ def getOrdine(fornitore, data):
     return {
         'Fornitore': fornitore,
         'Stato': stato,
-        'DataEmissione': data
+        'DataEmissione': data.strftime('%Y-%m-%d')
     }
 
 
