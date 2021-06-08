@@ -158,7 +158,11 @@ $$
 		n integer;
 	begin
 		select top 1 numero into n from richiestaacquisto where dipartimento = new.dipartimento order by numero desc;
-		n = n+1;
+		if n is null then
+			n = 0;
+		else
+			n = n+1;
+		end if;
 		new.numero := n;
 		return new;
 	end;
