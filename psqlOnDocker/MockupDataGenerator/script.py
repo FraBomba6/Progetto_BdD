@@ -220,6 +220,7 @@ queries = []
 for entry in listaOrdine:
     queries.append(querygenerator.build_from_json('Ordine', entry))
 querygenerator.make_sql('Ordine', queries)
+queries = []
 for entry in listaInclude:
     queries.append(querygenerator.build_from_json('Include', entry))
 querygenerator.make_sql('Include', queries)
