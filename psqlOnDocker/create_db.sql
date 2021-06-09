@@ -1,13 +1,12 @@
 start transaction;
 
+-- Creating enum types
 create type stato_richiesta as enum ('emessa', 'lavorazione', 'evasa', 'chiusa');
-
 create type classe_merceologica as enum ('cancelleria', 'libri', 'elettronica', 'informatica', 'pulizia', 'mobilia');
-
 create type unita_misura as enum ('cad', 'kg', 'm', 'l');
-
 create type stato_ordine as enum ('emesso', 'spedito', 'consegnato');
 
+-- Creating tables with fk and pk constraints
 create table Responsabile(
 	CodiceFiscale char(16) primary key,
 	Nome text not null,
@@ -78,9 +77,11 @@ create table Include(
 	Quantita numeric not null check(Quantita > 0),
 	PrezzoUnitario numeric default null,
 	primary key (Dipartimento, NumeroRichiesta, Articolo),
-	foreign key (Dipartimento, NumeroRichiesta ) references RichiestaAcquisto(Dipartimento, Numero)
+	foreign key (Dipartimento, NumeroRichiesta ) references RichiestaAcquisto(Dipartimento, Numero) on update cascade on delete restrict;
 );
 
+
+-- Trigger function that checks if article's supplier is the same as the referenced order's supplier
 create or replace function controlla_ordine_valido()
 returns trigger language plpgsql as
 $$
@@ -107,11 +108,13 @@ $$
 	end;
 $$;
 
+-- Trigger is executed at every insertion or update on Include
 create trigger controlla_fornitore
 before insert or update on Include
 for each row
 execute procedure controlla_ordine_valido();
 
+-- Function that maps an order state to a request state (they differ by names, but its a one-to-one relation)
 create or replace function map_stati(ord stato_ordine)
    returns stato_richiesta
    language plpgsql
@@ -132,6 +135,7 @@ $$
 $$;
 
 
+-- Trigger function that updates request state according to the states of the orders that satisfy the request
 create or replace function aggiorna_richiesta()
 returns trigger language plpgsql as
 $$
@@ -146,13 +150,14 @@ $$
 	end;
 $$;
 
-
+-- Trigger is executed everytime and order is inserted or updated
 create trigger aggiorna_stato_richiesta
 after insert or update on Ordine
 for each row
 execute procedure aggiorna_richiesta();
 
 
+-- Trigger function that gives incremental numbers to every department-related requests
 create or replace function set_numero_richiesta()
 returns trigger language plpgsql as
 $$
@@ -170,6 +175,7 @@ $$
 	end;
 $$;
 
+-- Trigger is executed on every insertion inside richiestaacquisto
 create trigger imposta_numero_richiesta
 before insert on richiestaacquisto
 for each row
