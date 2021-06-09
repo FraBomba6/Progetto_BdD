@@ -139,13 +139,16 @@ $$;
 create or replace function aggiorna_richiesta()
 returns trigger language plpgsql as
 $$
-	declare
-		minstato stato_ordine;
-		new_stato_richiesta stato_richiesta;
 	begin
-		select min(stato) into minstato from Include inner join Ordine on Include.ordine = Ordine.codice where ordine = new.codice;
-		new_stato_richiesta = map_stati(minstato);
-		update richiestaacquisto set stato = new_stato_richiesta where (numero, dipartimento) in (select numerorichiesta, dipartimento from include where ordine = new.codice) and stato <> new_stato_richiesta;
+	    update richiestaacquisto
+	        set stato = entry.stato from (
+                select distinct I1.dipartimento, I1.numerorichiesta, map_stati(min(stato)) as stato
+                    from include as I1
+                        inner join (select distinct dipartimento, numerorichiesta from Include as I2 where ordine = new.Codice) as I2 on (I1.dipartimento, I1.numerorichiesta) = (I2.dipartimento, I2.numerorichiesta)
+                        inner join ordine on codice = I1.ordine
+                    group by I1.dipartimento, I1.numerorichiesta
+	            ) as entry
+	        where richiestaacquisto.dipartimento = entry.Dipartimento and RichiestaAcquisto.numero = entry.NumeroRichiesta;
 		return new;
 	end;
 $$;
