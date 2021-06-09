@@ -77,7 +77,7 @@ create table Include(
 	Quantita numeric not null check(Quantita > 0),
 	PrezzoUnitario numeric default null,
 	primary key (Dipartimento, NumeroRichiesta, Articolo),
-	foreign key (Dipartimento, NumeroRichiesta ) references RichiestaAcquisto(Dipartimento, Numero) on update cascade on delete restrict;
+	foreign key (Dipartimento, NumeroRichiesta ) references RichiestaAcquisto(Dipartimento, Numero) on update cascade on delete restrict
 );
 
 

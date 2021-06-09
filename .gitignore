@@ -4,3 +4,4 @@ psqlOnDocker/MockupDataGenerator/.idea
 psqlOnDocker/MockupDataGenerator/env
 psqlOnDocker/MockupDataGenerator/__pycache__
 psqlOnDocker/.idea
+psqlOnDocker/update_ordini.sql
