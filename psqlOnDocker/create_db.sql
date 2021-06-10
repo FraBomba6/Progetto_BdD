@@ -136,7 +136,7 @@ $$;
 
 
 -- Trigger function that updates request state according to the states of the orders that satisfy the request
-create or replace function aggiorna_richiesta()
+create or replace function aggiorna_richiesta_da_ordine()
 returns trigger language plpgsql as
 $$
 	begin
@@ -149,15 +149,44 @@ $$
                     group by I1.dipartimento, I1.numerorichiesta
 	            ) as entry
 	        where richiestaacquisto.dipartimento = entry.Dipartimento and RichiestaAcquisto.numero = entry.NumeroRichiesta;
+
+		return new;
+	end;
+$$;
+
+
+-- Trigger is executed everytime and order is inserted or updated
+create trigger aggiorna_stato_richiesta_da_ordine
+after insert or update on Ordine
+for each row
+execute procedure aggiorna_richiesta_da_ordine();
+
+-- Trigger function that updates request state according to the states of the orders that satisfy the request
+create or replace function aggiorna_richiesta_da_include()
+returns trigger language plpgsql as
+$$
+    declare
+        newStato stato_richiesta;
+	begin
+	    if new.ordine is null then
+            return new;
+        end if;
+	    select CASE WHEN min(CASE WHEN stato is null then 0 else 1 END) = 0 THEN null ELSE min(stato) END into newStato from Include join Ordine on Codice = Include.Ordine where numerorichiesta = new.NumeroRichiesta and dipartimento = new.Dipartimento;
+	    if newStato is null then
+            newStato = 'emessa';
+        else
+	        newStato = map_stati(newStato);
+        end if;
+	    update richiestaacquisto set stato = newStato where RichiestaAcquisto.dipartimento = new.Dipartimento and RichiestaAcquisto.numero = new.NumeroRichiesta;
 		return new;
 	end;
 $$;
 
 -- Trigger is executed everytime and order is inserted or updated
-create trigger aggiorna_stato_richiesta
-after insert or update on Ordine
+create trigger aggiorna_stato_richiesta_da_include
+after insert or update of ordine on Include
 for each row
-execute procedure aggiorna_richiesta();
+execute procedure aggiorna_richiesta_da_include();
 
 
 -- Trigger function that gives incremental numbers to every department-related requests
