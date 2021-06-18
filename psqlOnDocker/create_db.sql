@@ -135,7 +135,7 @@ $$
 $$;
 
 
--- Trigger function that updates request state according to the states of the orders that satisfy the request
+-- Trigger function that updates request state according to the states of the orders that satisfy the request when something on Ordine table is done
 create or replace function aggiorna_richiesta_da_ordine()
 returns trigger language plpgsql as
 $$
@@ -155,13 +155,13 @@ $$
 $$;
 
 
--- Trigger is executed everytime and order is inserted or updated
+-- Trigger is executed everytime an order is inserted or updated
 create trigger aggiorna_stato_richiesta_da_ordine
 after insert or update on Ordine
 for each row
 execute procedure aggiorna_richiesta_da_ordine();
 
--- Trigger function that updates request state according to the states of the orders that satisfy the request
+-- Trigger function that updates request state according to the states of the orders that satisfy the request when something on Include table is done
 create or replace function aggiorna_richiesta_da_include()
 returns trigger language plpgsql as
 $$
@@ -182,7 +182,7 @@ $$
 	end;
 $$;
 
--- Trigger is executed everytime and order is inserted or updated
+-- Trigger is executed everytime an order is inserted or updated
 create trigger aggiorna_stato_richiesta_da_include
 after insert or update of ordine on Include
 for each row
