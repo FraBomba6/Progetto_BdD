@@ -166,18 +166,19 @@ create or replace function aggiorna_richiesta_da_include()
 returns trigger language plpgsql as
 $$
     declare
-        newStato stato_richiesta;
+        newStato stato_ordine;
+		newStatoMap stato_richiesta;
 	begin
 	    if new.ordine is null then
             return new;
         end if;
 	    select CASE WHEN min(CASE WHEN stato is null then 0 else 1 END) = 0 THEN null ELSE min(stato) END into newStato from Include join Ordine on Codice = Include.Ordine where numerorichiesta = new.NumeroRichiesta and dipartimento = new.Dipartimento;
 	    if newStato is null then
-            newStato = 'emessa';
+            newStatoMap = 'emessa';
         else
-	        newStato = map_stati(newStato);
+	        newStatoMap = map_stati(newStato);
         end if;
-	    update richiestaacquisto set stato = newStato where RichiestaAcquisto.dipartimento = new.Dipartimento and RichiestaAcquisto.numero = new.NumeroRichiesta;
+	    update richiestaacquisto set stato = newStatoMap where RichiestaAcquisto.dipartimento = new.Dipartimento and RichiestaAcquisto.numero = new.NumeroRichiesta;
 		return new;
 	end;
 $$;
