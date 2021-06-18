@@ -94,7 +94,7 @@ create table Include(
 	Ordine integer default null references Ordine on update cascade on delete set null,
 	DataConsegna date default null,
 	Quantita numeric not null check(Quantita > 0),
-	PrezzoUnitario numeric default null,
+	PrezzoUnitario numeric(7,2) default null,
 	primary key (Dipartimento, NumeroRichiesta, Articolo),
 	foreign key (Dipartimento, NumeroRichiesta ) references RichiestaAcquisto(Dipartimento, Numero) on update cascade on delete restrict
 );
