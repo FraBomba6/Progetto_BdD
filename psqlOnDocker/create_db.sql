@@ -6,7 +6,7 @@ create type classe_merceologica as enum ('cancelleria', 'libri', 'elettronica', 
 create type unita_misura as enum ('cad', 'kg', 'm', 'l');
 create type stato_ordine as enum ('emesso', 'spedito', 'consegnato');
 
--- Creating tables with fk and pk constraints
+
 create table Responsabile(
 	CodiceFiscale char(16) primary key,
 	Nome text not null,
@@ -21,6 +21,25 @@ create table Dipartimento(
 	Responsabile char(16) not null references Responsabile on update cascade on delete restrict
 );
 
+
+create table ProssimoCodiceRichiesta(
+	Dipartimento char(6) primary key references Dipartimento on update cascade on delete cascade,
+	ProssimoNumero integer default 0
+);
+
+create or replace function nuova_entry_dipartimento()
+returns trigger language plpgsql as
+$$
+	begin
+		insert into ProssimoCodiceRichiesta(Dipartimento) values(new.Codice);
+		return new;
+	end;
+$$;
+
+create trigger nuova_entry_dip_trigger
+after insert on Dipartimento 
+for each row
+execute procedure nuova_entry_dipartimento();
 
 create table RichiestaAcquisto(
 	Numero integer,
@@ -79,6 +98,40 @@ create table Include(
 	primary key (Dipartimento, NumeroRichiesta, Articolo),
 	foreign key (Dipartimento, NumeroRichiesta ) references RichiestaAcquisto(Dipartimento, Numero) on update cascade on delete restrict
 );
+
+-- Trigger function that compute the final price for an entry in Include table
+create or replace function compute_final_price()
+    returns trigger
+    language plpgsql as
+$$
+declare
+    currentOrder     integer;
+    currentSupplier varchar;
+    price            numeric;
+    discount         numeric;
+    finalPrice       numeric;
+begin
+    if new.Ordine is not null then
+        currentOrder = new.Ordine;
+        select Fornitore into currentSupplier from Ordine where Codice = currentOrder;
+        select PrezzoUnitario, Sconto
+        into price, discount
+        from Fornisce
+        where Fornitore = currentSupplier
+          and Articolo = new.Articolo;
+        finalPrice = price * (1 - discount);
+        new.PrezzoUnitario = finalPrice;
+    end if;
+    return new;
+end;
+$$;
+
+-- Trigger is executed everytime an order is associated with an article
+create trigger final_price
+    before insert or update of ordine
+    on Include
+    for each row
+execute procedure compute_final_price();
 
 
 -- Trigger function that checks if article's supplier is the same as the referenced order's supplier
@@ -197,14 +250,15 @@ $$
 	declare
 		n integer;
 	begin
-		select numero into n from richiestaacquisto where dipartimento = new.dipartimento order by numero desc limit 1;
+		select ProssimoNumero into n from ProssimoCodiceRichiesta where Dipartimento = new.Dipartimento;
 		if n is null then
-			n = 0;
+			raise notice 'Errore: dipartimento non valido';
+			return null;
 		else
-			n = n+1;
+			new.numero := n;
+			update ProssimoCodiceRichiesta set ProssimoNumero = n+1 where Dipartimento = new.Dipartimento;
+			return new;
 		end if;
-		new.numero := n;
-		return new;
 	end;
 $$;
 
