@@ -119,7 +119,7 @@ begin
         from Fornisce
         where Fornitore = currentSupplier
           and Articolo = new.Articolo;
-        finalPrice = price * (1 - discount);
+        finalPrice = price * (1 - discount/100);
         new.PrezzoUnitario = finalPrice;
     end if;
     return new;
