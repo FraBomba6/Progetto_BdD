@@ -1,6 +1,5 @@
 # %%
 import datetime
-import pandas as pd
 import querygenerator
 from faker import Faker
 import random
@@ -8,9 +7,36 @@ import random
 fake = Faker()
 
 StatoRic = ['emessa', 'lavorazione', 'evasa', 'chiusa']
-Classe = ['cancelleria', 'libri', 'elettronica', 'informatica', 'pulizia', 'mobilia']
+Classe = ['cancelleria', 'pulizia', 'libri', 'elettronica', 'informatica', 'mobilia']
 UnitaDiMisura = ['cad', 'kg', 'm', 'l']
 StatoOrdine = ['emesso', 'spedito', 'consegnato']
+
+rangePrezzi = {
+    'cancelleria': {
+        'low': 0.1,
+        'high': 30
+    },
+    'libri': {
+        'low': 5,
+        'high': 50
+    },
+    'elettronica': {
+        'low': 15,
+        'high': 1500
+    },
+    'informatica': {
+        'low': 10,
+        'high': 1500
+    },
+    'pulizia': {
+        'low': 1,
+        'high': 30
+    },
+    'mobilia': {
+        'low': 5,
+        'high': 500
+    }
+}
 
 
 # %%
@@ -43,7 +69,7 @@ def getArticolo(codice):
     return {
         'Codice': codice,
         'Descrizione': fake.sentence(nb_words=5),
-        'Classe': random.choice(Classe),
+        'Classe': random.choices(Classe, weights=[50, 20, 10, 5, 10, 5])[0],
         'UnitaDiMisura': random.choice(UnitaDiMisura)
     }
 
@@ -64,18 +90,17 @@ def getRecapitoTelefonico(fornitore):
     }
 
 
-def getFornisce(articolo, fornitore):
+def getFornisce(articolo, classe, fornitore):
     return {
         'Articolo': articolo,
         'Fornitore': fornitore,
         'Sconto': round(random.uniform(0, 50), 2),
-        'PrezzoUnitario': round(random.uniform(0, 200), 2),
+        'PrezzoUnitario': round(random.uniform(rangePrezzi[classe]['low'], rangePrezzi[classe]['high']), 2),
         'CodBar': fake.pystr_format(string_format='####################')
     }
 
 
 def getOrdine(fornitore, data):
-    stato = ''
     if data < datetime.date.today() - datetime.timedelta(days=90):
         stato = 'consegnato'
     elif data < datetime.date.today() - datetime.timedelta(days=30):
@@ -94,7 +119,7 @@ def getInclude(dipartimento, numeroRichiesta, articolo):
         'Dipartimento': dipartimento,
         'NumeroRichiesta': numeroRichiesta,
         'Articolo': articolo,
-        'Quantita': random.randint(1, 50)
+        'Quantita': random.randint(1, 20)
     }
 
 
@@ -129,14 +154,9 @@ for i in range(750):
     offset = 0
     if i > 499:
         offset = 1
-    art = listaArticolo[i % len(listaArticolo)]['Codice']
+    art = listaArticolo[i % len(listaArticolo)]
     fornitore = listaFornitore[(i + offset) % len(listaFornitore)]['PartitaIVA']
-    listaFornisce.append(getFornisce(art, fornitore))
-
-# listaOrdine = []
-# for i in range(200):
-#     fornitore = listaFornitore[i % len(listaFornitore)]['PartitaIVA']
-#     listaOrdine.append(getOrdine(fornitore))
+    listaFornisce.append(getFornisce(art['Codice'], art['Classe'], fornitore))
 
 listaInclude = []
 for i in range(len(listaRichiestaAcquisto)):
@@ -154,7 +174,6 @@ tabelle = {
         'Fornitore': listaFornitore,
         'RecapitoTelefonico': listaRecapitoTelefonico,
         'Fornisce': listaFornisce,
-        # 'Ordine': listaOrdine,
         'Include': listaInclude
     }
 
@@ -214,6 +233,24 @@ while start <= today:
                         break
 
     start += datetime.timedelta(days=7)
+
+# %%
+for entryInclude in listaInclude:
+    ordine = entryInclude['Ordine']
+    fornitore = ''
+    prezzo = 0
+    for entryOrdine in listaOrdine:
+        if entryOrdine['Codice'] == ordine:
+            fornitore = entryOrdine['Fornitore']
+            break
+    for entryFornisce in listaFornisce:
+        if entryFornisce['Fornitore'] == fornitore and entryFornisce['Articolo'] == entryInclude['Articolo']:
+            prezzo = entryFornisce['PrezzoUnitario']
+            break
+    rangeMin = 1
+    rangeMax = min(30, int(3000/prezzo))
+    entryInclude['Quantita'] = random.randint(rangeMin, rangeMax)
+
 
 # %%
 queries = []
