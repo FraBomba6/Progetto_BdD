@@ -1,0 +1,28 @@
+---
+title: "Analisi del database"
+output: html_notebook
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r Libraries}
+library("ggplot2")
+library("RPostgreSQL")
+```
+
+```{r Connection setup}
+drv <- dbDriver("PostgreSQL")
+con <- dbConnect(
+  drv,
+  dbname = "ufficioacquisti",
+  host = "localhost",
+  port = 15000,
+  user = "postgres",
+  password = "bdd2021"
+)
+```
+
+```{r}
+# dbGetQuery(con, "create index index_ordine on include(ordine)")
+dbGetQuery(con, "explain analyse select * from fornitore")
+```
