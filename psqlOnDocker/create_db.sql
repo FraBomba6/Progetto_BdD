@@ -245,9 +245,6 @@ declare
     newStato    stato_ordine;
     newStatoMap stato_richiesta;
 begin
-    if new.ordine is null then
-        return new;
-    end if;
     select CASE WHEN min(CASE WHEN stato is null then 0 else 1 END) = 0 THEN null ELSE min(stato) END
     into newStato
     from Include
