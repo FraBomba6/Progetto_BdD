@@ -8,6 +8,7 @@ editor_options:
 ```{r Libraries}
 library("ggplot2")
 library("RPostgreSQL")
+library("dplyr")
 ```
 
 ```{r Connection setup}
@@ -23,6 +24,34 @@ con <- dbConnect(
 ```
 
 ```{r}
-# dbGetQuery(con, "create index index_ordine on include(ordine)")
-dbGetQuery(con, "explain analyse select * from fornitore")
+senzaIndice <- data.frame()
+dbGetQuery(con, "explain analyse select * from include where ordine=255")
+dbGetQuery(con, "explain analyse select * from include where ordine=255")
+for(var in 0:10) {
+  senzaIndice <- rbind(senzaIndice, dbGetQuery(con, "explain analyse select * from include where ordine=255"))
+}
+dbGetQuery(con, "create index index_ordine on include(ordine)")
+conIndice <- data.frame()
+dbGetQuery(con, "explain analyse select * from include where ordine=255")
+dbGetQuery(con, "explain analyse select * from include where ordine=255")
+for(var in 0:10) {
+  conIndice <- rbind(conIndice, dbGetQuery(con, "explain analyse select * from include where ordine=255"))
+}
+```
+```{r}
+senzaIndice_update <- data.frame()
+for(var in 0:10) {
+  dbBegin(con)
+  dbGetQuery(con, "explain analyse update include set ordine = ordine where ordine = 255")
+  senzaIndice_update <- rbind(senzaIndice_update, dbGetQuery(con, "explain analyse update include set ordine = 260 where ordine = 255"))
+  dbRollback(con)
+}
+dbGetQuery(con, "create index index_ordine on include(ordine)")
+conIndice_update <- data.frame()
+for(var in 0:10) {
+  dbBegin(con)
+  dbGetQuery(con, "explain analyse update include set ordine = ordine where ordine = 255")
+  conIndice_update <- rbind(conIndice_update, dbGetQuery(con, "explain analyse update include set ordine = 260 where ordine = 255"))
+  dbRollback(con)
+}
 ```

@@ -20,8 +20,3 @@ def make_sql(table, queries):
         f.writelines(queries)
     print(f"Queries saved on file sql/{table}.sql")
 
-
-def load_sql(table, fileName):
-    with open(f"sql/{fileName}", "r") as f:
-        query = f.readline()
-
