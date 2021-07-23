@@ -193,21 +193,22 @@ Sulla base dei requisiti individuati, si descrivono le principali operazioni, co
 
 | **Operazione** | **Frequenza** |
 |:-|-|
-|Inserimento di una richiesta d'acquisto|150/settimana|
+|Inserimento di una richiesta d'acquisto|60/settimana|
 |||
-|Aggiornamento dello stato di una richiesta d'acquisto|7/settimana|
+|Aggiornamento dello stato di un ordine|2/settimana|
 |||
-|Aggiornamento dello stato di un ordine|3/settimana|
+|Visualizzazione delle informazioni relative ad una richiesta d'acquisto|120/settimana|
 |||
-|Visualizzazione delle informazioni relative ad una richiesta d'acquisto|60/settimana|
-|||
-|Visualizzazione degli articoli contenuti in una richiesta d'acquisto|60/settimana|
+|Visualizzazione degli articoli contenuti in una richiesta d'acquisto|180/settimana|
 |||
 |Inserimento di un nuovo ordine|5/settimana|
 |||
-|Visualizzazione di tutti gli articoli|500/settimana|
+|Visualizzazione di tutti gli articoli|200/settimana|
 |||
-|Calcolo della spesa mensile dei dipartimenti e dell'ente|30/mese|
+|Calcolo della spesa mensile dei dipartimenti|30/mese|
+|||
+|Calcolo della spesa complessiva dell'ente in un intervallo di tempo|5/mese|
+
 
 \newpage
 
@@ -245,6 +246,7 @@ Sulla base del documento di specifiche, si inviduano i criteri opportuni per la 
 	}%
 }
 ```
+
 ### Assunzioni in merito alle ambiguità rilevate {#assunzioni}
 
 - Sulla base di quanto riportato nelle specifiche sopracitate, si è osservato come il concetto di **listino** delinei l'insieme di articoli associati al rispettivo fornitore senza, però, aggiungere informazioni supplementari in merito a tale relazione. Si è, pertanto, deciso di **non** rappresentare il listino all'interno della Basi di Dati ma di, piuttosto, rappresentare l'associazione fra un singolo articolo e il rispettivo fornitore. 
@@ -306,22 +308,22 @@ Considerato il fatto che il medesimo articolo può essere fornito da più fornit
 
 ### Attributi derivabili
 
-Al fine di valutare il mantenimento o l'eliminazione delle ridondanze presenti nel diagramma ER proposto, si definisce, di seguito, la tavola dei volumi di entità e relazioni presenti nella Base di Dati.
+Al fine di valutare il mantenimento o l'eliminazione delle ridondanze presenti nel diagramma ER proposto, si definisce, di seguito, la tavola dei volumi di entità e relazioni presenti nella Base di Dati. Si considera lo stato della base di dati a seguito di un anno di attività, richieste d'acquisto che coinvolgono mediamente 5 articoli e ordini che soddisfano mediamente 60 richieste d'acquisto. Inoltre, si considera che una richiesta d'acquisto è mediamente soddisfatta da 3 ordini.
 
 |Concetto|Tipo|Volume|
 |-|:-:|-:|
 |Responsabile|E|25|
 |Dipartimento|R|30|
-|Richiesta d'Acquisto|E|6000|
-|Articolo|E|500|
-|Ordine|E|200|
+|Richiesta d'Acquisto|E|2400|
+|Articolo|E|300|
+|Ordine|E|265|
 |Fornitore|E|5|
-|Include|R|60000|
-|Fornisce|R|750|
+|Include|R|12000|
+|Fornisce|R|450|
 
 Si fa riferimento, inoltre, alle operazioni frequenti riportate al punto [2.4](#op-frequenti).
 
-Si effettua, quindi, un'analisi delle ridondanze in merito all'attributo derivato **Stato Richiesta** dell'entità *Richiesta d'Acquisto*. Quest'ultimo è coinvolto nelle operazioni di **Aggiornamento dello stato di una Richiesta d'Acquisto** [`7/settimana`] e quelle di **Visualizzazione delle informazioni relative ad una Richiesta d'Acquisto** [`60/settimana`]. Si riportano, di seguito, le tavole degli accessi in presenza e assenza dell'attributo derivato, assieme alla rispettiva valutazione del costo di esecuzione, considerando che una richiesta d'acquisto venga mediamente soddisfatta da cinque ordini.
+Si effettua, quindi, un'analisi delle ridondanze in merito all'attributo derivato **Stato Richiesta** dell'entità *Richiesta d'Acquisto*. Quest'ultimo è coinvolto nelle operazioni di **Aggiornamento dello stato di un Ordine** [`2/settimana`], quelle di **Visualizzazione delle informazioni relative ad una Richiesta d'Acquisto** [`60/settimana`] e quelle di **Inserimento di un Ordine** [`5/settimana`]. Si riportano, di seguito, le tavole degli accessi in presenza e assenza dell'attributo derivato, assieme alla rispettiva valutazione del costo di esecuzione, considerando che una richiesta d'acquisto venga mediamente soddisfatta da cinque ordini.
 
 Nel caso di **presenza** dell'attributo derivato, si prevedono gli accessi seguenti:
 
@@ -331,7 +333,7 @@ Nel caso di **presenza** dell'attributo derivato, si prevedono gli accessi segue
 % stato richiesta d'acquisto in presenza dell'attributo
 
 \begin{table}[H]
-\caption {\textbf{Aggiornamento dello stato di una richiesta d'acquisto}}
+\caption {\textbf{Aggiornamento dello stato di un ordine}}
 \centering
 \begin{tabular}{|l|l|l|l|}
 \hline
@@ -559,14 +561,17 @@ Si osserva come non sia possibile garantire il rispetto del Vincolo di Integrit�
 
 \newpage
 
-# Implementazione e Progettazione Fisica
+# Progettazione Fisica
 
-\newpage
+- Dati
+- Operazioni usate per ottimizzazioni
+- Analisi e scelta di opportuni indici
+- Definizione delle relazioni in SQL
+
 
 # Analisi dei dati
 
-
-
+\newpage
 
 
 
