@@ -6,3 +6,7 @@ psqlOnDocker/MockupDataGenerator/__pycache__
 psqlOnDocker/.idea
 psqlOnDocker/update_ordini.sql
 .Rproj.user
+R/.idea
+R/.RData
+R/.Rhistory
+R/DataAnalysis.nb.html
