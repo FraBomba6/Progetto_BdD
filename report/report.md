@@ -20,7 +20,7 @@ header-includes:
   - \usepackage{multirow} 
   - \usepackage{bigstrut}
   - \hypersetup{colorlinks=true,
-            linkcolor=blue,
+            linkcolor=black,
             urlcolor=blue,
             allbordercolors={0 0 0},
             pdfborderstyle={/S/U/W 1}}
@@ -28,6 +28,9 @@ header-includes:
 ---
 
 \captionsetup{labelformat=empty}
+\pagenumbering{arabic}
+\newpage
+\tableofcontents
 \newpage
 \definecolor{darkgreen}{RGB}{69,151,84}
 \definecolor{lightblue}{RGB}{3,219,252}
@@ -282,17 +285,14 @@ Inoltre, si evidenzia come sia la **data di consegna di un articolo** che il **p
 
 ### Regole di derivazione
 
-Il diagramma presenta un attributo derivato, ovvero **Stato Richiesta**. Questo viene calcolato valutando lo stato di tutti gli *Ordini* associati ad una specifica richiesta. 
+Il diagramma presenta due attributi derivati, ovvero **Stato Articolo** e **Numero Articoli**. Il primo è relativo alla relazione *Include* e viene calcolato valutando lo stato di avanzamento dell'ordine associato. Il secondo, invece, è relativo all'entità Richiesta d'Acquisto e viene calcolato contando gli articoli associati ad una richiesta.
 
 ### Considerazioni
-
-Si suppone che, nel caso della regola di derivazione esplicitata, la valutazione dell'attributo **Stato Richiesta** sia definita da una funzione che, sulla base dell'insieme dei rispettivi *ordini*, individua quello/i con *stato* meno avanzato. Una completa richiesta d'acquisto risulterà, infatti, conclusasi completamente solo quando tutti gli ordini che la soddisfano saranno giunti a destinazione presso il dipartimento.
 
 ```{=latex}
 % La relazione **Include** prevede l'aggiunta dell'attributo **Prezzo Unitario Finale** al fine di poter stabilire, come indicato al punto [2.5.1](#assunzioni), il prezzo al quale l'articolo viene acquistato.
 ```
-
-Inoltre, la partecipazione dell'entità *Ordine* alla relazione ternaria che coinvolge le entità *Richiesta d'Acquisto*, *Ordine* e *Articolo* è **opzionale**. Quest'ultima avverrà, infatti, solamente al momento in cui l'ufficio acquisti emetterà un ordine atto a soddisfare l'articolo incluso in una specifica richiesta. 
+Si osserva come la partecipazione dell'entità *Ordine* alla relazione ternaria che coinvolge le entità *Richiesta d'Acquisto*, *Ordine* e *Articolo* sia **opzionale**. Quest'ultima avverrà, infatti, solamente all'atto di emissione (da parte dell'ufficio acquisti) di un ordine che soddisfa l'articolo incluso in una specifica richiesta. 
 
 \newpage
 
@@ -304,88 +304,213 @@ Inoltre, la partecipazione dell'entità *Ordine* alla relazione ternaria che coi
 
 Come specificato precedentemente, l'unico ciclo presente nello schema ER coinvolge le entità **Ordine**, **Articolo** e **Fornitore**. Un ordine, infatti, deve essere rivolto ad uno specifico fornitore e, pertanto, gli articoli contenuti devono necessariamente provenire tutti dallo stesso fornitore.
 
-Considerato il fatto che il medesimo articolo può essere fornito da più fornitori, al fine di poter strutturare un ordine è necessario sapere il fornitore che lo evaderà e gli articoli in esso contenuti. Non è, pertanto, possibile effettuare un'eliminazione del ciclo senza la conseguente perdita di informazione necessaria al corretto comportamento della Base di Dati. Pertanto, il ciclo viene mantenuto e vincolato sulla base delle osservazioni effettuate al punto [3.2](#vincoli).
+Considerato il fatto che il medesimo articolo possa essere fornito da più fornitori, al fine di poter strutturare un ordine è necessario sapere il fornitore che lo evaderà e gli articoli in esso contenuti. Non è, pertanto, possibile effettuare un'eliminazione del ciclo senza la conseguente perdita di informazione necessaria al corretto comportamento della Base di Dati. Pertanto, il ciclo viene mantenuto e vincolato sulla base delle osservazioni effettuate al punto [3.2](#vincoli).
 
 ### Attributi derivabili
 
-Al fine di valutare il mantenimento o l'eliminazione delle ridondanze presenti nel diagramma ER proposto, si definisce, di seguito, la tavola dei volumi di entità e relazioni presenti nella Base di Dati. Si considera lo stato della base di dati a seguito di un anno di attività, richieste d'acquisto che coinvolgono mediamente 5 articoli e ordini che soddisfano mediamente 60 richieste d'acquisto. Inoltre, si considera che una richiesta d'acquisto è mediamente soddisfatta da 3 ordini.
+Al fine di valutare il mantenimento o l'eliminazione delle ridondanze presenti nel diagramma ER proposto, si definisce, di seguito, la tavola dei volumi di entità e relazioni presenti nella Base di Dati. Si considera quanto segue:
 
-|Concetto|Tipo|Volume|
+- La stato della base di dati dopo un anno di attività;
+- Richieste d'acquisto che coinvolgono mediamente 5 articoli e soddisfatte da 3 ordini;
+- Ordini che contengono, in media, 60 articoli;
+- Ordini che soddisfano mediamente 12 richieste d'acquisto.
+
+|**Concetto**|**Tipo**|**Volume**|
 |-|:-:|-:|
 |Responsabile|E|25|
 |Dipartimento|R|30|
 |Richiesta d'Acquisto|E|2400|
 |Articolo|E|300|
-|Ordine|E|265|
+|Ordine|E|200|
 |Fornitore|E|5|
 |Include|R|12000|
 |Fornisce|R|450|
 
 Si fa riferimento, inoltre, alle operazioni frequenti riportate al punto [2.4](#op-frequenti).
 
-Si effettua, quindi, un'analisi delle ridondanze in merito all'attributo derivato **Stato Richiesta** dell'entità *Richiesta d'Acquisto*. Quest'ultimo è coinvolto nelle operazioni di **Aggiornamento dello stato di un Ordine** [`2/settimana`], quelle di **Visualizzazione delle informazioni relative ad una Richiesta d'Acquisto** [`60/settimana`] e quelle di **Inserimento di un Ordine** [`5/settimana`]. Si riportano, di seguito, le tavole degli accessi in presenza e assenza dell'attributo derivato, assieme alla rispettiva valutazione del costo di esecuzione, considerando che una richiesta d'acquisto venga mediamente soddisfatta da cinque ordini.
+Si effettua, quindi, un'analisi delle ridondanze in merito agli attributi derivati **Stato Articolo** della relazione **Include** e **Numero Articoli** dell'entità **Richiesta d'Acquisto**. 
 
-Nel caso di **presenza** dell'attributo derivato, si prevedono gli accessi seguenti:
+Il primo, è coinvolto nelle operazioni di:
+
+- Inserimento di una Richiesta d'Acquisto [`60/settimana`];
+- Aggiornamento dello stato di un ordine [`2/settimana`];
+- Inserimento di un nuovo Ordine [`5/settimana`];
+- Visualizzazione degli articoli di una Richiesta d'Acquisto [`180/settimana`]
+
+Il secondo, invece, è coinvolto nelle operazioni di:
+
+- Visualizzazione delle informazioni relative ad una Richiesta d'Acquisto [`120/settimana`];
+- Inserimento di una Richiesta d'Acquisto [`60/settimana`].
+
+
+### Stato Articolo
+
+Per ogni operazione, si prevedono gli accessi seguenti:
 
 
 ```{=latex}
 
-% stato richiesta d'acquisto in presenza dell'attributo
+% stato richiesta d'acquisto
 
 \begin{table}[H]
+\centering
+\caption {\textbf{Inserimento di una Richiesta d'Acquisto}}
+\begin{tabular}{|p{0.20\textwidth}|l|l|l|l|l|}
+\cline{3-6}
+\multicolumn{2}{l|}{} & \multicolumn{2}{|l|}{\textbf{Presenza di attributo derivato}}  & \multicolumn{2}{|l|}{\textbf{Assenza di attributo derivato}}   \\ \cline{1-6}
+\textit{Concetto} & \textit{Tipo} & \textit{Accessi} & \textit{Tipo di accesso} & \textit{Accessi} & \textit{Tipo di accesso}        \\ \cline{1-6}
+Richiesta d'Acquisto &     E       &         1         &             W            &        -         &          -                    \\ \cline{1-6}
+Richiesta d'Acquisto &     E       &         1         &             R            &        -         &          -                    \\ \cline{1-6}
+Include              &     R       &         5         &             W            &        -         &          -                	 \\ \cline{1-6} 
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
 \caption {\textbf{Aggiornamento dello stato di un ordine}}
-\centering
-\begin{tabular}{|l|l|l|l|}
-\hline
-\textbf{Concetto}    & \textbf{Tipo} & \textbf{Accessi} & \textbf{Tipo di accesso} \\ \hline
-Ordine               & E    & 5       & R               \\ \hline
-Include              & R    & 5       & R               \\ \hline
-Richiesta d'Acquisto & E    & 1       & W               \\ \hline
+\begin{tabular}{|p{0.20\textwidth}|l|l|l|l|l|}
+\cline{3-6}
+\multicolumn{2}{l|}{} & \multicolumn{2}{|l|}{\textbf{Presenza di attributo derivato}}  & \multicolumn{2}{|l|}{\textbf{Assenza di attributo derivato}}   \\ \cline{1-6}
+\textit{Concetto} & \textit{Tipo} & \textit{Accessi} & \textit{Tipo di accesso} & \textit{Accessi} & \textit{Tipo di accesso}        \\ \cline{1-6}
+Ordine            &     E         &         1        &             W            &        -         &          -                      \\ \cline{1-6}
+Include           &     R         &         60       &             W            &        -         &          -                      \\ \cline{1-6}
 \end{tabular}
 \end{table}
 
+
 \begin{table}[H]
-\caption[Caption for LOF]{\textbf{Visualizzazione dello stato di una richiesta d'acquisto}\footnotemark}
 \centering
-\begin{tabular}{|l|l|l|l|}
-\hline
-\textbf{Concetto}    & \textbf{Tipo} & \textbf{Accessi} & \textbf{Tipo di accesso} \\ \hline
-Richiesta d'Acquisto & E             &    1             &           R               \\ \hline
+\caption {\textbf{Inserimento di un nuovo ordine}}
+\begin{tabular}{|p{0.20\textwidth}|l|l|l|l|l|}
+\cline{3-6}
+\multicolumn{2}{l|}{} & \multicolumn{2}{|l|}{\textbf{Presenza di attributo derivato}}  & \multicolumn{2}{|l|}{\textbf{Assenza di attributo derivato}}   \\ \cline{1-6}
+\textit{Concetto} & \textit{Tipo} & \textit{Accessi} & \textit{Tipo di accesso} & \textit{Accessi} & \textit{Tipo di accesso}        \\ \cline{1-6}
+Ordine            &     E         &         1        &             W            &        -         &          -                      \\ \cline{1-6}
+Include           &     R         &         60       &             W            &        -         &          -                      \\ \cline{1-6}
+\end{tabular}
+\end{table}
+
+
+\begin{table}[H]
+\centering
+\caption {\textbf{Visualizzazione degli articoli di una Richiesta d'Acquisto}}
+\begin{tabular}{|p{0.20\textwidth}|l|l|l|l|l|}
+\cline{3-6}
+\multicolumn{2}{l|}{} & \multicolumn{2}{|l|}{\textbf{Presenza di attributo derivato}}  & \multicolumn{2}{|l|}{\textbf{Assenza di attributo derivato}}   \\ \cline{1-6}
+\textit{Concetto} & \textit{Tipo} & \textit{Accessi} & \textit{Tipo di accesso} & \textit{Accessi} & \textit{Tipo di accesso}        \\ \cline{1-6}
+Richiesta d'Acquisto &  E         &         1        &             R            &        1         &          R                      \\ \cline{1-6}
+Include           &     R         &         5        &             R            &        5         &          R                      \\ \cline{1-6}
+Ordine            &     E         &         -        &             -            &        5         &          R                      \\ \cline{1-6}
 \end{tabular}
 \end{table}
 
 ```
 
-\footnotetext{Lo stato è ottenuto tramite l'operazione di visualizzazione delle informazioni relative ad una richiesta d'acquisto}
+Considerando la tavola dei volumi riportata precedentemente, si osserva quanto segue: 
 
-Considerando il costo in scrittura pari al doppio del costo in lettura e le frequenze precedentemente riportate, si osserva che il costo di **aggiornamento** è pari a $7\cdot(5\cdot1 + 5\cdot1 + 1\cdot2) = 84$ e quello di **visualizzazione** è pari a $60\cdot(1\cdot1) = 60$. Di conseguenza, il costo complessivo in presenza dell'attributo derivato è pari a $$ 84 + 60 = 144 $$ 
+- L'operazione di *Inserimento di una Richiesta d'Acquisto* considera:
+	+ 6 scritture ed 1 lettura in caso di presenza dell'attributo derivato
+	+ 0 scritture e letture in caso di assenza dell'attributo derivato 
 
-Nel caso di **assenza** dell'attributo derivato, si prevedono gli accessi seguenti:
+|
+
+- L'operazione di *Aggiornamento dello stato di un Ordine* considera: 
+	+ 0 letture e 61 scritture in caso di presenza dell'attributo derivato
+	+ 0 scritture e lettura in caso di assenza dell'attributo derivato
+
+|
+
+- L'operazione di *Inserimento di un nuovo ordine* considera:
+	+ 0 letture e 61 scritture in caso di presenza dell'attributo derivato
+	+ 0 scritture e letture in caso di assenza dell'attributo derivato
+
+|
+
+- L'operazione di *Visualizzazione degli articolo di una Richiesta d'Acquisto* considera:
+	+ 6 letture e 0 scritture in caso di presenza dell'attributo derivato
+	+ 11 letture e 0 scritture in caso di assenza dell'attributo derivato
+
+|
+
+Applicando alle scritture un peso doppio rispetto a quello delle letture e considerando la frequenza delle operazioni sopracitate si osservano i costi di seguito descritti:
+
+Nel caso di **presenza** dell'attributo derivato: 
+
+$60 \cdot (6 \cdot 2 + 1 \cdot 1) \; + \; 2 \cdot (61 \cdot 2 + 0 \cdot 1) \; + \; 5 \cdot (61 \cdot 2 + 0 \cdot 1) \; + \; 180 \cdot (0 \cdot 2 + 6 \cdot 1) = 780 + 244 + 610 + 1080 = 2714$
+
+|
+
+Nel caso di **assenza** dell'attributo derivato: 
+
+$180 \cdot (0 \cdot 2 + 11 \cdot 1) = 1980$
+
+Sulla base dei risultati ottenuti si sceglie, quindi, di non mantenere l'attributo derivato, procedendone alla rimozione dalla relazione *Include*.
+
+### Numero Articoli
+
+Per ogni operazione, si prevedono gli accessi seguenti:
 
 ```{=latex}
 
-% stato richiesta d'acquisto in assenza dell'attributo
+% numero articoli
 
 \begin{table}[H]
-\caption{\textbf{Visualizzazione dello stato di una richiesta d'acquisto}}
 \centering
-\begin{tabular}{|l|l|l|l|}
-\hline
-\textbf{Concetto}    & \textbf{Tipo} & \textbf{Accessi} & \textbf{Tipo di accesso} \\ \hline
-Ordine               &    E          &      5           &      R				   \\ \hline
-Include              &    R          &      5           &      R				   \\ \hline
+\caption {\textbf{Visualizzazione delle informazioni relative ad una Richiesta d'Acquisto}}
+\begin{tabular}{|p{0.20\textwidth}|l|l|l|l|l|}
+\cline{3-6}
+\multicolumn{2}{l|}{} & \multicolumn{2}{|l|}{\textbf{Presenza di attributo derivato}}  & \multicolumn{2}{|l|}{\textbf{Assenza di attributo derivato}}   \\ \cline{1-6}
+\textit{Concetto} & \textit{Tipo} & \textit{Accessi} & \textit{Tipo di accesso} & \textit{Accessi} & \textit{Tipo di accesso}      \\ \cline{1-6}
+Richiesta d'Acquisto &     E      &        1         &             R            &        1         &          R                    \\ \cline{1-6}
+Include              &     R      &        -         &             -            &        5         &          R                    \\ \cline{1-6}
 \end{tabular}
 \end{table}
 
+
+\begin{table}[H]
+\centering
+\caption {\textbf{Inserimento di una Richiesta d'Acquisto}}
+\begin{tabular}{|p{0.20\textwidth}|l|l|l|l|l|}
+\cline{3-6}
+\multicolumn{2}{l|}{} & \multicolumn{2}{|l|}{\textbf{Presenza di attributo derivato}}  & \multicolumn{2}{|l|}{\textbf{Assenza di attributo derivato}}   \\ \cline{1-6}
+\textit{Concetto} & \textit{Tipo} & \textit{Accessi} & \textit{Tipo di accesso} & \textit{Accessi} & \textit{Tipo di accesso}      \\ \cline{1-6}
+Richiesta d'Acquisto &     E      &        1         &             R            &        -         &          -                    \\ \cline{1-6}
+Include              &     R      &        1         &             W            &        -         &          -                    \\ \cline{1-6}
+\end{tabular}
+\end{table}
 ```
 
-Si osserva che non vi è alcun costo di **aggiornamento** in assenza dell'attributo e che il costo di **visualizzazione** è pari a $$ 60\cdot(5\cdot1 + 5\cdot1) = 600 $$ 
+Considerando la tavola dei volumi riportata precedentemente, si osserva quanto segue: 
 
-Sulla base dei risultati ottenuti, si ritiene conveniente il **mantenimento** dell'attributo derivato.
+- L'operazione di *Visualizzione delle informazioni relative ad una Richiesta d'Acquisto* considera:
+	+ 0 scritture ed 1 lettura in caso di presenza dell'attributo derivato
+	+ 0 scritture e 6 letture in caso di assenza dell'attributo derivato 
+
+|
+
+- L'operazione di *Inserimento di una Richiesta d'Acquisto* considera: 
+	+ 1 lettura e 1 scrittura in caso di presenza dell'attributo derivato
+	+ 0 scritture e letture in caso di assenza dell'attributo derivato
+
+|
+
+Applicando alle scritture un peso doppio rispetto a quello delle letture e considerando la frequenza delle operazioni sopracitate si osservano i costi di seguito descritti:
+
+Nel caso di **presenza** dell'attributo derivato: 
+
+$120 \cdot (0 \cdot 2 + 1 \cdot 1) \; + \; 60 \cdot (1 \cdot 2 + 1 \cdot 1) = 120 + 180  = 300$
+
+|
+
+Nel caso di **assenza** dell'attributo derivato: 
+
+$120 \cdot (0 \cdot 2 + 6 \cdot 1)  = 720$
+
+Sulla base dei risultati ottenuti si sceglie, quindi, di mantenere l'attributo derivato, procedendone alla reifica ad attributo nell'entità *Richiesta d'Acquisto*.
 
 ## Eliminazione delle generalizzazioni
 
-Non ci sono generalizzazioni da eliminare.
+Non essendovi relazioni di generalizzazione nel diagramma concettuale proposto al punto [3.1](#er-v1), non è stato necessario apportare modifiche rivolte all'eliminazione di eventuali relazioni di generalizzazione.
 
 ## Partizionamento ed accorpamento di entità e associazioni
 
@@ -462,9 +587,9 @@ Partendo dal diagramma ER ristrutturato, è stato prodotto il corrispondente sch
 			\item NotNull: Nome, Cognome, DataNascita, LuogoNascita
 		\end{itemize}
 	\item \textbf{Dipartimento}(\underline{Codice}, Descrizione)
-	\item \textbf{RichiestaAcquisto}(\underline{Numero, \emph{Dipartimento}}, DataEmissione, Stato)
+	\item \textbf{RichiestaAcquisto}(\underline{Numero, \emph{Dipartimento}}, DataEmissione)
 		\begin{itemize}
-			\item NotNull: DataEmissione, Stato, Dipartimento
+			\item NotNull: DataEmissione, Dipartimento 
 			\item Chiave Esterna: Dipartimento si riferisce alla chiave primaria dell'entità Dipartimento 
 		\end{itemize}
 	\item \textbf{Include}(\underline{\emph{NumeroRichiesta, Articolo, Dipartimento}}, DataConsegna, Quantità, PrezzoUnitario)
