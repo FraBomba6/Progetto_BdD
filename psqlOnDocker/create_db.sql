@@ -188,19 +188,19 @@ execute procedure controlla_ordine_valido();
 
 -- Function that maps an order state to a request state (they differ by names, but its a one-to-one relation)
 create or replace function map_stati(ord stato_ordine)
-    returns stato_richiesta
+    returns stato_articolo
     language plpgsql
 as
 $$
 declare
-    ret stato_richiesta;
+    ret stato_articolo;
 begin
     if ord::text = 'emesso' then
-        ret = 'lavorazione';
-    elsif ord::text = 'spedito' then
-        ret = 'evasa';
-    else
-        ret = 'chiusa';
+        ret = 'ordinato';
+	elsif ord::text = 'annullato' then
+		ret = 'richiesto';
+	else
+        ret = ord::text;
     end if;
     return ret;
 end;

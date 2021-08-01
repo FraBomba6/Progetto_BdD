@@ -1,5 +1,5 @@
 DB_CREATION=create_db.sql
-MOCKUP_DATA=MockupDataGenerator/sql/
+MOCKUP_DATA=MockupDataGenerator/sql
 DATABASE=ufficioacquisti
 export PGPASSWORD='bdd2021'
 
@@ -7,7 +7,7 @@ echo "Creating db"
 createdb -U postgres -h localhost -p 15000 $DATABASE
 
 echo "Building relations..."
-psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$DB_CREATION"
+psql -U postgres -h localhost -p 15000 -d $DATABASE -f $DB_CREATION
 
 echo "Mockup data insertion..."
 psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Responsabile.sql"
