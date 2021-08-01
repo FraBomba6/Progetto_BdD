@@ -1,11 +1,10 @@
 start transaction;
 
 -- Creating enum types
-create type stato_richiesta as enum ('emessa', 'lavorazione', 'evasa', 'chiusa');
 create type classe_merceologica as enum ('cancelleria', 'libri', 'elettronica', 'informatica', 'pulizia', 'mobilia');
 create type unita_misura as enum ('cad', 'kg', 'm', 'l');
-create type stato_ordine as enum ('emesso', 'spedito', 'consegnato');
-
+create type stato_ordine as enum ('emesso', 'spedito', 'consegnato', 'annullato');
+create type stato_articolo as enum ('richiesto', 'ordinato', 'spedito', 'consegnato'); 
 
 create table Responsabile
 (
@@ -30,28 +29,13 @@ create table ProssimoCodiceRichiesta
     ProssimoNumero integer default 0
 );
 
-create or replace function nuova_entry_dipartimento()
-    returns trigger
-    language plpgsql as
-$$
-begin
-    insert into ProssimoCodiceRichiesta(Dipartimento) values (new.Codice);
-    return new;
-end;
-$$;
-
-create trigger nuova_entry_dip_trigger
-    after insert
-    on Dipartimento
-    for each row
-execute procedure nuova_entry_dipartimento();
 
 create table RichiestaAcquisto
 (
-    Numero        integer,
-    Dipartimento  char(6)         not null references Dipartimento on update cascade on delete restrict,
-    DataEmissione date            not null default current_date,
-    Stato         stato_richiesta not null default 'emessa',
+    Numero           integer,
+    Dipartimento     char(6)      not null references Dipartimento on update cascade on delete restrict,
+    DataEmissione    date         not null default current_date,
+	NumeroArticoli   integer      not null default 0,
     primary key (Numero, Dipartimento)
 );
 
@@ -102,14 +86,34 @@ create table Include
 (
     Dipartimento    char(6),
     NumeroRichiesta integer,
-    Articolo        integer references Articolo on update cascade on delete restrict,
-    Ordine          integer       default null references Ordine on update cascade on delete set null,
-    DataConsegna    date          default null,
-    Quantita        numeric                    not null check (Quantita > 0),
-    PrezzoUnitario  numeric(7, 2) default null,
+    Articolo        integer          references Articolo on update cascade on delete restrict,
+    Ordine          integer          default null references Ordine on update cascade on delete set null,
+    DataConsegna    date             default null,
+    Quantita        numeric          not null check (Quantita > 0),
+    PrezzoUnitario  numeric(7, 2)    default null, 
+	StatoArticolo   stato_articolo   not null default 'richiesto',
     primary key (Dipartimento, NumeroRichiesta, Articolo),
     foreign key (Dipartimento, NumeroRichiesta) references RichiestaAcquisto (Dipartimento, Numero) on update cascade on delete restrict
 );
+
+-- Trigger function that considers new department entries in order to keep track of the incremental id
+create or replace function nuova_entry_dipartimento()
+    returns trigger
+    language plpgsql as
+$$
+begin
+    insert into ProssimoCodiceRichiesta(Dipartimento) values (new.Codice);
+    return new;
+end;
+$$;
+
+-- Trigger is executed everytime a new Department is added
+create trigger nuova_entry_dip_trigger
+    after insert
+    on Dipartimento
+    for each row
+execute procedure nuova_entry_dipartimento();
+
 
 -- Trigger function that compute the final price for an entry in Include table
 create or replace function compute_final_price()
@@ -202,74 +206,6 @@ begin
 end;
 $$;
 
-
--- Trigger function that updates request state according to the states of the orders that satisfy the request when something on Ordine table is done
-create or replace function aggiorna_richiesta_da_ordine()
-    returns trigger
-    language plpgsql as
-$$
-begin
-    update richiestaacquisto
-    set stato = entry.stato
-    from (
-             select distinct I1.dipartimento, I1.numerorichiesta, map_stati(min(stato)) as stato
-             from include as I1
-                      inner join (select distinct dipartimento, numerorichiesta
-                                  from Include as I2
-                                  where ordine = new.Codice) as I2
-                                 on (I1.dipartimento, I1.numerorichiesta) = (I2.dipartimento, I2.numerorichiesta)
-                      inner join ordine on codice = I1.ordine
-             group by I1.dipartimento, I1.numerorichiesta
-         ) as entry
-    where richiestaacquisto.dipartimento = entry.Dipartimento
-      and RichiestaAcquisto.numero = entry.NumeroRichiesta;
-
-    return new;
-end;
-$$;
-
-
--- Trigger is executed everytime an order is inserted or updated
-create trigger aggiorna_stato_richiesta_da_ordine
-    after insert or update
-    on Ordine
-    for each row
-execute procedure aggiorna_richiesta_da_ordine();
-
--- Trigger function that updates request state according to the states of the orders that satisfy the request when something on Include table is done
-create or replace function aggiorna_richiesta_da_include()
-    returns trigger
-    language plpgsql as
-$$
-declare
-    newStato    stato_ordine;
-    newStatoMap stato_richiesta;
-begin
-    select CASE WHEN min(CASE WHEN stato is null then 0 else 1 END) = 0 THEN null ELSE min(stato) END
-    into newStato
-    from Include
-             join Ordine on Codice = Include.Ordine
-    where numerorichiesta = new.NumeroRichiesta
-      and dipartimento = new.Dipartimento;
-    if newStato is null then
-        newStatoMap = 'emessa';
-    else
-        newStatoMap = map_stati(newStato);
-    end if;
-    update richiestaacquisto
-    set stato = newStatoMap
-    where RichiestaAcquisto.dipartimento = new.Dipartimento
-      and RichiestaAcquisto.numero = new.NumeroRichiesta;
-    return new;
-end;
-$$;
-
--- Trigger is executed everytime an order is inserted or updated
-create trigger aggiorna_stato_richiesta_da_include
-    after insert or update of ordine
-    on Include
-    for each row
-execute procedure aggiorna_richiesta_da_include();
 
 
 -- Trigger function that gives incremental numbers to every department-related requests
