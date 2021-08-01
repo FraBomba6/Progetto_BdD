@@ -6,10 +6,10 @@ import random
 
 fake = Faker()
 
-StatoRic = ['emessa', 'lavorazione', 'evasa', 'chiusa']
+StatoArticolo = ['richiesto', 'ordinato', 'spedito', 'consegnato']
 Classe = ['cancelleria', 'pulizia', 'libri', 'elettronica', 'informatica', 'mobilia']
 UnitaDiMisura = ['cad', 'kg', 'm', 'l']
-StatoOrdine = ['emesso', 'spedito', 'consegnato']
+StatoOrdine = ['emesso', 'spedito', 'consegnato', 'annullato']
 
 rangePrezzi = {
     'cancelleria': {
@@ -61,7 +61,7 @@ def getDipartimento(responabile):
 def getRichiestaAcquisto(dipartimento):
     return {
         'Dipartimento': dipartimento,
-        'DataEmissione': fake.date_between(start_date='-365d').strftime('%Y-%m-%d')
+        'DataEmissione': fake.date_between(start_date='-280d').strftime('%Y-%m-%d')
     }
 
 
@@ -134,12 +134,12 @@ for i in range(30):
     listaDipartimento.append(getDipartimento(resp))
 
 listaRichiestaAcquisto = []
-for i in range(6000):
+for i in range(2400):
     dip = listaDipartimento[i % len(listaDipartimento)]['Codice']
     listaRichiestaAcquisto.append(getRichiestaAcquisto(dip))
 
 listaArticolo = []
-for i in range(500):
+for i in range(300):
     listaArticolo.append(getArticolo(i))
 
 listaFornitore = []
@@ -150,9 +150,9 @@ for i in range(5):
     listaRecapitoTelefonico.append(getRecapitoTelefonico(fornitore['PartitaIVA']))
 
 listaFornisce = []
-for i in range(750):
+for i in range(450):
     offset = 0
-    if i > 499:
+    if i > 299:
         offset = 1
     art = listaArticolo[i % len(listaArticolo)]
     fornitore = listaFornitore[(i + offset) % len(listaFornitore)]['PartitaIVA']
@@ -161,7 +161,7 @@ for i in range(750):
 listaInclude = []
 for i in range(len(listaRichiestaAcquisto)):
     numero = i // len(listaDipartimento)
-    articoliDaOrdinare = random.sample(listaArticolo, 10)
+    articoliDaOrdinare = random.sample(listaArticolo, 5)
     for articolo in articoliDaOrdinare:
         listaInclude.append(getInclude(listaRichiestaAcquisto[i]['Dipartimento'], numero, articolo['Codice']))
 
@@ -191,12 +191,14 @@ for i in range(len(listaRichiestaAcquisto)):
 # %%
 codiceOrdine = 0
 listaOrdine = []
+
 # Generate Ordine
 today = datetime.date.today()
-start = today - datetime.timedelta(days=365)
+start = today - datetime.timedelta(days=280)
 
 while start <= today:
-    orderDay = start + datetime.timedelta(days=7)
+    weekDelta = datetime.timedelta(days=7)
+    orderDay = start + weekDelta
     print(f"Week from {start} to {orderDay}")
     richiesteValide = []
     for richiesta in listaRichiestaAcquisto:
@@ -227,12 +229,12 @@ while start <= today:
                     listaOrdine.append(ordine)
                     ordiniSettimanali[fornitore['PartitaIVA']] = codiceOrdine
                     codiceOrdine += 1
-                for i in range(articolo[3] * 300, articolo[3] * 300 + 300):
+                for i in range(articolo[3] * 150, articolo[3] * 150 + 150):
                     if listaInclude[i]['Dipartimento'] == articolo[2] and listaInclude[i]['NumeroRichiesta'] == articolo[3] and listaInclude[i]['Articolo'] == articolo[0]:
                         listaInclude[i]['Ordine'] = ordiniSettimanali[articolo[1]]
                         break
 
-    start += datetime.timedelta(days=7)
+    start += weekDelta
 
 # %%
 for entryInclude in listaInclude:
@@ -251,6 +253,10 @@ for entryInclude in listaInclude:
     rangeMax = min(30, int(3000/prezzo))
     entryInclude['Quantita'] = random.randint(rangeMin, rangeMax)
 
+# %%
+tabelle['Ordine'] = listaOrdine
+for key, value in tabelle.items():
+    print(f"{key}: {len(value)}")
 
 # %%
 queries = []
