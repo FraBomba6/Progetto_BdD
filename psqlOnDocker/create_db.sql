@@ -283,7 +283,71 @@ create trigger imposta_numero_richiesta
     for each row
 execute procedure set_numero_richiesta();
 
+
+
+-- Aggiornamento del NumeroArticoli di una Richiesta d'Acquisto all'inserimento di nuove entry in Include
+
+create or replace function aumenta_numero_articoli_da_include()
+	returns trigger
+	language plpgsql as
+$$
+declare
+	n_art integer;
+begin
+	update RichiestaAcquisto set NumeroArticoli = NumeroArticoli + new.Quantita where Dipartimento=new.Dipartimento and Numero=new.NumeroRichiesta;
+	return new;
+end;
+$$;
+
+create trigger numero_articoli_aumenta
+	before insert
+	on Include
+	for each row
+execute procedure aumenta_numero_articoli_da_include();
+
+
+
+-- Aggiornamento del NumeroArticoli di una Richiesta d'Acquisto alla rimozione di entry in Include
+
+create or replace function riduci_numero_articoli_da_include()
+	returns trigger
+	language plpgsql as
+$$
+declare
+	n_art integer;
+begin
+	update RichiestaAcquisto set NumeroArticoli = NumeroArticoli - new.Quantita where Dipartimento=old.Dipartimento and Numero=old.NumeroRichiesta;
+	return old;
+end;
+$$;
+
+create trigger numero_articoli_riduci
+	before delete 
+	on Include
+	for each row
+execute procedure riduci_numero_articoli_da_include();
+
+
+
+-- Aggiornamento del NumeroArticoli di una Richiesta d'Acquisto alla modifica delle entry di include
+
+create or replace function aggiorna_numero_articoli_da_include()
+	returns trigger
+	language plpgsql as
+$$
+declare
+	n_art integer;
+begin
+	update RichiestaAcquisto set NumeroArticoli = NumeroArticoli - old.Quantita where Dipartimento=old.Dipartimento and Numero=old.NumeroRichiesta;
+	update RichiestaAcquisto set NumeroArticoli = NumeroArticoli + new.Quantita where Dipartimento=new.Dipartimento and Numero=new.NumeroRichiesta;
+	return new;
+end;
+$$;
+
+create trigger numero_articoli_aggiorna
+	after update 
+	on Include
+	for each row
+execute procedure aggiorna_numero_articoli_da_include();
+
 commit;
-
-
-
