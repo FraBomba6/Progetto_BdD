@@ -186,6 +186,9 @@ create trigger controlla_fornitore
     for each row
 execute procedure controlla_ordine_valido();
 
+
+
+
 -- Function that maps an order state to a request state (they differ by names, but its a one-to-one relation)
 create or replace function map_stati(ord stato_ordine)
     returns stato_articolo
@@ -205,6 +208,51 @@ begin
     return ret;
 end;
 $$;
+
+
+-- Aggiornamento dello stato dei prodotti associati ad un ordine al cambio di stato dell'ordine
+create or replace function articolo_stato_update_ordine()
+	returns trigger
+	language plpgsql as
+$$
+declare
+	new_stato stato_articolo;
+begin
+	new_stato = map_stati(new.Stato);
+	update Include set StatoArticolo = new_stato where Ordine=new.Codice;
+	return new;
+end;
+$$;
+
+create trigger aggiorna_stato_articolo_da_ordine
+	after update of Stato
+	on Ordine
+	for each row
+execute procedure articolo_stato_update_ordine();
+
+
+-- Aggiornamento dello stato di una entry include al cambio di ordine
+create or replace function articolo_stato_update_include()
+	returns trigger
+	language plpgsql as
+$$
+declare
+	new_stato stato_articolo;
+	stato_ord stato_ordine;
+begin
+	select Stato into stato_ord from Ordine where Codice=new.Ordine;	
+	new_stato = map_stati(stato_ord);
+	update Include set StatoArticolo=new_stato where Ordine=new.Ordine;
+	return new;
+end;
+$$;
+
+
+create trigger aggiorna_stato_articolo_da_include
+	after update of Ordine
+	on Include
+	for each row
+execute procedure articolo_stato_update_include();
 
 
 
@@ -236,4 +284,6 @@ create trigger imposta_numero_richiesta
 execute procedure set_numero_richiesta();
 
 commit;
+
+
 

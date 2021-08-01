@@ -4,6 +4,7 @@ DATABASE=ufficioacquisti
 export PGPASSWORD='bdd2021'
 
 echo "Creating db"
+psql -U postgres -h localhost -p 15000 -c "drop database if exists $DATABASE"
 createdb -U postgres -h localhost -p 15000 $DATABASE
 
 echo "Building relations..."
