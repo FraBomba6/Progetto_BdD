@@ -285,7 +285,7 @@ Inoltre, si evidenzia come sia la **data di consegna di un articolo** che il **p
 
 ### Regole di derivazione
 
-Il diagramma presenta due attributi derivati, ovvero **Stato Articolo** e **Numero Articoli**. Il primo è relativo alla relazione *Include* e viene calcolato valutando lo stato di avanzamento dell'ordine associato. Il secondo, invece, è relativo all'entità Richiesta d'Acquisto e viene calcolato contando gli articoli associati ad una richiesta.
+Il diagramma presenta due attributi derivati, ovvero **Stato Articolo** e **Numero Articoli**. Il primo è relativo alla relazione *Include* e viene calcolato valutando lo stato di avanzamento dell'ordine associato. Il secondo, invece, è relativo all'entità Richiesta d'Acquisto e viene calcolato contando gli articoli associati ad una richiesta (considerandone la rispettiva quantità ordinata).
 
 ### Considerazioni
 
@@ -332,9 +332,7 @@ Si effettua, quindi, un'analisi delle ridondanze in merito agli attributi deriva
 
 Il primo, è coinvolto nelle operazioni di:
 
-- Inserimento di una Richiesta d'Acquisto [`60/settimana`];
 - Aggiornamento dello stato di un ordine [`2/settimana`];
-- Inserimento di un nuovo Ordine [`5/settimana`];
 - Visualizzazione degli articoli di una Richiesta d'Acquisto [`180/settimana`]
 
 Il secondo, invece, è coinvolto nelle operazioni di:
@@ -491,7 +489,7 @@ Il diagramma presenta una relazione binaria **Fornisce** che coinvolge le entit�
 
 Il diagramma ER presenta una relazione ternaria **Include** che coinvolge le entità **Richiesta d'Acquisto**, **Articolo** e **Ordine**. In particolare, la partecipazione delle entità Richiesta d'Acquisto e Articolo è di tipo `(1, N)`, mentre quella dell'entità Ordine è `(0, N)`: questo perché una richiesta non può essere vuota e un articolo può essere contenuto in una o più richieste, mentre un articolo appartenente ad una richiesta può non essere necessariamente incluso in un ordine. 
 
-Al fine di eliminare la relazione ternaria, si sceglie di reificarla ad entità in relazione con **Richiesta d'Acquisto**, **Articolo** ed **Ordine**, avente come attributi quelli che precedentemente individuato rispetto alla relazione.
+Al fine di eliminare la relazione ternaria, si sceglie di reificarla ad entità in relazione con **Richiesta d'Acquisto**, **Articolo** ed **Ordine**, avente come attributi quelli precedentemente individuati rispetto alla relazione.
 
 ### Valutazione degli attributi composti
 
@@ -516,7 +514,7 @@ Sulla base delle analisi e osservazioni effettuate, si provvede alla ristruttura
 
 ## Scelta degli identificatori primari
 
-Non essendovi entità che presentano più indetificatori primari candidati, non si attuano decisioni aggiuntive e si sceglie di utilizzare le chiavi proposte dal diagramma.
+Non essendovi entità che presentano più identificatori primari candidati, non si attuano decisioni aggiuntive e si sceglie di utilizzare le chiavi proposte dal diagramma.
 
 ## Traduzione verso il modello logico-relazionale
 
@@ -558,14 +556,14 @@ Partendo dal diagramma ER ristrutturato, è stato prodotto il corrispondente sch
 			\item NotNull: Nome, Cognome, DataNascita, LuogoNascita
 		\end{itemize}
 	\item \textbf{Dipartimento}(\underline{Codice}, Descrizione)
-	\item \textbf{RichiestaAcquisto}(\underline{Numero, \emph{Dipartimento}}, DataEmissione)
+	\item \textbf{RichiestaAcquisto}(\underline{Numero, \emph{Dipartimento}}, DataEmissione, NumeroArticoli)
 		\begin{itemize}
-			\item NotNull: DataEmissione, Dipartimento 
+			\item NotNull: DataEmissione, Dipartimento, NumeroArticoli
 			\item Chiave Esterna: Dipartimento si riferisce alla chiave primaria dell'entità Dipartimento 
 		\end{itemize}
-	\item \textbf{Include}(\underline{\emph{NumeroRichiesta, Articolo, Dipartimento}}, DataConsegna, Quantità, PrezzoUnitario)
+	\item \textbf{Include}(\underline{\emph{NumeroRichiesta, Articolo, Dipartimento}}, DataConsegna, Quantità, PrezzoUnitario, StatoArticolo)
 		\begin{itemize}
-			\item NotNull: Quantità, PrezzoUnitario, NumeroRichiesta, Dipartimento, Articolo
+			\item NotNull: Quantità, PrezzoUnitario, NumeroRichiesta, Dipartimento, Articolo, StatoArticolo
 			\item Chiave Esterna: NumeroRichiesta e Dipartimento si riferiscono alla chiave primaria dell'entità RichiestaAcquisto, Articolo si riferisce alla chiave primaria dell'entità Articolo
 		\end{itemize}
 	\item \textbf{Articolo}(\underline{Codice}, Descrizione, Classe, UnitàDiMisura)
