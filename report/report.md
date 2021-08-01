@@ -343,6 +343,8 @@ Il secondo, invece, è coinvolto nelle operazioni di:
 - Inserimento di una Richiesta d'Acquisto [`60/settimana`].
 
 
+\newpage
+
 ### Stato Articolo
 
 Per ogni operazione, si prevedono gli accessi seguenti:
@@ -354,42 +356,15 @@ Per ogni operazione, si prevedono gli accessi seguenti:
 
 \begin{table}[H]
 \centering
-\caption {\textbf{Inserimento di una Richiesta d'Acquisto}}
-\begin{tabular}{|p{0.20\textwidth}|l|l|l|l|l|}
-\cline{3-6}
-\multicolumn{2}{l|}{} & \multicolumn{2}{|l|}{\textbf{Presenza di attributo derivato}}  & \multicolumn{2}{|l|}{\textbf{Assenza di attributo derivato}}   \\ \cline{1-6}
-\textit{Concetto} & \textit{Tipo} & \textit{Accessi} & \textit{Tipo di accesso} & \textit{Accessi} & \textit{Tipo di accesso}        \\ \cline{1-6}
-Richiesta d'Acquisto &     E       &         1         &             W            &        -         &          -                    \\ \cline{1-6}
-Richiesta d'Acquisto &     E       &         1         &             R            &        -         &          -                    \\ \cline{1-6}
-Include              &     R       &         5         &             W            &        -         &          -                	 \\ \cline{1-6} 
-\end{tabular}
-\end{table}
-
-\begin{table}[H]
-\centering
 \caption {\textbf{Aggiornamento dello stato di un ordine}}
 \begin{tabular}{|p{0.20\textwidth}|l|l|l|l|l|}
 \cline{3-6}
 \multicolumn{2}{l|}{} & \multicolumn{2}{|l|}{\textbf{Presenza di attributo derivato}}  & \multicolumn{2}{|l|}{\textbf{Assenza di attributo derivato}}   \\ \cline{1-6}
 \textit{Concetto} & \textit{Tipo} & \textit{Accessi} & \textit{Tipo di accesso} & \textit{Accessi} & \textit{Tipo di accesso}        \\ \cline{1-6}
-Ordine            &     E         &         1        &             W            &        -         &          -                      \\ \cline{1-6}
+Ordine            &     E         &         1        &             W            &        1         &          W                      \\ \cline{1-6}
 Include           &     R         &         60       &             W            &        -         &          -                      \\ \cline{1-6}
 \end{tabular}
 \end{table}
-
-
-\begin{table}[H]
-\centering
-\caption {\textbf{Inserimento di un nuovo ordine}}
-\begin{tabular}{|p{0.20\textwidth}|l|l|l|l|l|}
-\cline{3-6}
-\multicolumn{2}{l|}{} & \multicolumn{2}{|l|}{\textbf{Presenza di attributo derivato}}  & \multicolumn{2}{|l|}{\textbf{Assenza di attributo derivato}}   \\ \cline{1-6}
-\textit{Concetto} & \textit{Tipo} & \textit{Accessi} & \textit{Tipo di accesso} & \textit{Accessi} & \textit{Tipo di accesso}        \\ \cline{1-6}
-Ordine            &     E         &         1        &             W            &        -         &          -                      \\ \cline{1-6}
-Include           &     R         &         60       &             W            &        -         &          -                      \\ \cline{1-6}
-\end{tabular}
-\end{table}
-
 
 \begin{table}[H]
 \centering
@@ -408,27 +383,15 @@ Ordine            &     E         &         -        &             -            
 
 Considerando la tavola dei volumi riportata precedentemente, si osserva quanto segue: 
 
-- L'operazione di *Inserimento di una Richiesta d'Acquisto* considera:
-	+ 6 scritture ed 1 lettura in caso di presenza dell'attributo derivato
-	+ 0 scritture e letture in caso di assenza dell'attributo derivato 
-
-|
-
 - L'operazione di *Aggiornamento dello stato di un Ordine* considera: 
-	+ 0 letture e 61 scritture in caso di presenza dell'attributo derivato
-	+ 0 scritture e lettura in caso di assenza dell'attributo derivato
+	+ 61 scritture e 0 letture in caso di presenza dell'attributo derivato
+	+ 1 scrittura e 0 letture in caso di assenza dell'attributo derivato
 
 |
 
-- L'operazione di *Inserimento di un nuovo ordine* considera:
-	+ 0 letture e 61 scritture in caso di presenza dell'attributo derivato
-	+ 0 scritture e letture in caso di assenza dell'attributo derivato
-
-|
-
-- L'operazione di *Visualizzazione degli articolo di una Richiesta d'Acquisto* considera:
-	+ 6 letture e 0 scritture in caso di presenza dell'attributo derivato
-	+ 11 letture e 0 scritture in caso di assenza dell'attributo derivato
+- L'operazione di *Visualizzazione degli articoli di una Richiesta d'Acquisto* considera:
+	+ 0 scritture e 6 letture in caso di presenza dell'attributo derivato
+	+ 0 scritture e 11 letture in caso di assenza dell'attributo derivato
 
 |
 
@@ -436,15 +399,17 @@ Applicando alle scritture un peso doppio rispetto a quello delle letture e consi
 
 Nel caso di **presenza** dell'attributo derivato: 
 
-$60 \cdot (6 \cdot 2 + 1 \cdot 1) \; + \; 2 \cdot (61 \cdot 2 + 0 \cdot 1) \; + \; 5 \cdot (61 \cdot 2 + 0 \cdot 1) \; + \; 180 \cdot (0 \cdot 2 + 6 \cdot 1) = 780 + 244 + 610 + 1080 = 2714$
+$2 \cdot (61 \cdot 2 + 0 \cdot 1) \; + \; 180 \cdot (0 \cdot 2 + 6 \cdot 1) = 244 + 1080 = 1324$
 
 |
 
 Nel caso di **assenza** dell'attributo derivato: 
 
-$180 \cdot (0 \cdot 2 + 11 \cdot 1) = 1980$
+$2 \cdot (1 \cdot 2 + 0 \cdot 1) \; + \; 180 \cdot (0 \cdot 2 + 11 \cdot 1) = 4 + 1980 = 1984$
 
-Sulla base dei risultati ottenuti si sceglie, quindi, di non mantenere l'attributo derivato, procedendone alla rimozione dalla relazione *Include*.
+Sulla base dei risultati ottenuti si sceglie, quindi, di mantenere l'attributo derivato, reificandolo ad attributo della relazione *Include*.
+
+\newpage
 
 ### Numero Articoli
 
@@ -474,23 +439,25 @@ Include              &     R      &        -         &             -            
 \cline{3-6}
 \multicolumn{2}{l|}{} & \multicolumn{2}{|l|}{\textbf{Presenza di attributo derivato}}  & \multicolumn{2}{|l|}{\textbf{Assenza di attributo derivato}}   \\ \cline{1-6}
 \textit{Concetto} & \textit{Tipo} & \textit{Accessi} & \textit{Tipo di accesso} & \textit{Accessi} & \textit{Tipo di accesso}      \\ \cline{1-6}
-Richiesta d'Acquisto &     E      &        1         &             R            &        -         &          -                    \\ \cline{1-6}
-Include              &     R      &        1         &             W            &        -         &          -                    \\ \cline{1-6}
+Richiesta d'Acquisto &     E      &        1         &             R            &        1         &          R                    \\ \cline{1-6}
+Richiesta d'Acquisto &     E      &        2         &             W            &        1         &          W                    \\ \cline{1-6}
+Include              &     R      &        5         &             R            &        -         &          -                    \\ \cline{1-6}
+Include              &     R      &        5         &             W            &        5         &          W                    \\ \cline{1-6}
 \end{tabular}
 \end{table}
 ```
 
 Considerando la tavola dei volumi riportata precedentemente, si osserva quanto segue: 
 
-- L'operazione di *Visualizzione delle informazioni relative ad una Richiesta d'Acquisto* considera:
+- L'operazione di *Visualizzazione delle informazioni relative ad una Richiesta d'Acquisto* considera:
 	+ 0 scritture ed 1 lettura in caso di presenza dell'attributo derivato
 	+ 0 scritture e 6 letture in caso di assenza dell'attributo derivato 
 
 |
 
 - L'operazione di *Inserimento di una Richiesta d'Acquisto* considera: 
-	+ 1 lettura e 1 scrittura in caso di presenza dell'attributo derivato
-	+ 0 scritture e letture in caso di assenza dell'attributo derivato
+	+ 7 scritture e 6 letture in caso di presenza dell'attributo derivato
+	+ 6 scritture e 1 lettura in caso di assenza dell'attributo derivato
 
 |
 
@@ -498,15 +465,17 @@ Applicando alle scritture un peso doppio rispetto a quello delle letture e consi
 
 Nel caso di **presenza** dell'attributo derivato: 
 
-$120 \cdot (0 \cdot 2 + 1 \cdot 1) \; + \; 60 \cdot (1 \cdot 2 + 1 \cdot 1) = 120 + 180  = 300$
+$120 \cdot (0 \cdot 2 + 1 \cdot 1) \; + \; 60 \cdot (7 \cdot 2 + 6 \cdot 1) = 120 + 1200  = 1320$
 
 |
 
 Nel caso di **assenza** dell'attributo derivato: 
 
-$120 \cdot (0 \cdot 2 + 6 \cdot 1)  = 720$
+$120 \cdot (0 \cdot 2 + 6 \cdot 1) \; + \; 60 \cdot (6 \cdot 2 + 1 \cdot 1)  = 720 + 780 = 1500$
 
 Sulla base dei risultati ottenuti si sceglie, quindi, di mantenere l'attributo derivato, procedendone alla reifica ad attributo nell'entità *Richiesta d'Acquisto*.
+
+\newpage
 
 ## Eliminazione delle generalizzazioni
 
@@ -531,6 +500,8 @@ L'unico attributo composto presente nel diagramma è *Luogo di Nascita* in rifer
 ### Eliminazione di attributi multivalore
 
 Il diagramma presenta un attributo multivalore *Recapiti Telefonici* in riferimento all'entità **Fornitore**. Questo, infatti, può avere uno o più contatti di riferimento. L'attributo multivalore viene, conseguentemente, reificato ad entità.
+
+\newpage
 
 ### Ristrutturazione del diagramma ER
 
