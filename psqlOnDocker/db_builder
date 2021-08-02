@@ -1,3 +1,5 @@
+#!/bin/bash
+
 DB_CREATION=create_db.sql
 MOCKUP_DATA=MockupDataGenerator/sql
 DATABASE=ufficioacquisti

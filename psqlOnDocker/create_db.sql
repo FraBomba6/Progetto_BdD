@@ -1,10 +1,21 @@
 start transaction;
 
--- Creating enum types
+
+
+--      +----------+
+--      |   ENUM   |
+--      +----------+
+
 create type classe_merceologica as enum ('cancelleria', 'libri', 'elettronica', 'informatica', 'pulizia', 'mobilia');
 create type unita_misura as enum ('cad', 'kg', 'm', 'l');
 create type stato_ordine as enum ('emesso', 'spedito', 'consegnato', 'annullato');
 create type stato_articolo as enum ('richiesto', 'ordinato', 'spedito', 'consegnato'); 
+
+
+
+--      +-----------+
+--      |  TABELLE  |
+--      +-----------+
 
 create table Responsabile
 (
@@ -14,6 +25,7 @@ create table Responsabile
     DataNascita   date not null,
     LuogoNascita  text not null
 );
+
 
 create table Dipartimento
 (
@@ -48,6 +60,7 @@ create table Articolo
     UnitaDiMisura unita_misura        not null
 );
 
+
 create table Fornitore
 (
     PartitaIVA char(13) primary key,
@@ -56,11 +69,13 @@ create table Fornitore
     FAX        varchar(15)
 );
 
+
 create table RecapitoTelefonico
 (
     NumeroTelefono varchar(15) primary key,
     Fornitore      char(13) not null references Fornitore on update cascade on delete cascade
 );
+
 
 create table Fornisce
 (
@@ -82,6 +97,7 @@ create table Ordine
     DataEmissione date         not null default current_date
 );
 
+
 create table Include
 (
     Dipartimento    char(6),
@@ -96,7 +112,40 @@ create table Include
     foreign key (Dipartimento, NumeroRichiesta) references RichiestaAcquisto (Dipartimento, Numero) on update cascade on delete restrict
 );
 
--- Trigger function that considers new department entries in order to keep track of the incremental id
+
+
+--      +----------+
+--      | FUNZIONI |
+--      +----------+
+
+-- Mappa lo stato di un ordine al rispettivo stato articolo
+create or replace function map_stati(ord stato_ordine)
+    returns stato_articolo
+    language plpgsql
+as
+$$
+declare
+    ret stato_articolo;
+begin
+    if ord::text = 'emesso' then
+        ret = 'ordinato';
+	elsif ord::text = 'annullato' then
+		ret = 'richiesto';
+	else
+        ret = ord::text;
+    end if;
+    return ret;
+end;
+$$;
+
+
+
+--      +----------+
+--      | TRIGGERS |
+--      +----------+
+
+-- Funzione trigger per l'assegnazione di un codice incrementato 
+-- per dipartimento ad ogni Richiesta d'Acquisto
 create or replace function nuova_entry_dipartimento()
     returns trigger
     language plpgsql as
@@ -107,7 +156,7 @@ begin
 end;
 $$;
 
--- Trigger is executed everytime a new Department is added
+-- Il trigger viene eseguito dopo l'inserimento di un nuovo dipartimento
 create trigger nuova_entry_dip_trigger
     after insert
     on Dipartimento
@@ -115,7 +164,10 @@ create trigger nuova_entry_dip_trigger
 execute procedure nuova_entry_dipartimento();
 
 
--- Trigger function that compute the final price for an entry in Include table
+
+
+-- Funzione che calcola il prezzo unitario di un articolo considerando lo sconto
+-- e lo inserisce nella relativa entry di include
 create or replace function compute_final_price()
     returns trigger
     language plpgsql as
@@ -142,7 +194,7 @@ begin
 end;
 $$;
 
--- Trigger is executed everytime an order is associated with an article
+-- Il trigger viene eseguito dopo ogni associazione ad un ordine di un'entry di include
 create trigger final_price
     before insert or update of ordine
     on Include
@@ -150,7 +202,11 @@ create trigger final_price
 execute procedure compute_final_price();
 
 
--- Trigger function that checks if article's supplier is the same as the referenced order's supplier
+
+
+-- Funzione che verifica il rispetto del vincolo aziendale imposto
+-- Ovvero "il fornitore di un ordine deve essere lo stesso di tutti gli
+-- articoli inclusi nell'ordine"
 create or replace function controlla_ordine_valido()
     returns trigger
     language plpgsql as
@@ -179,7 +235,8 @@ begin
 end;
 $$;
 
--- Trigger is executed at every insertion or update on Include
+-- Il trigger viene eseguito ad ogni inserimento o aggiornamento di una entry
+-- di include
 create trigger controlla_fornitore
     before insert or update
     on Include
@@ -187,27 +244,6 @@ create trigger controlla_fornitore
 execute procedure controlla_ordine_valido();
 
 
-
-
--- Function that maps an order state to a request state (they differ by names, but its a one-to-one relation)
-create or replace function map_stati(ord stato_ordine)
-    returns stato_articolo
-    language plpgsql
-as
-$$
-declare
-    ret stato_articolo;
-begin
-    if ord::text = 'emesso' then
-        ret = 'ordinato';
-	elsif ord::text = 'annullato' then
-		ret = 'richiesto';
-	else
-        ret = ord::text;
-    end if;
-    return ret;
-end;
-$$;
 
 
 -- Aggiornamento dello stato dei prodotti associati ad un ordine al cambio di stato dell'ordine
@@ -224,6 +260,7 @@ begin
 end;
 $$;
 
+-- Il trigger viene eseguito dopo l'update dello stato di un ordine
 create trigger aggiorna_stato_articolo_da_ordine
 	after update of Stato
 	on Ordine
@@ -231,7 +268,9 @@ create trigger aggiorna_stato_articolo_da_ordine
 execute procedure articolo_stato_update_ordine();
 
 
--- Aggiornamento dello stato di una entry include al cambio di ordine
+
+
+-- Aggiornamento dello stato di una entry include al cambio dell'ordine associato 
 create or replace function articolo_stato_update_include()
 	returns trigger
 	language plpgsql as
@@ -247,7 +286,7 @@ begin
 end;
 $$;
 
-
+-- Il trigger viene eseguito dopo un update della colonna "Ordine" in Include 
 create trigger aggiorna_stato_articolo_da_include
 	after update of Ordine
 	on Include
@@ -256,7 +295,8 @@ execute procedure articolo_stato_update_include();
 
 
 
--- Trigger function that gives incremental numbers to every department-related requests
+
+-- Funzione che assegna un codice incrementato per dipartimento ad ogni richiesta
 create or replace function set_numero_richiesta()
     returns trigger
     language plpgsql as
@@ -276,7 +316,7 @@ begin
 end;
 $$;
 
--- Trigger is executed on every insertion inside richiestaacquisto
+-- Il trigger viene eseguito ad ogni nuovo inserimento in RichiestaAcquisto
 create trigger imposta_numero_richiesta
     before insert
     on richiestaacquisto
@@ -285,8 +325,8 @@ execute procedure set_numero_richiesta();
 
 
 
--- Aggiornamento del NumeroArticoli di una Richiesta d'Acquisto all'inserimento di nuove entry in Include
 
+-- Aggiornamento del NumeroArticoli di una Richiesta d'Acquisto all'inserimento di nuove entry in Include
 create or replace function aumenta_numero_articoli_da_include()
 	returns trigger
 	language plpgsql as
@@ -299,6 +339,7 @@ begin
 end;
 $$;
 
+-- Il trigger viene eseguito ogni volta che viene aggiunta una entry in Include
 create trigger numero_articoli_aumenta
 	before insert
 	on Include
@@ -307,8 +348,8 @@ execute procedure aumenta_numero_articoli_da_include();
 
 
 
--- Aggiornamento del NumeroArticoli di una Richiesta d'Acquisto alla rimozione di entry in Include
 
+-- Aggiornamento del NumeroArticoli di una Richiesta d'Acquisto alla rimozione di entry in Include
 create or replace function riduci_numero_articoli_da_include()
 	returns trigger
 	language plpgsql as
@@ -321,6 +362,7 @@ begin
 end;
 $$;
 
+-- Il trigger viene eseguto ogni volta che viene rimossa una entry da include
 create trigger numero_articoli_riduci
 	before delete 
 	on Include
@@ -329,8 +371,8 @@ execute procedure riduci_numero_articoli_da_include();
 
 
 
--- Aggiornamento del NumeroArticoli di una Richiesta d'Acquisto alla modifica delle entry di include
 
+-- Aggiornamento del NumeroArticoli di una Richiesta d'Acquisto alla modifica delle entry di include
 create or replace function aggiorna_numero_articoli_da_include()
 	returns trigger
 	language plpgsql as
@@ -338,12 +380,16 @@ $$
 declare
 	n_art integer;
 begin
+	-- Si considera come uno spostamento di un'entry da una richiesta d'acquisto ad un'altra
+	-- Di conseguenza si decrementa il numero articoli della richiesta originaria
+	-- E si incrementa il numero articoli della nuova Richiesta Acquisto
 	update RichiestaAcquisto set NumeroArticoli = NumeroArticoli - old.Quantita where Dipartimento=old.Dipartimento and Numero=old.NumeroRichiesta;
 	update RichiestaAcquisto set NumeroArticoli = NumeroArticoli + new.Quantita where Dipartimento=new.Dipartimento and Numero=new.NumeroRichiesta;
 	return new;
 end;
 $$;
 
+-- Il trigger viene eseguito ogni volta che una entry di include viene modificata
 create trigger numero_articoli_aggiorna
 	after update 
 	on Include
@@ -351,3 +397,4 @@ create trigger numero_articoli_aggiorna
 execute procedure aggiorna_numero_articoli_da_include();
 
 commit;
+
