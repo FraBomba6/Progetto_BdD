@@ -198,7 +198,7 @@ Sulla base dei requisiti individuati, si descrivono le principali operazioni, co
 |:-|-|
 |Inserimento di una richiesta d'acquisto|60/settimana|
 |||
-|Aggiornamento dello stato di un ordine|2/settimana|
+|Aggiornamento dello stato di un ordine|10/settimana|
 |||
 |Visualizzazione delle informazioni relative ad una richiesta d'acquisto|120/settimana|
 |||
@@ -285,7 +285,7 @@ Inoltre, si evidenzia come sia la **data di consegna di un articolo** che il **p
 
 ### Regole di derivazione
 
-Il diagramma presenta due attributi derivati, ovvero **Stato Articolo** e **Numero Articoli**. Il primo è relativo alla relazione *Include* e viene calcolato valutando lo stato di avanzamento dell'ordine associato. Il secondo, invece, è relativo all'entità Richiesta d'Acquisto e viene calcolato contando gli articoli associati ad una richiesta (considerandone la rispettiva quantità ordinata).
+Il diagramma presenta due attributi derivati, ovvero **Data di Consegna** e **Numero Articoli**. Il primo è relativo alla relazione Include e viene derivato sulla base della data di consegna relativa all'ordine che soddisfa ciascun articolo. Il secondo, invece, è relativo all'entità Richiesta d'Acquisto e viene calcolato contando gli articoli associati ad una richiesta (considerandone la rispettiva quantità ordinata).
 
 ### Considerazioni
 
@@ -328,12 +328,12 @@ Al fine di valutare il mantenimento o l'eliminazione delle ridondanze presenti n
 
 Si fa riferimento, inoltre, alle operazioni frequenti riportate al punto [2.4](#op-frequenti).
 
-Si effettua, quindi, un'analisi delle ridondanze in merito agli attributi derivati **Stato Articolo** della relazione **Include** e **Numero Articoli** dell'entità **Richiesta d'Acquisto**. 
+Si effettua, quindi, un'analisi delle ridondanze in merito agli attributi derivati **Data di Consegna** della relazione **Include** e **Numero Articoli** dell'entità **Richiesta d'Acquisto**. 
 
 Il primo, è coinvolto nelle operazioni di:
 
-- Aggiornamento dello stato di un ordine [`2/settimana`];
-- Visualizzazione degli articoli di una Richiesta d'Acquisto [`180/settimana`]
+- Visualizzazione degli articoli contenuti in una richiesta d'acquisto [`180/settimana`]
+- Aggiornamento dello stato di un ordine [`10/settimana`]
 
 Il secondo, invece, è coinvolto nelle operazioni di:
 
@@ -343,26 +343,13 @@ Il secondo, invece, è coinvolto nelle operazioni di:
 
 \newpage
 
-### Stato Articolo
+### Data di Consegna 
 
 Per ogni operazione, si prevedono gli accessi seguenti:
 
-
 ```{=latex}
 
-% stato richiesta d'acquisto
-
-\begin{table}[H]
-\centering
-\caption {\textbf{Aggiornamento dello stato di un ordine}}
-\begin{tabular}{|p{0.20\textwidth}|l|l|l|l|l|}
-\cline{3-6}
-\multicolumn{2}{l|}{} & \multicolumn{2}{|l|}{\textbf{Presenza di attributo derivato}}  & \multicolumn{2}{|l|}{\textbf{Assenza di attributo derivato}}   \\ \cline{1-6}
-\textit{Concetto} & \textit{Tipo} & \textit{Accessi} & \textit{Tipo di accesso} & \textit{Accessi} & \textit{Tipo di accesso}        \\ \cline{1-6}
-Ordine            &     E         &         1        &             W            &        1         &          W                      \\ \cline{1-6}
-Include           &     R         &         60       &             W            &        -         &          -                      \\ \cline{1-6}
-\end{tabular}
-\end{table}
+% data di consegna
 
 \begin{table}[H]
 \centering
@@ -377,15 +364,22 @@ Ordine            &     E         &         -        &             -            
 \end{tabular}
 \end{table}
 
+\begin{table}[H]
+\centering
+\caption {\textbf{Aggiornamento dello stato di un ordine}}
+\begin{tabular}{|p{0.20\textwidth}|l|l|l|l|l|}
+\cline{3-6}
+\multicolumn{2}{l|}{} & \multicolumn{2}{|l|}{\textbf{Presenza di attributo derivato}}  & \multicolumn{2}{|l|}{\textbf{Assenza di attributo derivato}}   \\ \cline{1-6}
+\textit{Concetto} & \textit{Tipo} & \textit{Accessi} & \textit{Tipo di accesso} & \textit{Accessi} & \textit{Tipo di accesso}        \\ \cline{1-6}
+Ordine            &     E         &         1        &             W            &        1         &          W                      \\ \cline{1-6}
+Include           &     R         &         60       &             W            &        -         &          -                      \\ \cline{1-6}
+\end{tabular}
+\end{table}
+
+
 ```
 
 Considerando la tavola dei volumi riportata precedentemente, si osserva quanto segue: 
-
-- L'operazione di *Aggiornamento dello stato di un Ordine* considera: 
-	+ 61 scritture e 0 letture in caso di presenza dell'attributo derivato
-	+ 1 scrittura e 0 letture in caso di assenza dell'attributo derivato
-
-|
 
 - L'operazione di *Visualizzazione degli articoli di una Richiesta d'Acquisto* considera:
 	+ 0 scritture e 6 letture in caso di presenza dell'attributo derivato
@@ -393,19 +387,23 @@ Considerando la tavola dei volumi riportata precedentemente, si osserva quanto s
 
 |
 
+- L'operazione di *Aggiornamento dello stato di un Ordine* considera: 
+	+ 61 scritture e 0 letture in caso di presenza dell'attributo derivato
+	+ 1 scrittura e 0 letture in caso di assenza dell'attributo derivato
+
 Applicando alle scritture un peso doppio rispetto a quello delle letture e considerando la frequenza delle operazioni sopracitate si osservano i costi di seguito descritti:
 
 Nel caso di **presenza** dell'attributo derivato: 
 
-$2 \cdot (61 \cdot 2 + 0 \cdot 1) \; + \; 180 \cdot (0 \cdot 2 + 6 \cdot 1) = 244 + 1080 = 1324$
+$10 \cdot (61 \cdot 2 + 0 \cdot 1) \; + \; 180 \cdot (0 \cdot 2 + 6 \cdot 1) = 1220 + 1080 = 2300$
 
 |
 
 Nel caso di **assenza** dell'attributo derivato: 
 
-$2 \cdot (1 \cdot 2 + 0 \cdot 1) \; + \; 180 \cdot (0 \cdot 2 + 11 \cdot 1) = 4 + 1980 = 1984$
+$10 \cdot (1 \cdot 2 + 0 \cdot 1) \; + \; 180 \cdot (0 \cdot 2 + 11 \cdot 1) = 20 + 1980 = 2000$
 
-Sulla base dei risultati ottenuti si sceglie, quindi, di mantenere l'attributo derivato, reificandolo ad attributo della relazione *Include*.
+Sulla base dei risultati ottenuti si sceglie, quindi, di non mantenere l'attributo derivato.
 
 \newpage
 
@@ -561,16 +559,16 @@ Partendo dal diagramma ER ristrutturato, è stato prodotto il corrispondente sch
 			\item NotNull: DataEmissione, Dipartimento, NumeroArticoli
 			\item Chiave Esterna: Dipartimento si riferisce alla chiave primaria dell'entità Dipartimento 
 		\end{itemize}
-	\item \textbf{Include}(\underline{\emph{NumeroRichiesta, Articolo, Dipartimento}}, DataConsegna, Quantità, PrezzoUnitario, StatoArticolo)
+	\item \textbf{Include}(\underline{\emph{NumeroRichiesta, Articolo, Dipartimento}}, Quantità, PrezzoUnitario)
 		\begin{itemize}
-			\item NotNull: Quantità, PrezzoUnitario, NumeroRichiesta, Dipartimento, Articolo, StatoArticolo
+			\item NotNull: Quantità, PrezzoUnitario, NumeroRichiesta, Dipartimento, Articolo 
 			\item Chiave Esterna: NumeroRichiesta e Dipartimento si riferiscono alla chiave primaria dell'entità RichiestaAcquisto, Articolo si riferisce alla chiave primaria dell'entità Articolo
 		\end{itemize}
 	\item \textbf{Articolo}(\underline{Codice}, Descrizione, Classe, UnitàDiMisura)
 		\begin{itemize}
 			\item NotNull: Descrizione, Classe, UnitàDiMisura
 		\end{itemize}
-	\item \textbf{Ordine}(\underline{Codice}, Stato, DataEmissione)
+	\item \textbf{Ordine}(\underline{Codice}, Stato, DataEmissione, DataConsegna)
 		\begin{itemize}
 			\item NotNull: Stato, DataEmissione
 		\end{itemize}
@@ -611,7 +609,7 @@ Partendo dal diagramma ER ristrutturato, è stato prodotto il corrispondente sch
 		\end{itemize}
 	\item \textbf{I-O}
 		\begin{itemize}
-			\item Modifica: Include(\underline{\emph{NumeroRichiesta, Articolo, Dipartimento}}, \emph{Ordine}, DataConsegna, Quantità, PrezzoUnitario)
+			\item Modifica: Include(\underline{\emph{NumeroRichiesta, Articolo, Dipartimento}}, \emph{Ordine}, Quantità, PrezzoUnitario)
 			\item NotNull: Non vengono introdotti vincoli aggiuntivi rispetto a quelli già individuati 
 			\item Chiave Esterna: Ordine si riferisce alla chiave primaria dell'entità Ordine
 		\end{itemize}
@@ -621,7 +619,7 @@ Partendo dal diagramma ER ristrutturato, è stato prodotto il corrispondente sch
 		\end{itemize}
 	\item \textbf{Evade}
 		\begin{itemize}
-			\item Modifica: Ordine(\underline{Codice}, Stato, DataEmissione, \emph{Fornitore})
+			\item Modifica: Ordine(\underline{Codice}, Stato, DataEmissione, DataConsegna, \emph{Fornitore})
 			\item NotNull: Fornitore
 			\item Chiave Esterna: Fornitore si riferisce alla chiave primaria dell'entità Fornitore
 		\end{itemize}
