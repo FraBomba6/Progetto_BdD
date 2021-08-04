@@ -395,13 +395,13 @@ Applicando alle scritture un peso doppio rispetto a quello delle letture e consi
 
 Nel caso di **presenza** dell'attributo derivato: 
 
-$10 \cdot (61 \cdot 2 + 0 \cdot 1) \; + \; 180 \cdot (0 \cdot 2 + 6 \cdot 1) = 1220 + 1080 = 2300$
+$180 \cdot (0 \cdot 2 + 6 \cdot 1) \; + \; 10 \cdot (61 \cdot 2 + 0 \cdot 1) = 1080 + 1220 = 2300$
 
 |
 
 Nel caso di **assenza** dell'attributo derivato: 
 
-$10 \cdot (1 \cdot 2 + 0 \cdot 1) \; + \; 180 \cdot (0 \cdot 2 + 11 \cdot 1) = 20 + 1980 = 2000$
+$180 \cdot (0 \cdot 2 + 11 \cdot 1) \; + \; 10 \cdot (1 \cdot 2 + 0 \cdot 1) = 1980 + 20 = 2000$
 
 Sulla base dei risultati ottenuti si sceglie, quindi, di non mantenere l'attributo derivato.
 
@@ -527,7 +527,7 @@ Partendo dal diagramma ER ristrutturato, è stato prodotto il corrispondente sch
 |------------------------|:--------------------:|--------------|
 |Entità| - |Responsabile|
 |Entità| - |Dipartimento|
-|Entità| - |Dichiesta d'Acquisto|
+|Entità| - |Richiesta d'Acquisto|
 |Entità| - |Include|
 |Entità| - |Articolo|
 |Entità| - |Ordine|
