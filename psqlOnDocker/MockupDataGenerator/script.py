@@ -225,6 +225,8 @@ while start <= today:
             if fornitore['PartitaIVA'] == articolo[1]:
                 if fornitore['PartitaIVA'] not in ordiniSettimanali.keys():
                     ordine = getOrdine(fornitore['PartitaIVA'], orderDay)
+                    if ordine['Stato'] == 'spedito' or ordine['Stato'] == 'consegnato':
+                        ordine['DataConsegna'] = (datetime.datetime.strptime(ordine['DataEmissione'], '%Y-%m-%d') + datetime.timedelta(days=5)).strftime('%Y-%m-%d')
                     ordine['Codice'] = codiceOrdine
                     listaOrdine.append(ordine)
                     ordiniSettimanali[fornitore['PartitaIVA']] = codiceOrdine

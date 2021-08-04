@@ -213,6 +213,26 @@ create trigger controlla_fornitore
 execute procedure controlla_ordine_valido();
 
 
+-- Controlli per la rimozione di un ordine
+create or replace function rimuovi_ordine()
+    returns trigger
+    language plpgsql as
+$$
+begin
+    if old.stato = 'consegnato' or old.stato = 'spedito' then
+        raise exception 'Non puoi rimuovere questo ordine!';
+    elseif old.stato = 'emesso' then
+        old.stato = 'annullato';
+    end if;
+    update include set ordine=null where ordine=old.codice;
+    return old;
+end;
+$$;
+
+create trigger rimuovi_ordine
+    before delete on Ordine
+    for each row
+execute procedure rimuovi_ordine();
 
 
 -- Funzione che assegna un codice incrementato per dipartimento ad ogni richiesta
