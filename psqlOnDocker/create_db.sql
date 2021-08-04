@@ -1,7 +1,5 @@
 start transaction;
 
-
-
 --      +----------+
 --      |   ENUM   |
 --      +----------+
@@ -9,8 +7,6 @@ start transaction;
 create type classe_merceologica as enum ('cancelleria', 'libri', 'elettronica', 'informatica', 'pulizia', 'mobilia');
 create type unita_misura as enum ('cad', 'kg', 'm', 'l');
 create type stato_ordine as enum ('emesso', 'spedito', 'consegnato', 'annullato');
-create type stato_articolo as enum ('richiesto', 'ordinato', 'spedito', 'consegnato'); 
-
 
 
 --      +-----------+
@@ -104,39 +100,12 @@ create table Include
     NumeroRichiesta integer,
     Articolo        integer          references Articolo on update cascade on delete restrict,
     Ordine          integer          default null references Ordine on update cascade on delete set null,
-    DataConsegna    date             default null,
     Quantita        numeric          not null check (Quantita > 0),
     PrezzoUnitario  numeric(7, 2)    default null, 
-	StatoArticolo   stato_articolo   not null default 'richiesto',
     primary key (Dipartimento, NumeroRichiesta, Articolo),
     foreign key (Dipartimento, NumeroRichiesta) references RichiestaAcquisto (Dipartimento, Numero) on update cascade on delete restrict
 );
 
-
-
---      +----------+
---      | FUNZIONI |
---      +----------+
-
--- Mappa lo stato di un ordine al rispettivo stato articolo
-create or replace function map_stati(ord stato_ordine)
-    returns stato_articolo
-    language plpgsql
-as
-$$
-declare
-    ret stato_articolo;
-begin
-    if ord::text = 'emesso' then
-        ret = 'ordinato';
-	elsif ord::text = 'annullato' then
-		ret = 'richiesto';
-	else
-        ret = ord::text;
-    end if;
-    return ret;
-end;
-$$;
 
 
 
@@ -246,56 +215,6 @@ execute procedure controlla_ordine_valido();
 
 
 
--- Aggiornamento dello stato dei prodotti associati ad un ordine al cambio di stato dell'ordine
-create or replace function articolo_stato_update_ordine()
-	returns trigger
-	language plpgsql as
-$$
-declare
-	new_stato stato_articolo;
-begin
-	new_stato = map_stati(new.Stato);
-	update Include set StatoArticolo = new_stato where Ordine=new.Codice;
-	return new;
-end;
-$$;
-
--- Il trigger viene eseguito dopo l'update dello stato di un ordine
-create trigger aggiorna_stato_articolo_da_ordine
-	after update of Stato
-	on Ordine
-	for each row
-execute procedure articolo_stato_update_ordine();
-
-
-
-
--- Aggiornamento dello stato di una entry include al cambio dell'ordine associato 
-create or replace function articolo_stato_update_include()
-	returns trigger
-	language plpgsql as
-$$
-declare
-	new_stato stato_articolo;
-	stato_ord stato_ordine;
-begin
-	select Stato into stato_ord from Ordine where Codice=new.Ordine;	
-	new_stato = map_stati(stato_ord);
-	update Include set StatoArticolo=new_stato where Ordine=new.Ordine;
-	return new;
-end;
-$$;
-
--- Il trigger viene eseguito dopo un update della colonna "Ordine" in Include 
-create trigger aggiorna_stato_articolo_da_include
-	after update of Ordine
-	on Include
-	for each row
-execute procedure articolo_stato_update_include();
-
-
-
-
 -- Funzione che assegna un codice incrementato per dipartimento ad ogni richiesta
 create or replace function set_numero_richiesta()
     returns trigger
@@ -327,7 +246,7 @@ execute procedure set_numero_richiesta();
 
 
 -- Aggiornamento del NumeroArticoli di una Richiesta d'Acquisto all'inserimento di nuove entry in Include
-create or replace function aumenta_numero_articoli_da_include()
+create or replace function numero_articoli_aumenta()
 	returns trigger
 	language plpgsql as
 $$
@@ -344,13 +263,13 @@ create trigger numero_articoli_aumenta
 	before insert
 	on Include
 	for each row
-execute procedure aumenta_numero_articoli_da_include();
+execute procedure numero_articoli_aumenta();
 
 
 
 
 -- Aggiornamento del NumeroArticoli di una Richiesta d'Acquisto alla rimozione di entry in Include
-create or replace function riduci_numero_articoli_da_include()
+create or replace function numero_articoli_riduci()
 	returns trigger
 	language plpgsql as
 $$
@@ -367,13 +286,13 @@ create trigger numero_articoli_riduci
 	before delete 
 	on Include
 	for each row
-execute procedure riduci_numero_articoli_da_include();
+execute procedure numero_articoli_riduci();
 
 
 
 
 -- Aggiornamento del NumeroArticoli di una Richiesta d'Acquisto alla modifica delle entry di include
-create or replace function aggiorna_numero_articoli_da_include()
+create or replace function numero_articoli_aggiorna()
 	returns trigger
 	language plpgsql as
 $$
@@ -394,7 +313,7 @@ create trigger numero_articoli_aggiorna
 	after update 
 	on Include
 	for each row
-execute procedure aggiorna_numero_articoli_da_include();
+execute procedure numero_articoli_aggiorna();
 
 commit;
 
