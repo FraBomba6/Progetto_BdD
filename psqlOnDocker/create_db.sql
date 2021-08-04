@@ -90,7 +90,8 @@ create table Ordine
     Codice        serial primary key,
     Fornitore     char(13)     not null references Fornitore on update cascade on delete restrict,
     Stato         stato_ordine not null default 'emesso',
-    DataEmissione date         not null default current_date
+    DataEmissione date         not null default current_date,
+	DataConsegna  date         default null
 );
 
 
@@ -296,7 +297,7 @@ $$
 declare
 	n_art integer;
 begin
-	update RichiestaAcquisto set NumeroArticoli = NumeroArticoli - new.Quantita where Dipartimento=old.Dipartimento and Numero=old.NumeroRichiesta;
+	update RichiestaAcquisto set NumeroArticoli = NumeroArticoli - old.Quantita where Dipartimento=old.Dipartimento and Numero=old.NumeroRichiesta;
 	return old;
 end;
 $$;

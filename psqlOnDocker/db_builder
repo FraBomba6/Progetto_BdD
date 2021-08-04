@@ -3,23 +3,23 @@
 DB_CREATION=create_db.sql
 MOCKUP_DATA=MockupDataGenerator/sql
 DATABASE=ufficioacquisti
-export PGPASSWORD='bdd2021'
+export PGPASSWORD="bdd2021"
 
 echo "Creating db"
-psql -U postgres -h localhost -p 15000 -c "drop database if exists $DATABASE"
-createdb -U postgres -h localhost -p 15000 $DATABASE
+(psql -U postgres -h localhost -p 15000 -c "drop database if exists $DATABASE") > /dev/null
+(createdb -U postgres -h localhost -p 15000 $DATABASE) > /dev/null
 
 echo "Building relations..."
-psql -U postgres -h localhost -p 15000 -d $DATABASE -f $DB_CREATION
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f $DB_CREATION) > /dev/null
 
 echo "Mockup data insertion..."
-psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Responsabile.sql"
-psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Dipartimento.sql"
-psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Articolo.sql"
-psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Fornitore.sql"
-psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/RecapitoTelefonico.sql"
-psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Fornisce.sql"
-psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/RichiestaAcquisto.sql"
-psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Ordine.sql"
-psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Include.sql"
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Responsabile.sql") > /dev/null
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Dipartimento.sql") > /dev/null
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Articolo.sql") > /dev/null
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Fornitore.sql") > /dev/null
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/RecapitoTelefonico.sql") > /dev/null
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Fornisce.sql") > /dev/null
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/RichiestaAcquisto.sql") > /dev/null
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Ordine.sql") > /dev/null
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Include.sql") > /dev/null
 
