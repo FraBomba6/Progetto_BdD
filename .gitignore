@@ -4,6 +4,7 @@ notes.txt
 psqlOnDocker/MockupDataGenerator/.idea
 psqlOnDocker/MockupDataGenerator/env
 psqlOnDocker/MockupDataGenerator/__pycache__
+psqlOnDocker/db
 psqlOnDocker/.idea
 psqlOnDocker/update_ordini.sql
 .Rproj.user
