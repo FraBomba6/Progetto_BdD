@@ -2,6 +2,7 @@
 .DS_Store
 notes.txt
 psqlOnDocker/MockupDataGenerator/.idea
+psqlOnDocker/db/
 psqlOnDocker/MockupDataGenerator/env
 psqlOnDocker/MockupDataGenerator/__pycache__
 psqlOnDocker/db

@@ -16,6 +16,7 @@ header-includes:
   - \usepackage{xcolor}
   - \usepackage[normalem]{ulem}
   - \usepackage{float}
+  - \usepackage{csvsimple}
   - \usepackage{array}
   - \usepackage{multirow} 
   - \usepackage{bigstrut}
@@ -663,10 +664,28 @@ Si osserva come non sia possibile garantire il rispetto del Vincolo di Integrit√
 	- Fornisce
 	- Ordine
 
+## Indici
+
+### Indicizzazione di Include su Ordine
+
+**Operazioni di ricerca**
+
+
+**Operazioni di modifica**
+
+
+
+### Indicizzazione di DataEmissione su RichiestaAcquisto 
+
+**Operazioni di ricerca**
+
+
+**Operazioni di modifica**
+
 
 # SQL
-- Definizione delle relazioni in SQL
 
+- Definizione delle relazioni in SQL
 
 # Analisi dei dati
 

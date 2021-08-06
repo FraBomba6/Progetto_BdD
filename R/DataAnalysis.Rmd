@@ -5,12 +5,14 @@ editor_options:
   chunk_output_type: inline
 ---
 
+
 ```{r Libraries}
 library("ggplot2")
 library("RPostgreSQL")
 library("dplyr")
 options(digits = 3)
 ```
+
 ```{r Connection setup}
 drv <- dbDriver("PostgreSQL")
 con <- dbConnect(
@@ -22,6 +24,9 @@ con <- dbConnect(
   password = "bdd2021"
 )
 ```
+
+Valutazione in merito all'inserimento di un indice in relazione agli attributi "NumeroRichiesta" e "Dipartimento" dell'entità Include.
+
 ```{r}
 query <- "explain analyse select * from Include where numerorichiesta=0 and dipartimento='THQQYK'"
 senzaIndice <- data.frame()
@@ -50,6 +55,10 @@ conIndice[, 1] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 1
 conIndice[, 2] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 2]))
 
 ```
+
+Valutazione in merito all'inserimento di un indice in relazione all'attributo "Ordine" dell'entità Include.
+Operazioni di ricerca.
+
 ```{r}
 nomeIndice <- "Indice_Include.Ordine_Select"
 query <- "explain analyse select * from include where ordine=5;"
@@ -90,12 +99,17 @@ risultato <- rbind(senzaIndice, conIndice)
 
 write.csv2(risultato, paste("./R/csv/", paste(nomeIndice, ".csv", sep = ""), sep = ""))
 ```
+
 ```{r}
 plot <- ggplot(risultato, aes(Planning, Execution, color=Tipo)) +
         geom_point() +
         geom_smooth(method = "lm")
 ggsave(paste("./R/plots/", paste(nomeIndice, ".png", sep = ""), sep = ""))
 ```
+
+Valutazione in merito all'inserimento di un indice in relazione all'attributo "Ordine" dell'entità Include.
+Operazioni di aggiornamento.
+
 ```{r}
 nomeIndice <- "Indice_Include.Ordine_Update"
 prep_query <- "update include set ordine=NULL where Dipartimento='WLIQJC' and NumeroRichiesta=79 and Articolo = 102;"
@@ -139,9 +153,115 @@ risultato <- rbind(senzaIndice, conIndice)
 
 write.csv2(risultato, paste("./R/csv/", paste(nomeIndice, ".csv", sep = ""), sep = ""))
 ```
+
 ```{r}
 plot <- ggplot(risultato, aes(Planning, Execution, color=Tipo)) +
         geom_point() +
         geom_smooth(method = "lm")
 ggsave(paste("./R/plots/", paste(nomeIndice, ".png", sep = ""), sep = ""))
 ```
+
+Valutazione in merito all'inserimento di un indice in relazione all'attributo "DataEmissione" dell'entità RichiestaAcquisto
+Operazioni di ricerca.
+
+```{r}
+nomeIndice <- "Indice_RichiestaAcquisto.DataEmissione_Select"
+query <- "explain analyse select * from RichiestaAcquisto where DataEmissione BETWEEN '2020-10-01' AND '2020-11-01'"
+senzaIndice <- data.frame()
+for(var in 0:49) {
+  dbBegin(con)
+  dbSendQuery(con, "SET LOCAL enable_seqscan = OFF;")
+  x <- dbGetQuery(con, query)[c(4, 9), ]
+  senzaIndice <- rbind(senzaIndice, dbGetQuery(con, query)[c(4,9), ])
+  dbRollback(con)
+}
+
+dbSendQuery(con, "create index index_data on RichiestaAcquisto(DataEmissione)")
+conIndice <- data.frame()
+for(var in 0:49) {
+  dbBegin(con)
+  dbSendQuery(con, "SET LOCAL enable_seqscan = OFF;")
+  x<-dbGetQuery(con, query)[6:7, ]
+  conIndice <- rbind(conIndice, dbGetQuery(con, query)[6:7, ])
+  dbRollback(con)
+}
+dbSendQuery(con, "drop index index_data")
+
+colnames(senzaIndice)[1] <- "Planning"
+colnames(senzaIndice)[2] <- "Execution"
+colnames(conIndice)[1] <- "Planning"
+colnames(conIndice)[2] <- "Execution"
+
+senzaIndice$"Tipo" <- "senza"
+conIndice$"Tipo" <- "con"
+
+senzaIndice[, 1] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 1]))
+senzaIndice[, 2] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 2]))
+conIndice[, 1] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 1]))
+conIndice[, 2] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 2]))
+
+risultato <- rbind(senzaIndice, conIndice)
+
+write.csv2(risultato, paste("./R/csv/", paste(nomeIndice, ".csv", sep = ""), sep = ""))
+```
+
+```{r}
+plot <- ggplot(risultato, aes(Planning, Execution, color=Tipo)) +
+        geom_point() +
+        geom_smooth(method = "lm")
+ggsave(paste("./R/plots/", paste(nomeIndice, ".png", sep = ""), sep = ""))
+```
+
+
+Valutazione in merito all'inserimento di un indice in relazione all'attributo "DataEmissione" dell'entità RichiestaAcquisto
+Operazioni di inserimento
+
+```{r}
+nomeIndice <- "Indice_RichiestaAcquisto.DataEmissione_Update"
+query <- "explain analyse insert into RichiestaAcquisto(Dipartimento) values ('ZXTSNW')"
+senzaIndice <- data.frame()
+for(var in 0:49) {
+  dbBegin(con)
+  dbSendQuery(con, "SET LOCAL enable_seqscan = OFF;")
+  dbGetQuery(con, query)[c(3, 6), ]
+  senzaIndice <- rbind(senzaIndice, dbGetQuery(con, query)[c(3,6), ])
+  dbRollback(con)
+}
+
+dbSendQuery(con, "create index index_data on RichiestaAcquisto(DataEmissione)")
+conIndice <- data.frame()
+for(var in 0:49) {
+  dbBegin(con)
+  dbSendQuery(con, "SET LOCAL enable_seqscan = OFF;")
+  dbGetQuery(con, query)[c(3, 6), ]
+  conIndice <- rbind(conIndice, dbGetQuery(con, query)[c(3,6), ])
+  dbRollback(con)
+}
+dbSendQuery(con, "drop index index_data")
+
+colnames(senzaIndice)[1] <- "Planning"
+colnames(senzaIndice)[2] <- "Execution"
+colnames(conIndice)[1] <- "Planning"
+colnames(conIndice)[2] <- "Execution"
+
+senzaIndice$"Tipo" <- "senza"
+conIndice$"Tipo" <- "con"
+
+senzaIndice[, 1] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 1]))
+senzaIndice[, 2] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 2]))
+conIndice[, 1] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 1]))
+conIndice[, 2] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 2]))
+
+risultato <- rbind(senzaIndice, conIndice)
+
+write.csv2(risultato, paste("./R/csv/", paste(nomeIndice, ".csv", sep = ""), sep = ""))
+```
+
+```{r}
+plot <- ggplot(risultato, aes(Planning, Execution, color=Tipo)) +
+        geom_point() +
+        geom_smooth(method = "lm")
+ggsave(paste("./R/plots/", paste(nomeIndice, ".png", sep = ""), sep = ""))
+```
+
+
