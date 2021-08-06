@@ -1,0 +1,29 @@
+ INDICI
+ ------
+
+ 1. indice_ricerca_articoli_richiesta
+
+	tabella: Include 
+ 	colonne: Dipartimento, NumeroRichiesta
+
+	+---------+
+	|Risultati| -----> non è conveniente inserire un indice
+	+---------+
+
+ 2. indice_ricerca_ordine_richiesta
+ 	
+	tabella: Include 
+	colonne: Ordine
+
+	+---------+
+	|Risultati| -----> 
+	+---------+
+
+ 3. indice_ricerca_data_richiesta
+ 	
+	tabella: RichiestaAcquisto
+	colonne: DataEmissione
+
+	+---------+
+	|Risultati| ----->
+	+---------+

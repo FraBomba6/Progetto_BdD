@@ -655,9 +655,16 @@ Si osserva come non sia possibile garantire il rispetto del Vincolo di Integrit√
 
 # Progettazione Fisica
 
-- Dati
+- Dati (Mockup Data)
 - Operazioni usate per ottimizzazioni
+	- Utilizzare una tabella ausiliaria per l'assegnazione dei numeri incrementali per richiesta acquisto
 - Analisi e scelta di opportuni indici
+	- Include
+	- Fornisce
+	- Ordine
+
+
+# SQL
 - Definizione delle relazioni in SQL
 
 
