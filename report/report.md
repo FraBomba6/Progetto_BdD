@@ -308,7 +308,7 @@ Come specificato precedentemente, l'unico ciclo presente nello schema ER coinvol
 
 Considerato il fatto che il medesimo articolo possa essere fornito da più fornitori, al fine di poter strutturare un ordine è necessario sapere il fornitore che lo evaderà e gli articoli in esso contenuti. Non è, pertanto, possibile effettuare un'eliminazione del ciclo senza la conseguente perdita di informazione necessaria al corretto comportamento della Base di Dati. Pertanto, il ciclo viene mantenuto e vincolato sulla base delle osservazioni effettuate al punto [3.2](#vincoli).
 
-### Attributi derivabili
+### Attributi derivabili {#volumi}
 
 Al fine di valutare il mantenimento o l'eliminazione delle ridondanze presenti nel diagramma ER proposto, si definisce, di seguito, la tavola dei volumi di entità e relazioni presenti nella Base di Dati. Si considera quanto segue:
 
@@ -657,7 +657,7 @@ Si osserva come non sia possibile garantire il rispetto del Vincolo di Integrit�
 
 # Progettazione Fisica
 
-## Valutazioni sugli indici
+## Osservazioni sugli indici
 
 Al fine di introdurre un miglioramento delle prestazioni, si valuta l'inserimento di ulteriori indici confrontando la variazione delle prestazione sia in operazioni di **ricerca** che in operazioni di **modifica**. L'indicizzazione permette, infatti, un tempo di lookup inferiore durante query di selezione ma può causare l'aumento dei tempi di esecuzione delle query di modifica e inserimento sulla stessa tabella. Si rende, pertanto, necessario un confronto atto a stabilire le variazioni che i tempi di esecuzione subiscono in entrambi i casi. 
 
@@ -675,7 +675,7 @@ Nel primo caso, è stato osservato come l'indicizzazione di chiavi primarie comp
 
 Nel secondo e terzo caso, invece, si sceglie di procedere al confronto in presenza e assenza degli indici. L'indicizzazione dell'entità *Include* sull'attributo **Ordine** permetterebbe, infatti, una più efficiente ricerca degli articoli contenuti in un determinato Ordine, mentre quella dell'entità *RichiestaAcquisto* sull'attributo **DataEmissione** permetterebbe una più veloce ricerca delle Richieste d'Acquisto effettuate in un determinato intervallo di tempo, utile durante la computazione di statistiche e metriche mensili, semestrali e annualli da parte dell'ente pubblico.
 
-## Indici
+I test sono stati condotti sui dati di Mockup (la cui produzione viene descritta al punto [x.y](#mockup-data)), realizzati nel rispetto dei volumi descritti al punto [4.1.2](#volumi) al fine di poter condurre operazioni di test e di analisi sulla base di dati.
 
 ### Indicizzazione di Include su Ordine in operazioni di ricerca
 
@@ -692,7 +692,7 @@ Nel secondo e terzo caso, invece, si sceglie di procedere al confronto in presen
 \textbf{Planning} & \textbf{Execution} \\
 \midrule
 \DTLforeach*[\equal{senza}{\Tipo}]{ordine_select}
-{\Esecuzione=Esecuzione,\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
+{\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
 {\\ \Planning & \Execution}
 % \vdots & \vdots & \vdots  \\ 
 % \bottomrule
@@ -707,7 +707,7 @@ Nel secondo e terzo caso, invece, si sceglie di procedere al confronto in presen
 \textbf{Planning} & \textbf{Execution} \\
 \midrule
 \DTLforeach*[\equal{con}{\Tipo}]{ordine_select}
-{\Esecuzione=Esecuzione,\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
+{\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
 {\\ \Planning & \Execution}
 % \vdots & \vdots & \vdots  \\ 
 % \bottomrule
@@ -732,7 +732,7 @@ Nel secondo e terzo caso, invece, si sceglie di procedere al confronto in presen
 \textbf{Planning} & \textbf{Execution} \\
 \midrule
 \DTLforeach*[\equal{senza}{\Tipo}]{ordine_update}
-{\Esecuzione=Esecuzione,\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
+{\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
 {\\ \Planning & \Execution}
 % \vdots & \vdots & \vdots  \\ 
 % \bottomrule
@@ -747,7 +747,7 @@ Nel secondo e terzo caso, invece, si sceglie di procedere al confronto in presen
 \textbf{Planning} & \textbf{Execution} \\
 \midrule
 \DTLforeach*[\equal{con}{\Tipo}]{ordine_update}
-{\Esecuzione=Esecuzione,\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
+{\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
 {\\ \Planning & \Execution}
 % \vdots & \vdots & \vdots  \\ 
 % \bottomrule
@@ -759,25 +759,194 @@ Nel secondo e terzo caso, invece, si sceglie di procedere al confronto in presen
 
 #### Osservazioni 
 
-Si osserva quindi che.........
+Sulla base dei dati ottenuti sono stati prodotti i seguenti grafici:
+
+```{=latex}
+\begin{figure}[H]
+\includegraphics[width=0.5\textwidth, height=280px]{../R/plots/Indice_Include.Ordine_Select_Planning.png}
+\includegraphics[width=0.5\textwidth, height=280px]{../R/plots/Indice_Include.Ordine_Select_Execution.png}
+\caption{Variazione di Planning ed Execution time per operazioni di selezione}
+\end{figure}
+```
+
+```{=latex}
+\begin{figure}[H]
+\includegraphics[width=0.5\textwidth, height=280px]{../R/plots/Indice_Include.Ordine_Update_Planning.png}
+\includegraphics[width=0.5\textwidth, height=280px]{../R/plots/Indice_Include.Ordine_Update_Execution.png}
+\caption{Variazione di Planning ed Execution time per operazioni di modifica}
+\end{figure}
+```
+
+\newpage
+
+Le query di selezione e modifica utilizzate sono le seguenti:
+
+```sql
+-- Selezione 
+EXPLAIN ANALYSE 
+	SELECT * 
+	FROM Include 
+	WHERE Ordine=5;
+
+-- Modifica
+EXPLAIN ANALYSE 
+	UPDATE Include 
+	SET Ordine=NULL 
+	WHERE 
+		Dipartimento='WLIQJC' AND 
+		NumeroRichiesta=79 AND 
+		Articolo=102;
+```
+
+Si osserva quanto segue:
+
+- Nel caso di **query di selezione** i tempi di esecuzione migliorano notevolmente in presenza di un indice
+- Nel caso di **query di modifica** la presenza dell'indice non causa notevoli variazioni nei tempi di esecuzione
+
+Si sceglie, pertanto, di **mantenere l'indice** all'interno della base di dati.
 
 ### Indicizzazione di DataEmissione su RichiestaAcquisto in operazioni di ricerca
 
-tabelle
+```{=latex}
 
-### Indicizzazione di DataEmissione su RichiestaAcquisto in operazioni di mmodifica
+\DTLloaddb{richiesta_select}{../R/csv/Indice_RichiestaAcquisto.DataEmissione_Select.csv}
 
-tabelle
+\begin{table}[H]
+\begin{minipage}{0.5\textwidth}
+\centering
+\caption{\textbf{Assenza dell'Indice}}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Planning} & \textbf{Execution} \\
+\midrule
+\DTLforeach*[\equal{senza}{\Tipo}]{richiesta_select}
+{\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
+{\\ \Planning & \Execution}
+% \vdots & \vdots & \vdots  \\ 
+% \bottomrule
+\end{tabular}
+
+\end{minipage} \hfill
+\begin{minipage}{0.5\textwidth}
+\centering
+\caption{\textbf{Presenza dell'Indice}}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Planning} & \textbf{Execution} \\
+\midrule
+\DTLforeach*[\equal{con}{\Tipo}]{richiesta_select}
+{\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
+{\\ \Planning & \Execution}
+% \vdots & \vdots & \vdots  \\ 
+% \bottomrule
+\end{tabular}
+
+\end{minipage}
+\end{table}
+```
+
+### Indicizzazione di DataEmissione su RichiestaAcquisto in operazioni di modifica
+
+```{=latex}
+
+\DTLloaddb{richiesta_update}{../R/csv/Indice_RichiestaAcquisto.DataEmissione_Update.csv}
+
+\begin{table}[H]
+\begin{minipage}{0.5\textwidth}
+\centering
+\caption{\textbf{Assenza dell'Indice}}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Planning} & \textbf{Execution} \\
+\midrule
+\DTLforeach*[\equal{senza}{\Tipo}]{richiesta_update}
+{\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
+{\\ \Planning & \Execution}
+% \vdots & \vdots & \vdots  \\ 
+% \bottomrule
+\end{tabular}
+
+\end{minipage} \hfill
+\begin{minipage}{0.5\textwidth}
+\centering
+\caption{\textbf{Presenza dell'Indice}}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Planning} & \textbf{Execution} \\
+\midrule
+\DTLforeach*[\equal{con}{\Tipo}]{richiesta_update}
+{\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
+{\\ \Planning & \Execution}
+% \vdots & \vdots & \vdots  \\ 
+% \bottomrule
+\end{tabular}
+
+\end{minipage}
+\end{table}
+```
 
 #### Osservazioni
 
-# SQL
+Sulla base dei dati ottenuti sono stati prodotti i seguenti grafici:
 
-- Definizione delle relazioni in SQL
+```{=latex}
+\begin{figure}[H]
+\includegraphics[width=0.5\textwidth, height=280px]{../R/plots/Indice_RichiestaAcquisto.DataEmissione_Select_Planning.png}
+\includegraphics[width=0.5\textwidth, height=280px]{../R/plots/Indice_RichiestaAcquisto.DataEmissione_Select_Execution.png}
+\caption{Variazione di Planning ed Execution time per operazioni di selezione}
+\end{figure}
+```
+
+```{=latex}
+\begin{figure}[H]
+\includegraphics[width=0.5\textwidth, height=280px]{../R/plots/Indice_RichiestaAcquisto.DataEmissione_Update_Planning.png}
+\includegraphics[width=0.5\textwidth, height=280px]{../R/plots/Indice_RichiestaAcquisto.DataEmissione_Update_Execution.png}
+\caption{Variazione di Planning ed Execution time per operazioni di modifica}
+\end{figure}
+```
+
+\newpage
+
+Le query di selezione e modifica utilizzate sono le seguenti:
+
+```sql
+-- Selezione 
+EXPLAIN ANALYSE 
+	SELECT * 
+	FROM RichiestaAcquisto 
+	WHERE DataEmissione BETWEEN '2020-10-01' AND '2020-11-01'
+
+-- Modifica
+EXPLAIN ANALYSE 
+	INSERT INTO RichiestaAcquisto(Dipartimento) 
+	VALUES ('ZXTSNW')
+```
+
+Si osserva quanto segue:
+
+- Nel caso di **query di selezione** i tempi di esecuzione subiscono un notevole miglioramento in presenza dell'indice 
+- Nel caso di **query di modifica** i tempi di esecuzione non subiscono variazioni significative, ma se si osserva una maggiore variabilità nel caso di assenza dell'indice.
+
+Sulla base dei risultati ottenuti si sceglie, quindi, il **mantenimento dell'indice**.
+
+\newpage
+
+# Implementazione 
+
+## Containerizzazione del DBMS
+
+## Implementazione della Base di Dati
+
+## Produzione e Inserimento dei dati di Mockup
+
+## Osservazioni
 
 # Analisi dei dati
 
 \newpage
+
+# Conclusioni
+
 
 
 
