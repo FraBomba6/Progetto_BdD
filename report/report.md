@@ -30,6 +30,7 @@ header-includes:
 ---
 
 \captionsetup{labelformat=empty}
+
 \pagenumbering{arabic}
 \newpage
 \tableofcontents
@@ -42,7 +43,7 @@ header-includes:
 
 # Introduzione
 
-Il presente elaborato espone l'attività di progettazione e implementazione di una Base di Dati relazionale, assieme all'attività di analisi dei dati ottenuti da un'applicazione della stessa. Scrivo anche delle altre parole giusto per dare un po' di corpo a questa introduzione altrimenti troppo corta, ma lo faccio solo perchè mantenga l'impaginazione perchè poi tutte queste frasi le cancelleremo.
+Il presente elaborato espone l'attività di progettazione e implementazione di una Base di Dati relazionale, assieme all'attività di analisi dei dati ottenuti da un'applicazione della stessa. 
 
 \newpage
 
@@ -646,6 +647,8 @@ Si osserva come non sia possibile garantire il rispetto del Vincolo di Integrit�
 
 ## Modello Relazionale {#relazionale}
 
+Sulla base delle osservazioni effettuate, si provvede alla rappresentazione del diagramma relazionale:
+
 \
 
 \begin{figure}[H]
@@ -675,7 +678,7 @@ Nel primo caso, è stato osservato come l'indicizzazione di chiavi primarie comp
 
 Nel secondo e terzo caso, invece, si sceglie di procedere al confronto in presenza e assenza degli indici. L'indicizzazione dell'entità *Include* sull'attributo **Ordine** permetterebbe, infatti, una più efficiente ricerca degli articoli contenuti in un determinato Ordine, mentre quella dell'entità *RichiestaAcquisto* sull'attributo **DataEmissione** permetterebbe una più veloce ricerca delle Richieste d'Acquisto effettuate in un determinato intervallo di tempo, utile durante la computazione di statistiche e metriche mensili, semestrali e annualli da parte dell'ente pubblico.
 
-I test sono stati condotti sui dati di Mockup (la cui produzione viene descritta al punto [6.3](#mockup-data)), realizzati nel rispetto dei volumi descritti al punto [4.1.2](#volumi) al fine di poter condurre operazioni di test e di analisi sulla base di dati.
+I test sono stati condotti sui dati di Mockup (la cui produzione viene descritta successivamente), realizzati nel rispetto dei volumi descritti al punto [4.1.2](#volumi) al fine di poter condurre operazioni di test e di analisi sulla base di dati.
 
 L'ottenimento dei tempi di planning ed esecuzione e la successiva produzione dei rispettivi grafici è stato, invece, delegato allo script `IndexEval.R`, che utilizza la libreria [RPostgreSQL](https://cran.r-project.org/web/packages/RPostgreSQL/index.html) ed è localizzato all'interno della directory `R`.
 
@@ -919,7 +922,7 @@ EXPLAIN ANALYSE
 Si osserva quanto segue:
 
 - Nel caso di **query di selezione** i tempi di esecuzione subiscono un notevole miglioramento in presenza dell'indice 
-- Nel caso di **query di modifica** i tempi di esecuzione non subiscono variazioni significative, ma se si osserva una maggiore variabilità nel caso di assenza dell'indice.
+- Nel caso di **query di modifica** i tempi di esecuzione non subiscono variazioni significative, anche se si osserva una maggiore variabilità nel caso di assenza dell'indice.
 
 Sulla base dei risultati ottenuti si sceglie, quindi, il **mantenimento dell'indice**.
 
@@ -929,7 +932,7 @@ Sulla base dei risultati ottenuti si sceglie, quindi, il **mantenimento dell'ind
 
 ## Containerizzazione del DBMS
 
-Al fine di agevolare il processo di implementazione e deployment, si è scelto di utilizzare un container docker basato sull'immagine [*postgres*](https://hub.docker.com/_/postgres). Di conseguenza, è stato descritto il seguente **docker-compose**:
+Al fine di agevolare il processo di implementazione e deployment, si è scelto di utilizzare un container docker basato sull'immagine [*postgres*](https://hub.docker.com/_/postgres). Di conseguenza, è stato descritto il seguente `docker-compose.yaml`:
 
 ```docker
 version: "3.9"
@@ -947,10 +950,12 @@ services:
 
 È, quindi, possibile accedere al DBMS tramite le seguenti credenziali:
 
-- **Utente**: `postgres`
-- **Password**: `bdd2021` 
-- **Indirizzo**: `localhost`
-- **Porta**: `15000`
+|Parametro |Valore |
+|-|-|
+|**Utente**|`postgres`|
+|**Password**|`bdd2021`| 
+|**Indirizzo**|`localhost`|
+|**Porta**|`15000`|
 
 Il contenuto del DBMS viene serializzato all'interno della directory `psqlOnDocker/db`.
 
@@ -1121,6 +1126,17 @@ create table Include
 
 
 L'aggiornamento dei campi al suo interno è permesso dai trigger descritti al punto successivo.
+
+```sql
+create table ProssimoCodiceRichiesta
+(
+    Dipartimento char(6) primary key 
+		references Dipartimento 
+		on update cascade 
+		on delete cascade,
+    ProssimoNumero integer default 0
+);
+```
 
 ### Definizione dei trigger
 
@@ -1416,9 +1432,27 @@ create index on RichiestaAcquisto(DataEmissione);
 
 L'implementazione descritta è contenuta interamente nel file `create_db.sql` presente all'interno della directory `psqlOnDocker`.
 
-## Produzione ed Inserimento dei dati di Mockup
+## Produzione ed Inserimento dei dati di Mockup {#mockup}
 
-## Osservazioni
+Al fine di popolare il DBMS con dati realistici e coerenti con i volumi dichiarati al punto [4.1.2](#volumi), è stato realizzato uno script Python (`psqlOnDocker/MockupDataGenerator/script.py`) che sfrutta la liberia [Faker](https://faker.readthedocs.io/en/master/).
+
+Quest'ultimo genera, per ognuna delle tabelle presenti all'interno della base di dati, un omonimo file **sql** contenente le query di inserimento. Al fine di rendere i dati quanto più verosimili ed analizzabili, sono stati presi in considerazione aspetti quali: 
+
+- **Differenza nella probabilità di acquisto di prodotti diversi** (Ad esempio, i prodotti di classe cancelleria sono richiesti più frequentemente rispetto a quelli di classe mobilia) 
+- **Differenze nei costi dei prodotti sulla base della classe merceologica** (Ad esempio, i prodotti dela classe elettronica hanno costi mediamente più alti rispetto a quelli della classe cancelleria)
+
+Al fine di definire inserimenti validi, nel corso della generazione dei dati vengono, inoltre, presi in considerazione i vincoli imposti sulla base di dati e controllati dai trigger definiti in precedenza.
+
+I file vengono, infine, generati all'interno della directory `psqlOnDocker/sql`.
+
+## Generazione della base di dati
+
+Al fine di agevolare il processo di creazione e popolamento della base di dati, è stato definito un Makefile che permette, una volta istanziato il container con il comando `docker compose up -d`:
+
+- La generazione dei dati di mockup (`make mockup`)
+- La creazione e il popolamento della base di dati (`make db`)
+
+\newpage
 
 # Analisi dei dati
 
