@@ -270,7 +270,7 @@ Sulla base del documento di specifiche, si inviduano i criteri opportuni per la 
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=510px]{../ER.png}
+\includegraphics[width=510px]{../ER/ER.png}
 \end{figure}
 
 \newpage
@@ -507,7 +507,7 @@ Sulla base delle analisi e osservazioni effettuate, si provvede alla ristruttura
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=510px]{../ER_final.png}
+\includegraphics[width=510px]{../ER/ER_final.png}
 \end{figure}
 
 \newpage
@@ -644,13 +644,13 @@ Si osserva come non sia possibile garantire il rispetto del Vincolo di Integrit�
 
 \newpage
 
-## Modello Relazionale
+## Modello Relazionale {#relazionale}
 
 \
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=510px]{../Logical.png}
+\includegraphics[width=510px]{../ER/Logical.png}
 \end{figure}
 
 \newpage
@@ -675,7 +675,9 @@ Nel primo caso, è stato osservato come l'indicizzazione di chiavi primarie comp
 
 Nel secondo e terzo caso, invece, si sceglie di procedere al confronto in presenza e assenza degli indici. L'indicizzazione dell'entità *Include* sull'attributo **Ordine** permetterebbe, infatti, una più efficiente ricerca degli articoli contenuti in un determinato Ordine, mentre quella dell'entità *RichiestaAcquisto* sull'attributo **DataEmissione** permetterebbe una più veloce ricerca delle Richieste d'Acquisto effettuate in un determinato intervallo di tempo, utile durante la computazione di statistiche e metriche mensili, semestrali e annualli da parte dell'ente pubblico.
 
-I test sono stati condotti sui dati di Mockup (la cui produzione viene descritta al punto [x.y](#mockup-data)), realizzati nel rispetto dei volumi descritti al punto [4.1.2](#volumi) al fine di poter condurre operazioni di test e di analisi sulla base di dati.
+I test sono stati condotti sui dati di Mockup (la cui produzione viene descritta al punto [6.3](#mockup-data)), realizzati nel rispetto dei volumi descritti al punto [4.1.2](#volumi) al fine di poter condurre operazioni di test e di analisi sulla base di dati.
+
+L'ottenimento dei tempi di planning ed esecuzione e la successiva produzione dei rispettivi grafici è stato, invece, delegato allo script `IndexEval.R`, che utilizza la libreria [RPostgreSQL](https://cran.r-project.org/web/packages/RPostgreSQL/index.html) ed è localizzato all'interno della directory `R`.
 
 ### Indicizzazione di Include su Ordine in operazioni di ricerca
 
@@ -689,13 +691,12 @@ I test sono stati condotti sui dati di Mockup (la cui produzione viene descritta
 \caption{\textbf{Assenza dell'Indice}}
 \begin{tabular}{ccc}
 \toprule
-\textbf{Planning} & \textbf{Execution} \\
+\textit{Planning} & \textit{Execution} \\
 \midrule
 \DTLforeach*[\equal{senza}{\Tipo}]{ordine_select}
 {\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
 {\\ \Planning & \Execution}
-% \vdots & \vdots & \vdots  \\ 
-% \bottomrule
+\\ \hline
 \end{tabular}
 
 \end{minipage} \hfill
@@ -704,13 +705,12 @@ I test sono stati condotti sui dati di Mockup (la cui produzione viene descritta
 \caption{\textbf{Presenza dell'Indice}}
 \begin{tabular}{ccc}
 \toprule
-\textbf{Planning} & \textbf{Execution} \\
+\textit{Planning} & \textit{Execution} \\
 \midrule
 \DTLforeach*[\equal{con}{\Tipo}]{ordine_select}
 {\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
 {\\ \Planning & \Execution}
-% \vdots & \vdots & \vdots  \\ 
-% \bottomrule
+\\ \hline
 \end{tabular}
 
 \end{minipage}
@@ -729,13 +729,12 @@ I test sono stati condotti sui dati di Mockup (la cui produzione viene descritta
 \caption{\textbf{Assenza dell'Indice}}
 \begin{tabular}{ccc}
 \toprule
-\textbf{Planning} & \textbf{Execution} \\
+\textit{Planning} & \textit{Execution} \\
 \midrule
 \DTLforeach*[\equal{senza}{\Tipo}]{ordine_update}
 {\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
 {\\ \Planning & \Execution}
-% \vdots & \vdots & \vdots  \\ 
-% \bottomrule
+\\ \hline
 \end{tabular}
 
 \end{minipage} \hfill
@@ -744,13 +743,12 @@ I test sono stati condotti sui dati di Mockup (la cui produzione viene descritta
 \caption{\textbf{Presenza dell'Indice}}
 \begin{tabular}{ccc}
 \toprule
-\textbf{Planning} & \textbf{Execution} \\
+\textit{Planning} & \textit{Execution} \\
 \midrule
 \DTLforeach*[\equal{con}{\Tipo}]{ordine_update}
 {\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
 {\\ \Planning & \Execution}
-% \vdots & \vdots & \vdots  \\ 
-% \bottomrule
+\\ \hline
 \end{tabular}
 
 \end{minipage}
@@ -817,13 +815,12 @@ Si sceglie, pertanto, di **mantenere l'indice** all'interno della base di dati.
 \caption{\textbf{Assenza dell'Indice}}
 \begin{tabular}{ccc}
 \toprule
-\textbf{Planning} & \textbf{Execution} \\
+\textit{Planning} & \textit{Execution} \\
 \midrule
 \DTLforeach*[\equal{senza}{\Tipo}]{richiesta_select}
 {\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
 {\\ \Planning & \Execution}
-% \vdots & \vdots & \vdots  \\ 
-% \bottomrule
+\\ \hline
 \end{tabular}
 
 \end{minipage} \hfill
@@ -832,13 +829,12 @@ Si sceglie, pertanto, di **mantenere l'indice** all'interno della base di dati.
 \caption{\textbf{Presenza dell'Indice}}
 \begin{tabular}{ccc}
 \toprule
-\textbf{Planning} & \textbf{Execution} \\
+\textit{Planning} & \textit{Execution} \\
 \midrule
 \DTLforeach*[\equal{con}{\Tipo}]{richiesta_select}
 {\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
 {\\ \Planning & \Execution}
-% \vdots & \vdots & \vdots  \\ 
-% \bottomrule
+\\ \hline
 \end{tabular}
 
 \end{minipage}
@@ -857,13 +853,12 @@ Si sceglie, pertanto, di **mantenere l'indice** all'interno della base di dati.
 \caption{\textbf{Assenza dell'Indice}}
 \begin{tabular}{ccc}
 \toprule
-\textbf{Planning} & \textbf{Execution} \\
+\textit{Planning} & \textit{Execution} \\
 \midrule
 \DTLforeach*[\equal{senza}{\Tipo}]{richiesta_update}
 {\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
 {\\ \Planning & \Execution}
-% \vdots & \vdots & \vdots  \\ 
-% \bottomrule
+\\ \hline
 \end{tabular}
 
 \end{minipage} \hfill
@@ -872,13 +867,12 @@ Si sceglie, pertanto, di **mantenere l'indice** all'interno della base di dati.
 \caption{\textbf{Presenza dell'Indice}}
 \begin{tabular}{ccc}
 \toprule
-\textbf{Planning} & \textbf{Execution} \\
+\textit{Planning} & \textit{Execution} \\
 \midrule
 \DTLforeach*[\equal{con}{\Tipo}]{richiesta_update}
 {\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
 {\\ \Planning & \Execution}
-% \vdots & \vdots & \vdots  \\ 
-% \bottomrule
+\\ \hline
 \end{tabular}
 
 \end{minipage}
@@ -935,9 +929,494 @@ Sulla base dei risultati ottenuti si sceglie, quindi, il **mantenimento dell'ind
 
 ## Containerizzazione del DBMS
 
+Al fine di agevolare il processo di implementazione e deployment, si è scelto di utilizzare un container docker basato sull'immagine [*postgres*](https://hub.docker.com/_/postgres). Di conseguenza, è stato descritto il seguente **docker-compose**:
+
+```docker
+version: "3.9"
+services:
+  db:
+    image: postgres
+    container_name: db
+    ports:
+      - "15000:5432"
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: bdd2021
+```
+
+È, quindi, possibile accedere al DBMS tramite le seguenti credenziali:
+
+- **Utente**: `postgres`
+- **Password**: `bdd2021` 
+- **Indirizzo**: `localhost`
+- **Porta**: `15000`
+
+Il contenuto del DBMS viene serializzato all'interno della directory `psqlOnDocker/db`.
+
 ## Implementazione della Base di Dati
 
-## Produzione e Inserimento dei dati di Mockup
+### Definizione dei tipi enum
+
+Sulla base di quanto individuato nel corso dell'analisi, sono stati definiti i tipi di dato atti a descrivere le possibili classi merceologiche di un articolo, le unità di misura e gli stati di un ordine. 
+
+```sql
+create type classe_merceologica as enum (
+	'cancelleria', 
+	'libri', 
+	'elettronica', 
+	'informatica', 
+	'pulizia', 
+	'mobilia'
+);
+
+create type unita_misura as enum (
+	'cad', 
+	'kg', 
+	'm', 
+	'l'
+);
+
+create type stato_ordine as enum (
+	'emesso', 
+	'spedito', 
+	'consegnato', 
+	'annullato'
+);
+```
+
+### Creazione delle tabelle
+
+Di seguito, sono state definite le tabelle (con rispettivi vincoli di chiave primaria e chiave esterna) sulla base di quando descritto dal diagramma relazionale presentato al punto [4.6](#relazionale).
+
+```sql
+
+create table Responsabile
+(
+    CodiceFiscale char(16) primary key,
+    Nome text not null,
+    Cognome text not null,
+    DataNascita date not null,
+    LuogoNascita text not null
+);
+
+
+create table Dipartimento
+(
+    Codice char(6) primary key,
+    Descrizione text not null,
+    Responsabile char(16) not null 
+		references Responsabile 
+		on update cascade 
+		on delete restrict
+);
+
+
+create table RichiestaAcquisto
+(
+    Numero integer,
+    Dipartimento char(6) not null 
+		references Dipartimento 
+		on update cascade 
+		on delete restrict,
+    DataEmissione date not null default current_date,
+	NumeroArticoli integer not null default 0,
+    primary key (Numero, Dipartimento)
+);
+
+
+create table Articolo
+(
+    Codice serial primary key,
+    Descrizione text not null,
+    Classe classe_merceologica not null,
+    UnitaDiMisura unita_misura not null
+);
+
+
+create table Fornitore
+(
+    PartitaIVA char(13) primary key,
+    Indirizzo text not null,
+    Email varchar(50) not null,
+    FAX varchar(15)
+);
+
+
+create table RecapitoTelefonico
+(
+    NumeroTelefono varchar(15) primary key,
+    Fornitore char(13) not null 
+		references Fornitore 
+		on update cascade 
+		on delete cascade
+);
+
+
+create table Fornisce
+(
+    Articolo integer 
+		references Articolo 
+		on update cascade 
+		on delete cascade,
+    Fornitore char(13) 
+		references Fornitore 
+		on update cascade 
+		on delete cascade,
+    Sconto numeric not null default 0,
+    PrezzoUnitario numeric not null 
+		check (PrezzoUnitario > 0),
+    QuantitaMinima integer not null default 1 
+		check (QuantitaMinima >= 1),
+    CodBar varchar(20) not null,
+    primary key (Articolo, Fornitore)
+);
+
+
+create table Ordine
+(
+    Codice serial primary key,
+    Fornitore char(13) not null 
+		references Fornitore 
+		on update cascade 
+		on delete restrict,
+    Stato stato_ordine not null default 'emesso',
+    DataEmissione date not null default current_date,
+	DataConsegna date default null
+);
+
+
+create table Include
+(
+    Dipartimento char(6),
+    NumeroRichiesta integer,
+    Articolo integer          
+		references Articolo 
+		on update cascade 
+		on delete restrict,
+    Ordine integer default null 
+		references Ordine 
+		on update cascade 
+		on delete set null,
+    Quantita numeric not null 
+		check (Quantita > 0),
+    PrezzoUnitario numeric(7, 2) default null, 
+    primary key (Dipartimento, NumeroRichiesta, Articolo),
+    foreign key (Dipartimento, NumeroRichiesta) 
+		references RichiestaAcquisto (Dipartimento, Numero) 
+		on update cascade 
+		on delete restrict
+);
+
+```
+
+È stata, inoltre, implementata la tabella `ProssimoCodiceRichiesta`, che permette di mantenere in memoria il codice di una nuova eventuale Richiesta d'Acquisto per ognuno dei dipartimenti presenti. Ad esempio:
+
+|Dipartimento | ProssimoNumero |
+|:-----------:|:--------------:|
+| ZXTSNW      |   10		   | 
+| WPIUQD      |   3			   |
+| $\cdots$    |   $\cdots$     |
+
+
+
+L'aggiornamento dei campi al suo interno è permesso dai trigger descritti al punto successivo.
+
+### Definizione dei trigger
+
+Sono stati, inoltre, definiti i trigger necessari al mantenimento del vincolo aziendale descritto al punto [3.2.1](#vincoli), alla sincronizzazione degli attributi derivati e al mantenimento di informazioni coerenti e consistenti all'interno della base di dati. 
+
+\newpage
+
+#### Vincolo aziendale
+
+```sql
+create or replace function controlla_ordine_valido()
+    returns trigger
+    language plpgsql as
+$$
+declare
+    n    integer;
+    forn character(13);
+begin
+    if new.Ordine IS NULL then
+        return new;
+    end if;
+
+    SELECT Fornitore 
+		INTO forn
+		FROM Ordine 
+		WHERE Codice = new.Ordine;
+
+    SELECT COUNT(*)
+    	INTO n
+    	FROM Fornisce
+    	WHERE (Fornisce.Articolo = new.Articolo) AND 
+		      (forn = Fornisce.Fornitore);
+
+    if n = 0 then
+        raise notice 'Prodotto non valido per fornitore';
+        return null;
+    end if;
+    return new;
+end;
+$$;
+
+create trigger controlla_ordine_valido
+    before insert or update
+    on Include
+    for each row
+execute procedure controlla_ordine_valido();
+```
+
+\newpage
+
+#### Calcolo del prezzo unitario con sconto
+
+```sql
+create or replace function calcola_prezzo_finale()
+    returns trigger
+    language plpgsql as
+$$
+declare
+    currentOrder    integer;
+    currentSupplier varchar;
+    price           numeric;
+    discount        numeric;
+    finalPrice      numeric;
+begin
+    if new.Ordine is not null then
+        currentOrder = new.Ordine;
+
+        SELECT Fornitore 
+			INTO currentSupplier 
+			FROM Ordine 
+			WHERE Codice = currentOrder;
+        
+		SELECT PrezzoUnitario, Sconto
+        	INTO price, discount
+        	FROM Fornisce
+        	WHERE Fornitore = currentSupplier AND
+				  Articolo = new.Articolo;
+        
+		finalPrice = price * (1 - discount / 100);
+        new.PrezzoUnitario = finalPrice;
+	end if;
+	return new;
+end;
+$$;
+
+
+create trigger calcola_prezzo_finale 
+    before insert or update of Ordine
+    on Include
+    for each row
+execute procedure calcola_prezzo_finale();
+```
+
+\newpage
+
+#### Verifica della possibile rimozione di un Ordine
+
+```sql
+create or replace function rimuovi_ordine()
+    returns trigger
+    language plpgsql as
+$$
+begin
+    if old.Stato = 'consegnato' or old.stato = 'spedito' then
+        raise exception 'Non puoi rimuovere questo ordine!';
+    elseif old.Stato = 'emesso' then
+        old.Stato = 'annullato';
+    end if;
+
+    UPDATE Include 
+		SET Ordine=NULL 
+		WHERE Ordine=old.Codice;
+
+    return old;
+end;
+$$;
+
+create trigger rimuovi_ordine
+    before delete on Ordine
+    for each row
+execute procedure rimuovi_ordine();
+```
+
+|
+
+Un ordine può essere, infatti, rimosso solamente se si trova in stato **annullato**. Nel caso in cui l'ordine sia nello stato **emesso**, il trigger procede autonomamente alla modifica dello stato e alla successiva cancellazione. Questo è motivato dal fatto che la cancellazione di un ordine emesso non può provocare inconsistenze nella base di dati.
+
+Nel caso in cui l'ordine si trovi in uno degli stati rimanenti, la procedura di cancellazione non viene consentita e viene delegata all'utente della base di dati la responsabilità relativa alla modifica dello stato dell'ordine al fine di consentirne la cancellazione.
+
+\newpage
+
+#### Sincronizzazione dell'attributo derivato NumeroArticoli
+
+```sql
+-- Inserimento in Include
+create or replace function numero_articoli_aumenta()
+	returns trigger
+	language plpgsql as
+$$
+declare
+	n_art integer;
+begin
+
+	UPDATE RichiestaAcquisto 
+		SET NumeroArticoli = NumeroArticoli + new.Quantita 
+		WHERE Dipartimento=new.Dipartimento AND 
+		      Numero=new.NumeroRichiesta;
+
+	return new;
+end;
+$$;
+
+create trigger numero_articoli_aumenta
+	before insert
+	on Include
+	for each row
+execute procedure numero_articoli_aumenta();
+
+
+-- Rimozione da Include
+create or replace function numero_articoli_riduci()
+	returns trigger
+	language plpgsql as
+$$
+declare
+	n_art integer;
+begin
+	UPDATE RichiestaAcquisto 
+		SET NumeroArticoli = NumeroArticoli - old.Quantita 
+		WHERE Dipartimento=old.Dipartimento AND 
+		      Numero=old.NumeroRichiesta;
+	return old;
+end;
+$$;
+
+create trigger numero_articoli_riduci
+	before delete 
+	on Include
+	for each row
+execute procedure numero_articoli_riduci();
+```
+
+\newpage
+
+```sql
+-- Aggiornamento in Include
+create or replace function numero_articoli_aggiorna()
+	returns trigger
+	language plpgsql as
+$$
+declare
+	n_art integer;
+begin
+
+	UPDATE RichiestaAcquisto 
+		SET NumeroArticoli = NumeroArticoli - old.Quantita 
+		WHERE Dipartimento=old.Dipartimento AND 
+			  Numero=old.NumeroRichiesta;
+
+	UPDATE RichiestaAcquisto 
+		SET NumeroArticoli = NumeroArticoli + new.Quantita 
+		WHERE Dipartimento=new.Dipartimento AND 
+			  Numero=new.NumeroRichiesta;
+
+	return new;
+end;
+$$;
+
+create trigger numero_articoli_aggiorna
+	after update 
+	on Include
+	for each row
+execute procedure numero_articoli_aggiorna();
+```
+
+\newpage
+
+#### Inserimento di un nuovo dipartimento in ProssimoCodiceRichiesta
+
+```sql
+create or replace function nuova_entry_dipartimento()
+    returns trigger
+    language plpgsql as
+$$
+begin
+
+    INSERT INTO ProssimoCodiceRichiesta(Dipartimento) VALUES (new.Codice);
+
+    return new;
+end;
+$$;
+
+create trigger nuova_entry_dipartimento
+    after insert
+    on Dipartimento
+    for each row
+execute procedure nuova_entry_dipartimento();
+```
+
+\newpage
+
+#### Aggiornamento di ProssimoCodiceRichiesta
+
+```sql
+create or replace function set_numero_richiesta()
+    returns trigger
+    language plpgsql as
+$$
+declare
+    n integer;
+begin
+
+    SELECT ProssimoNumero 
+		INTO n 
+		FROM ProssimoCodiceRichiesta 
+		WHERE Dipartimento = new.Dipartimento;
+
+    if n is null then
+        raise notice 'Errore: dipartimento non valido';
+        return null;
+    else
+        new.numero := n;
+
+        UPDATE ProssimoCodiceRichiesta 
+			SET ProssimoNumero = n+1 
+			WHERE Dipartimento = new.Dipartimento;
+
+        return new;
+    end if;
+end;
+$$;
+
+create trigger set_numero_richiesta 
+    before insert
+    on RichiestaAcquisto
+    for each row
+execute procedure set_numero_richiesta();
+```
+
+\newpage
+
+### Definizione degli indici
+
+Sulla base di quanto convenuto in precedenza, si sceglie di includere ulteriori indici per le entità **Include** e **RichiestaAcquisto**. 
+
+```sql
+create index on Include(Ordine);
+
+create index on RichiestaAcquisto(DataEmissione);
+```
+
+|
+
+L'implementazione descritta è contenuta interamente nel file `create_db.sql` presente all'interno della directory `psqlOnDocker`.
+
+## Produzione ed Inserimento dei dati di Mockup
 
 ## Osservazioni
 
