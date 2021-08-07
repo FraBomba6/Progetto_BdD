@@ -90,21 +90,25 @@ colnames(conIndice)[2] <- "Execution"
 senzaIndice$"Tipo" <- "senza"
 conIndice$"Tipo" <- "con"
 
-senzaIndice[, 1] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 1]))
-senzaIndice[, 2] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 2]))
-conIndice[, 1] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 1]))
-conIndice[, 2] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 2]))
+senzaIndice[, 1] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 1])), nsmall = 3)
+senzaIndice[, 2] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 2])), nsmall=3)
+conIndice[, 1] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 1])), nsmall = 3)
+conIndice[, 2] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 2])), nsmall = 3)
 
 risultato <- rbind(senzaIndice, conIndice)
 
-write.csv2(risultato, paste("./R/csv/", paste(nomeIndice, ".csv", sep = ""), sep = ""))
+write.csv(risultato, paste0("./R/csv/", paste0(nomeIndice, ".csv")), quote = FALSE, row.names = FALSE)
+risultato[, 1] <- as.numeric(risultato[, 1])
+risultato[, 2] <- as.numeric(risultato[, 2])
 ```
 
 ```{r}
-plot <- ggplot(risultato, aes(Planning, Execution, color=Tipo)) +
-        geom_point() +
-        geom_smooth(method = "lm")
-ggsave(paste("./R/plots/", paste(nomeIndice, ".png", sep = ""), sep = ""))
+plot <- ggplot(risultato, aes(fill = Tipo)) +
+        geom_boxplot(aes(Tipo, Planning))
+ggsave(paste0("./R/plots/", paste0(nomeIndice, "_Planning.png")), width = 7.5)
+plot <- ggplot(risultato, aes(fill = Tipo)) +
+        geom_boxplot(aes(Tipo, Execution))
+ggsave(paste0("./R/plots/", paste0(nomeIndice, "_Execution.png")), width = 7.5)
 ```
 
 Valutazione in merito all'inserimento di un indice in relazione all'attributo "Ordine" dell'entità Include.
@@ -144,21 +148,25 @@ colnames(conIndice)[2] <- "Execution"
 senzaIndice$"Tipo" <- "senza"
 conIndice$"Tipo" <- "con"
 
-senzaIndice[, 1] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 1]))
-senzaIndice[, 2] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 2]))
-conIndice[, 1] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 1]))
-conIndice[, 2] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 2]))
+senzaIndice[, 1] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 1])), nsmall = 3)
+senzaIndice[, 2] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 2])), nsmall=3)
+conIndice[, 1] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 1])), nsmall = 3)
+conIndice[, 2] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 2])), nsmall = 3)
 
 risultato <- rbind(senzaIndice, conIndice)
 
-write.csv2(risultato, paste("./R/csv/", paste(nomeIndice, ".csv", sep = ""), sep = ""))
+write.csv(risultato, paste0("./R/csv/", paste0(nomeIndice, ".csv")), quote = FALSE, row.names = FALSE)
+risultato[, 1] <- as.numeric(risultato[, 1])
+risultato[, 2] <- as.numeric(risultato[, 2])
 ```
 
 ```{r}
-plot <- ggplot(risultato, aes(Planning, Execution, color=Tipo)) +
-        geom_point() +
-        geom_smooth(method = "lm")
-ggsave(paste("./R/plots/", paste(nomeIndice, ".png", sep = ""), sep = ""))
+plot <- ggplot(risultato, aes(fill = Tipo)) +
+        geom_boxplot(aes(Tipo, Planning))
+ggsave(paste0("./R/plots/", paste0(nomeIndice, "_Planning.png")), width = 7.5)
+plot <- ggplot(risultato, aes(fill = Tipo)) +
+        geom_boxplot(aes(Tipo, Execution))
+ggsave(paste0("./R/plots/", paste0(nomeIndice, "_Execution.png")), width = 7.5)
 ```
 
 Valutazione in merito all'inserimento di un indice in relazione all'attributo "DataEmissione" dell'entità RichiestaAcquisto
@@ -195,21 +203,25 @@ colnames(conIndice)[2] <- "Execution"
 senzaIndice$"Tipo" <- "senza"
 conIndice$"Tipo" <- "con"
 
-senzaIndice[, 1] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 1]))
-senzaIndice[, 2] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 2]))
-conIndice[, 1] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 1]))
-conIndice[, 2] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 2]))
+senzaIndice[, 1] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 1])), nsmall = 3)
+senzaIndice[, 2] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 2])), nsmall=3)
+conIndice[, 1] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 1])), nsmall = 3)
+conIndice[, 2] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 2])), nsmall = 3)
 
 risultato <- rbind(senzaIndice, conIndice)
 
-write.csv2(risultato, paste("./R/csv/", paste(nomeIndice, ".csv", sep = ""), sep = ""))
+write.csv(risultato, paste0("./R/csv/", paste0(nomeIndice, ".csv")), quote = FALSE, row.names = FALSE)
+risultato[, 1] <- as.numeric(risultato[, 1])
+risultato[, 2] <- as.numeric(risultato[, 2])
 ```
 
 ```{r}
-plot <- ggplot(risultato, aes(Planning, Execution, color=Tipo)) +
-        geom_point() +
-        geom_smooth(method = "lm")
-ggsave(paste("./R/plots/", paste(nomeIndice, ".png", sep = ""), sep = ""))
+plot <- ggplot(risultato, aes(fill = Tipo)) +
+        geom_boxplot(aes(Tipo, Planning))
+ggsave(paste0("./R/plots/", paste0(nomeIndice, "_Planning.png")), width = 7.5)
+plot <- ggplot(risultato, aes(fill = Tipo)) +
+        geom_boxplot(aes(Tipo, Execution))
+ggsave(paste0("./R/plots/", paste0(nomeIndice, "_Execution.png")), width = 7.5)
 ```
 
 
@@ -247,21 +259,23 @@ colnames(conIndice)[2] <- "Execution"
 senzaIndice$"Tipo" <- "senza"
 conIndice$"Tipo" <- "con"
 
-senzaIndice[, 1] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 1]))
-senzaIndice[, 2] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 2]))
-conIndice[, 1] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 1]))
-conIndice[, 2] <- as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 2]))
+senzaIndice[, 1] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 1])), nsmall = 3)
+senzaIndice[, 2] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", senzaIndice[, 2])), nsmall=3)
+conIndice[, 1] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 1])), nsmall = 3)
+conIndice[, 2] <- format(as.numeric(gsub("([0-9]+\\.?[0-9]+)|.", "\\1", conIndice[, 2])), nsmall = 3)
 
 risultato <- rbind(senzaIndice, conIndice)
 
-write.csv2(risultato, paste("./R/csv/", paste(nomeIndice, ".csv", sep = ""), sep = ""))
+write.csv(risultato, paste0("./R/csv/", paste0(nomeIndice, ".csv")), quote = FALSE, row.names = FALSE)
+risultato[, 1] <- as.numeric(risultato[, 1])
+risultato[, 2] <- as.numeric(risultato[, 2])
 ```
 
 ```{r}
-plot <- ggplot(risultato, aes(Planning, Execution, color=Tipo)) +
-        geom_point() +
-        geom_smooth(method = "lm")
-ggsave(paste("./R/plots/", paste(nomeIndice, ".png", sep = ""), sep = ""))
+plot <- ggplot(risultato, aes(fill = Tipo)) +
+        geom_boxplot(aes(Tipo, Planning))
+ggsave(paste0("./R/plots/", paste0(nomeIndice, "_Planning.png")), width = 7.5)
+plot <- ggplot(risultato, aes(fill = Tipo)) +
+        geom_boxplot(aes(Tipo, Execution))
+ggsave(paste0("./R/plots/", paste0(nomeIndice, "_Execution.png")), width = 7.5)
 ```
-
-
