@@ -1,7 +1,7 @@
 #!/bin/bash
 
 DB_CREATION=create_db.sql
-MOCKUP_DATA=MockupDataGenerator/sql
+MOCKUP_DATA=./sql
 DATABASE=ufficioacquisti
 export PGPASSWORD="bdd2021"
 
