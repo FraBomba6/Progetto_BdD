@@ -10,7 +10,6 @@ editor_options:
 library("ggplot2")
 library("RPostgreSQL")
 library("dplyr")
-options(digits = 3)
 ```
 
 ```{r Connection setup}
