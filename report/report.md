@@ -16,7 +16,8 @@ header-includes:
   - \usepackage{xcolor}
   - \usepackage[normalem]{ulem}
   - \usepackage{float}
-  - \usepackage{csvsimple}
+  - \usepackage{datatool}
+  - \usepackage{booktabs}
   - \usepackage{array}
   - \usepackage{multirow} 
   - \usepackage{bigstrut}
@@ -656,32 +657,119 @@ Si osserva come non sia possibile garantire il rispetto del Vincolo di Integrit�
 
 # Progettazione Fisica
 
-- Dati (Mockup Data)
-- Operazioni usate per ottimizzazioni
-	- Utilizzare una tabella ausiliaria per l'assegnazione dei numeri incrementali per richiesta acquisto
-- Analisi e scelta di opportuni indici
-	- Include
-	- Fornisce
-	- Ordine
+## Valutazioni sugli indici
+
+Al fine di introdurre un miglioramento delle prestazioni, si valuta l'inserimento di ulteriori indici confrontando la variazione delle prestazione sia in operazioni di **ricerca** che in operazioni di **modifica**. L'indicizzazione permette, infatti, un tempo di lookup inferiore durante query di selezione ma può causare l'aumento dei tempi di esecuzione delle query di modifica e inserimento sulla stessa tabella. Si rende, pertanto, necessario un confronto atto a stabilire le variazioni che i tempi di esecuzione subiscono in entrambi i casi. 
+
+A tal fine, è stato utilizzato il comando `EXPLAIN ANALYZE [statement]`, che permette di ottenere informazioni sull'**execution plan** e sui tempi di esecuzione richiesti da una query. È stato, inoltre, impostato ad `OFF` l'attributo `enable seqscan` al fine di discoraggiare il query planner all'utilizzo di scan sequenziali che invaliderebbero i confronti fra operazioni su tabelle in assenza e presenza di indici. 
+
+Si tiene, inoltre, presente il fatto che ogni tabella viene automaticamente indicizzata dal DBMS sulla sua chiave primaria.
+
+Gli indici presi in considerazione sono i seguenti: 
+
+- Indicizzazione sugli attributi **Dipartimento** e **NumeroRichiesta** dell'entità *Include*
+- Indicizzazione sull'attributo **Ordine** dell'entità *Include*
+- Indicizzazione sull'attributo **DataRichiesta** dell'entità *RichiestaAcquisto*
+
+Nel primo caso, è stato osservato come l'indicizzazione di chiavi primarie composite in PostgreSQL avvenga anche su sottoinsiemi della stessa. Pertanto, considerata l'appartenenza di Dipartimento e NumeroRichiesta alla chiave primaria di RichiestaAcquisto, non risulterebbe conveniente l'aggiunta di un ulteriore indice sui due soli attributi. Il DBMS sfrutterebbe, in ogni caso, l'indicizzazione della chiave primaria. Si sceglie, pertanto, di non implementare tale indice all'interno della base di dati.
+
+Nel secondo e terzo caso, invece, si sceglie di procedere al confronto in presenza e assenza degli indici. L'indicizzazione dell'entità *Include* sull'attributo **Ordine** permetterebbe, infatti, una più efficiente ricerca degli articoli contenuti in un determinato Ordine, mentre quella dell'entità *RichiestaAcquisto* sull'attributo **DataEmissione** permetterebbe una più veloce ricerca delle Richieste d'Acquisto effettuate in un determinato intervallo di tempo, utile durante la computazione di statistiche e metriche mensili, semestrali e annualli da parte dell'ente pubblico.
 
 ## Indici
 
-### Indicizzazione di Include su Ordine
+### Indicizzazione di Include su Ordine in operazioni di ricerca
 
-**Operazioni di ricerca**
+```{=latex}
 
+\DTLloaddb{ordine_select}{../R/csv/Indice_Include.Ordine_Select.csv}
 
-**Operazioni di modifica**
+\begin{table}[H]
+\begin{minipage}{0.5\textwidth}
+\centering
+\caption{\textbf{Assenza dell'Indice}}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Planning} & \textbf{Execution} \\
+\midrule
+\DTLforeach*[\equal{senza}{\Tipo}]{ordine_select}
+{\Esecuzione=Esecuzione,\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
+{\\ \Planning & \Execution}
+% \vdots & \vdots & \vdots  \\ 
+% \bottomrule
+\end{tabular}
 
+\end{minipage} \hfill
+\begin{minipage}{0.5\textwidth}
+\centering
+\caption{\textbf{Presenza dell'Indice}}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Planning} & \textbf{Execution} \\
+\midrule
+\DTLforeach*[\equal{con}{\Tipo}]{ordine_select}
+{\Esecuzione=Esecuzione,\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
+{\\ \Planning & \Execution}
+% \vdots & \vdots & \vdots  \\ 
+% \bottomrule
+\end{tabular}
 
+\end{minipage}
+\end{table}
+```
 
-### Indicizzazione di DataEmissione su RichiestaAcquisto 
+### Indicizzazione di Include su Ordine in operazioni di inserimento 
 
-**Operazioni di ricerca**
+```{=latex}
 
+\DTLloaddb{ordine_update}{../R/csv/Indice_Include.Ordine_Update.csv}
 
-**Operazioni di modifica**
+\begin{table}[H]
+\begin{minipage}{0.5\textwidth}
+\centering
+\caption{\textbf{Assenza dell'Indice}}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Planning} & \textbf{Execution} \\
+\midrule
+\DTLforeach*[\equal{senza}{\Tipo}]{ordine_update}
+{\Esecuzione=Esecuzione,\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
+{\\ \Planning & \Execution}
+% \vdots & \vdots & \vdots  \\ 
+% \bottomrule
+\end{tabular}
 
+\end{minipage} \hfill
+\begin{minipage}{0.5\textwidth}
+\centering
+\caption{\textbf{Presenza dell'Indice}}
+\begin{tabular}{ccc}
+\toprule
+\textbf{Planning} & \textbf{Execution} \\
+\midrule
+\DTLforeach*[\equal{con}{\Tipo}]{ordine_update}
+{\Esecuzione=Esecuzione,\Planning=Planning,\Execution=Execution,\Tipo=Tipo}
+{\\ \Planning & \Execution}
+% \vdots & \vdots & \vdots  \\ 
+% \bottomrule
+\end{tabular}
+
+\end{minipage}
+\end{table}
+```
+
+#### Osservazioni 
+
+Si osserva quindi che.........
+
+### Indicizzazione di DataEmissione su RichiestaAcquisto in operazioni di ricerca
+
+tabelle
+
+### Indicizzazione di DataEmissione su RichiestaAcquisto in operazioni di mmodifica
+
+tabelle
+
+#### Osservazioni
 
 # SQL
 
