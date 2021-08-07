@@ -127,7 +127,7 @@ end;
 $$;
 
 -- Il trigger viene eseguito dopo l'inserimento di un nuovo dipartimento
-create trigger nuova_entry_dip_trigger
+create trigger nuova_entry_dipartimento
     after insert
     on Dipartimento
     for each row
@@ -138,7 +138,7 @@ execute procedure nuova_entry_dipartimento();
 
 -- Funzione che calcola il prezzo unitario di un articolo considerando lo sconto
 -- e lo inserisce nella relativa entry di include
-create or replace function compute_final_price()
+create or replace function calcola_prezzo_finale()
     returns trigger
     language plpgsql as
 $$
@@ -165,11 +165,11 @@ end;
 $$;
 
 -- Il trigger viene eseguito dopo ogni associazione ad un ordine di un'entry di include
-create trigger final_price
-    before insert or update of ordine
+create trigger calcola_prezzo_finale 
+    before insert or update of Ordine
     on Include
     for each row
-execute procedure compute_final_price();
+execute procedure calcola_prezzo_finale();
 
 
 
@@ -207,7 +207,7 @@ $$;
 
 -- Il trigger viene eseguito ad ogni inserimento o aggiornamento di una entry
 -- di include
-create trigger controlla_fornitore
+create trigger controlla_ordine_valido
     before insert or update
     on Include
     for each row
@@ -257,9 +257,9 @@ end;
 $$;
 
 -- Il trigger viene eseguito ad ogni nuovo inserimento in RichiestaAcquisto
-create trigger imposta_numero_richiesta
+create trigger set_numero_richiesta 
     before insert
-    on richiestaacquisto
+    on RichiestaAcquisto
     for each row
 execute procedure set_numero_richiesta();
 
@@ -335,6 +335,10 @@ create trigger numero_articoli_aggiorna
 	on Include
 	for each row
 execute procedure numero_articoli_aggiorna();
+
+create index on Include(Ordine);
+
+create index on RichiestaAcquisto(DataEmissione);
 
 commit;
 
