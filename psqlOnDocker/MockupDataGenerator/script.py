@@ -180,6 +180,8 @@ tabelle = {
 for tabella, listaEntry in tabelle.items():
     queries = []
     for entry in listaEntry:
+        if tabella == 'Articolo':
+            entry.pop('Codice')
         queries.append(querygenerator.build_from_json(tabella, entry))
     querygenerator.make_sql(tabella, queries)
 
@@ -262,6 +264,7 @@ for key, value in tabelle.items():
 # %%
 queries = []
 for entry in listaOrdine:
+    entry.pop('Codice')
     queries.append(querygenerator.build_from_json('Ordine', entry))
 querygenerator.make_sql('Ordine', queries)
 queries = []
