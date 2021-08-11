@@ -34,7 +34,7 @@ create table Dipartimento
 create table ProssimoCodiceRichiesta
 (
     Dipartimento   char(6) primary key references Dipartimento on update cascade on delete cascade,
-    ProssimoNumero integer default 0
+    ProssimoNumero integer default 1
 );
 
 
@@ -164,6 +164,9 @@ begin
 end;
 $$;
 
+
+
+
 -- Il trigger viene eseguito dopo ogni associazione ad un ordine di un'entry di include
 create trigger calcola_prezzo_finale 
     before insert or update of Ordine
@@ -172,6 +175,43 @@ create trigger calcola_prezzo_finale
 execute procedure calcola_prezzo_finale();
 
 
+
+-- Verifica che la quantità minima venga rispettata
+create or replace function controlla_quantita_minima()
+    returns trigger
+    language plpgsql as
+$$
+declare
+    q    integer;
+	forn character(13);
+begin
+    if new.Ordine IS NULL then
+        return new;
+    end if;
+
+    select Fornitore into forn from Ordine where Codice = new.Ordine;
+
+    select QuantitaMinima
+		into q
+		from Fornisce
+		where (Fornisce.Articolo = new.Articolo) and
+	          (forn = Fornisce.Fornitore);
+
+    if new.Quantita < q then
+        raise notice 'La quantità minima ordinable non è soddisfatta';
+        return null;
+    end if;
+    return new;
+end;
+$$;
+
+-- Il trigger viene eseguito ad ogni inserimento o aggiornamento dell'attributo
+-- Ordine in una entry di include
+create trigger controlla_quantita_minima 
+    before insert or update of ordine
+    on Include
+    for each row
+execute procedure controlla_quantita_minima();
 
 
 -- Funzione che verifica il rispetto del vincolo aziendale imposto

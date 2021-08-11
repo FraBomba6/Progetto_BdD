@@ -959,7 +959,7 @@ services:
 
 Il contenuto del DBMS viene serializzato all'interno della directory `psqlOnDocker/db`.
 
-## Implementazione della Base di Dati
+## SQL 
 
 ### Definizione dei tipi enum
 
@@ -1115,6 +1115,9 @@ create table Include
 
 ```
 
+|
+|
+
 È stata, inoltre, implementata la tabella `ProssimoCodiceRichiesta`, che permette di mantenere in memoria il codice di una nuova eventuale Richiesta d'Acquisto per ognuno dei dipartimenti presenti. Ad esempio:
 
 |Dipartimento | ProssimoNumero |
@@ -1123,7 +1126,8 @@ create table Include
 | WPIUQD      |   3			   |
 | $\cdots$    |   $\cdots$     |
 
-
+|
+|
 
 L'aggiornamento dei campi al suo interno è permesso dai trigger descritti al punto successivo.
 
@@ -1134,15 +1138,15 @@ create table ProssimoCodiceRichiesta
 		references Dipartimento 
 		on update cascade 
 		on delete cascade,
-    ProssimoNumero integer default 0
+    ProssimoNumero integer default 1
 );
 ```
+
+\newpage
 
 ### Definizione dei trigger
 
 Sono stati, inoltre, definiti i trigger necessari al mantenimento del vincolo aziendale descritto al punto [3.2.1](#vincoli), alla sincronizzazione degli attributi derivati e al mantenimento di informazioni coerenti e consistenti all'interno della base di dati. 
-
-\newpage
 
 #### Vincolo aziendale
 
@@ -1354,6 +1358,49 @@ execute procedure numero_articoli_aggiorna();
 
 \newpage
 
+#### Verifica del rispetto della quantità minima ordinabile
+
+```sql
+create or replace function controlla_quantita_minima()
+    returns trigger
+    language plpgsql as
+$$
+declare
+    q    integer;
+	forn character(13);
+begin
+    if new.Ordine IS NULL then
+        return new;
+    end if;
+
+    SELECT Fornitore 
+		INTO forn 
+		FROM Ordine 
+		WHERE Codice = new.Ordine;
+
+    SELECT QuantitaMinima
+		INTO q
+		FROM Fornisce
+		WHERE (Fornisce.Articolo = new.Articolo) AND
+	          (forn = Fornisce.Fornitore);
+
+    if new.Quantita < q then
+        raise notice 'La quantità minima ordinable non è soddisfatta';
+        return null;
+    end if;
+    return new;
+end;
+$$;
+
+create trigger controlla_quantita_minima 
+    before insert or update of Ordine
+    on Include
+    for each row
+execute procedure controlla_quantita_minima();
+```
+
+\newpage
+
 #### Inserimento di un nuovo dipartimento in ProssimoCodiceRichiesta
 
 ```sql
@@ -1451,6 +1498,10 @@ Al fine di agevolare il processo di creazione e popolamento della base di dati, 
 
 - La generazione dei dati di mockup (`make mockup`)
 - La creazione e il popolamento della base di dati (`make db`)
+
+\newpage
+
+# Query Significative
 
 \newpage
 
