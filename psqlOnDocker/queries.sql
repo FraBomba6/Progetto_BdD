@@ -114,12 +114,9 @@ begin
 	insert into RichiestaAcquisto(Dipartimento) values (dip);
 	select prossimonumero-1 into codice from ProssimoCodiceRichiesta where Dipartimento=dip;
 
-	
-	if array_length(_articolo, 1) = 0 then
+	if array_length(_articolo, 1) IS NULL then
 		raise exception 'Specificare almeno un articolo';
-	end if;
-
-	if array_length(_quantita, 1) = 0 then
+	elseif array_length(_quantita, 1) IS NULL then
 		insert into Include(Dipartimento, NumeroRichiesta, Articolo, Quantita)
 			select dip, codice, unnest(_articolo), 1;
 	elseif array_length(_articolo, 1) = array_length(_quantita, 1) then

@@ -286,8 +286,7 @@ declare
 begin
     select ProssimoNumero into n from ProssimoCodiceRichiesta where Dipartimento = new.Dipartimento;
     if n is null then
-        raise notice 'Errore: dipartimento non valido';
-        return null;
+        raise exception 'Errore: dipartimento non valido';
     else
         new.numero := n;
         update ProssimoCodiceRichiesta set ProssimoNumero = n + 1 where Dipartimento = new.Dipartimento;
