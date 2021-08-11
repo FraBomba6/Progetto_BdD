@@ -379,5 +379,74 @@ create index on Include(Ordine);
 
 create index on RichiestaAcquisto(DataEmissione);
 
+
+
+
+-- Funzioni
+
+
+create or replace function NuovoOrdine(fornitore text, _articolo integer[], _richiesta integer[], _dipartimento text[])
+  returns void 
+  language plpgsql as
+$$
+declare
+	codice integer;
+begin
+
+	if array_length(_articolo, 1) == 0 then
+		raise exception 'Ogni vettore deve contenere almeno un elemento';
+	end if;
+
+	if array_length(_articolo, 1) == array_length(_richiesta, 1) AND
+	   array_length(_richiesta, 1) == array_length(_dipartimento, 1) then
+
+		insert into Ordine(Fornitore) values (NuovoOrdine.Fornitore);
+
+		codice = currval('ordine_codice_seq');
+		UPDATE Include i
+			SET Ordine = codice
+			FROM (
+				select unnest(_dipartimento) as Dipartimento,
+					   unnest(_richiesta) as NumeroRichiesta,
+					   unnest(_articolo) as Articolo 
+			 ) u
+		WHERE i.Dipartimento = u.Dipartimento and
+			  i.NumeroRichiesta = u.NumeroRichiesta and
+			  i.Articolo = u.Articolo;
+	else
+		raise exception 'Gli array hanno cardinalità diverse';
+	end if;
+end;
+$$;
+
+
+
+
+create or replace function InserisciRichiesta(dip char(6), _articolo integer[], _quantita integer[])
+  returns void
+  language plpgsql as
+$$
+declare
+	codice integer;
+begin
+	select prossimonumero into codice from ProssimoCodiceRichiesta where Dipartimento=dip;
+
+	if array_length(_articolo, 1) IS NULL then
+		raise exception 'Specificare almeno un articolo';
+	elseif array_length(_quantita, 1) IS NULL then
+		insert into RichiestaAcquisto(Dipartimento) values (dip);
+		insert into Include(Dipartimento, NumeroRichiesta, Articolo, Quantita)
+			select dip, codice, unnest(_articolo), 1;
+	elseif array_length(_articolo, 1) = array_length(_quantita, 1) then
+		insert into RichiestaAcquisto(Dipartimento) values (dip);
+		insert into Include(Dipartimento, NumeroRichiesta, Articolo, Quantita)
+			select dip, codice, unnest(_articolo), unnest(_quantita);
+	else
+		raise exception 'Gli array hanno cardinalità diverse';
+	end if;
+end;
+$$;
+
+
 commit;
 

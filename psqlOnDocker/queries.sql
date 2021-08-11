@@ -83,7 +83,7 @@ begin
 	if array_length(_articolo, 1) == array_length(_richiesta, 1) AND
 	   array_length(_richiesta, 1) == array_length(_dipartimento, 1) then
 
-		insert into Ordine(Fornitore) values (fornitore);
+		insert into Ordine(Fornitore) values (NuovoOrdine.Fornitore);
 
 		codice = currval('ordine_codice_seq');
 		UPDATE Include i
