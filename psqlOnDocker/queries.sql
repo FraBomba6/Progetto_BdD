@@ -68,14 +68,28 @@ select * from Include inner join Ordine on Include.Ordine=Ordine.Codice;
 
 -- Inserimento di un nuovo ordine
 
-start transaction;
-
-insert into Ordine(Fornitore) values ('YY39520660462');
-
-update Include set Ordine=currval('persons_id_seq') 
-			   where Articolo IN (123,22,33,56) and
-		             Ordine is NULL;	
-commit;
+create or replace function NuovoOrdine(fornitore text, _articolo integer[], _richiesta integer[], _dipartimento text[])
+  returns void 
+  language plpgsql as
+$$
+declare
+	codice integer;
+begin
+	insert into Ordine(Fornitore) values (fornitore);
+	-- TODO check array length
+	codice = currval('ordine_codice_seq');
+	UPDATE Include i
+		SET Ordine = codice
+		FROM (
+			select unnest(_dipartimento) as Dipartimento,
+				   unnest(_richiesta) as NumeroRichiesta,
+				   unnest(_articolo) as Articolo 
+		 ) u
+	WHERE i.Dipartimento = u.Dipartimento and
+	      i.NumeroRichiesta = u.NumeroRichiesta and
+		  i.Articolo = u.Articolo;
+end;
+$$;
 
 
 -- oppure
@@ -101,8 +115,9 @@ declare
 begin
 	insert into RichiestaAcquisto(Dipartimento) values (dip);
 	-- TODO check array length
-	select prossimonumero-1 into codice from ProssimoCodiceRichiesta where Dipartimento=dip order by ProssimoNumero desc limit 1;
-	insert into Include(Dipartimento, NumeroRichiesta, Articolo, Quantita)
-	SELECT dip, codice, unnest(_articolo), unnest(_quantita);
+	select prossimonumero-1 into codice from ProssimoCodiceRichiesta where Dipartimento=dip;
+	insert into Include(Dipartimento, NumeroRichiesta, Articolo, Quantita);
+	select dip, codice, unnest(_articolo), unnest(_quantita);
 end;
 $$;
+
