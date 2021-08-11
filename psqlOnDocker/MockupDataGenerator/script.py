@@ -6,7 +6,6 @@ import random
 
 fake = Faker()
 
-StatoArticolo = ['richiesto', 'ordinato', 'spedito', 'consegnato']
 Classe = ['cancelleria', 'pulizia', 'libri', 'elettronica', 'informatica', 'mobilia']
 UnitaDiMisura = ['cad', 'kg', 'm', 'l']
 StatoOrdine = ['emesso', 'spedito', 'consegnato', 'annullato']
@@ -140,7 +139,7 @@ for i in range(2400):
 
 listaArticolo = []
 for i in range(300):
-    listaArticolo.append(getArticolo(i))
+    listaArticolo.append(getArticolo(i+1))
 
 listaFornitore = []
 listaRecapitoTelefonico = []
@@ -160,7 +159,7 @@ for i in range(450):
 
 listaInclude = []
 for i in range(len(listaRichiestaAcquisto)):
-    numero = i // len(listaDipartimento)
+    numero = (i // len(listaDipartimento)) + 1
     articoliDaOrdinare = random.sample(listaArticolo, 5)
     for articolo in articoliDaOrdinare:
         listaInclude.append(getInclude(listaRichiestaAcquisto[i]['Dipartimento'], numero, articolo['Codice']))
@@ -186,10 +185,10 @@ for tabella, listaEntry in tabelle.items():
 
 # %%
 for i in range(len(listaRichiestaAcquisto)):
-    listaRichiestaAcquisto[i]['Numero'] = i // len(listaDipartimento)
+    listaRichiestaAcquisto[i]['Numero'] = (i // len(listaDipartimento)) + 1
 
 # %%
-codiceOrdine = 0
+codiceOrdine = 1
 listaOrdine = []
 
 # Generate Ordine
@@ -231,7 +230,7 @@ while start <= today:
                     listaOrdine.append(ordine)
                     ordiniSettimanali[fornitore['PartitaIVA']] = codiceOrdine
                     codiceOrdine += 1
-                for i in range(articolo[3] * 150, articolo[3] * 150 + 150):
+                for i in range((articolo[3] - 1) * 150, (articolo[3] - 1) * 150 + 150):
                     if listaInclude[i]['Dipartimento'] == articolo[2] and listaInclude[i]['NumeroRichiesta'] == articolo[3] and listaInclude[i]['Articolo'] == articolo[0]:
                         listaInclude[i]['Ordine'] = ordiniSettimanali[articolo[1]]
                         break

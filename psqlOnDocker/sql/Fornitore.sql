@@ -1,10 +1,10 @@
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('YY39520660462','399 Hansen Haven
-East Jessicastad, IA 24584','brownraymond@rodriguez-hays.com','2802623939269');
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('SC32399248674','Unit 1696 Box 0899
-DPO AA 30247','chavezandrew@pierce-thomas.com','2816377374761');
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('NJ77453340830','8636 Pruitt Vista Suite 550
-Juliastad, DE 13255','alanmcdowell@wright.com','9713734874849');
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('VD60714977244','60609 Macdonald Points Suite 523
-Mariamouth, IA 54074','cruzbradley@washington.com','2096555094506');
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('MF73100519952','50158 Ryan Square Suite 307
-Briggston, TX 99271','tpena@byrd-arnold.com','6303698817390');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('WC49456042148','784 Rodriguez Plains Suite 119
+Lake Richard, CA 21629','smalone@petersen.com','7313147475217');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('EZ73557436113','53480 Calderon Gardens Suite 135
+Lewisland, NC 65956','gnguyen@barnes.com','0550292103438');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('ZT08016343944','91336 Joyce Garden Apt. 878
+South Randall, AK 10303','rebeccacarlson@conrad.info','1020701205122');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('AD74316191094','146 Graham Roads Apt. 406
+Ramostown, LA 87172','bryanday@simmons-knight.com','0611193553747');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('CI69332617043','670 Tyler Lakes Apt. 264
+Lake Elizabeth, MO 87313','nflores@lopez.org','4030030211278');
