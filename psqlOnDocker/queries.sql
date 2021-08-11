@@ -75,7 +75,6 @@ $$
 declare
 	codice integer;
 begin
-	insert into Ordine(Fornitore) values (fornitore);
 
 	if array_length(_articolo, 1) == 0 then
 		raise exception 'Ogni vettore deve contenere almeno un elemento';
@@ -83,6 +82,8 @@ begin
 
 	if array_length(_articolo, 1) == array_length(_richiesta, 1) AND
 	   array_length(_richiesta, 1) == array_length(_dipartimento, 1) then
+
+		insert into Ordine(Fornitore) values (fornitore);
 
 		codice = currval('ordine_codice_seq');
 		UPDATE Include i
@@ -111,15 +112,16 @@ $$
 declare
 	codice integer;
 begin
-	insert into RichiestaAcquisto(Dipartimento) values (dip);
-	select prossimonumero-1 into codice from ProssimoCodiceRichiesta where Dipartimento=dip;
+	select prossimonumero into codice from ProssimoCodiceRichiesta where Dipartimento=dip;
 
 	if array_length(_articolo, 1) IS NULL then
 		raise exception 'Specificare almeno un articolo';
 	elseif array_length(_quantita, 1) IS NULL then
+		insert into RichiestaAcquisto(Dipartimento) values (dip);
 		insert into Include(Dipartimento, NumeroRichiesta, Articolo, Quantita)
 			select dip, codice, unnest(_articolo), 1;
 	elseif array_length(_articolo, 1) = array_length(_quantita, 1) then
+		insert into RichiestaAcquisto(Dipartimento) values (dip);
 		insert into Include(Dipartimento, NumeroRichiesta, Articolo, Quantita)
 			select dip, codice, unnest(_articolo), unnest(_quantita);
 	else
