@@ -76,37 +76,35 @@ declare
 	codice integer;
 begin
 	insert into Ordine(Fornitore) values (fornitore);
-	-- TODO check array length
-	codice = currval('ordine_codice_seq');
-	UPDATE Include i
-		SET Ordine = codice
-		FROM (
-			select unnest(_dipartimento) as Dipartimento,
-				   unnest(_richiesta) as NumeroRichiesta,
-				   unnest(_articolo) as Articolo 
-		 ) u
-	WHERE i.Dipartimento = u.Dipartimento and
-	      i.NumeroRichiesta = u.NumeroRichiesta and
-		  i.Articolo = u.Articolo;
+
+	if array_length(_articolo, 1) == 0 then
+		raise exception 'Ogni vettore deve contenere almeno un elemento';
+	end if;
+
+	if array_length(_articolo, 1) == array_length(_richiesta, 1) AND
+	   array_length(_richiesta, 1) == array_length(_dipartimento, 1) then
+
+		codice = currval('ordine_codice_seq');
+		UPDATE Include i
+			SET Ordine = codice
+			FROM (
+				select unnest(_dipartimento) as Dipartimento,
+					   unnest(_richiesta) as NumeroRichiesta,
+					   unnest(_articolo) as Articolo 
+			 ) u
+		WHERE i.Dipartimento = u.Dipartimento and
+			  i.NumeroRichiesta = u.NumeroRichiesta and
+			  i.Articolo = u.Articolo;
+	else
+		raise exception 'Gli array hanno cardinalità diverse';
+	end if;
 end;
 $$;
 
 
--- oppure
-
-start transaction;
-
-insert into Ordine(Fornitore) values ('YY39520660462');
-
-update Include set Ordine=currval('persons_id_seq') 
-			   where (NumeroRichiesta, Dipartimento, Articolo) IN
-			         ((2, 'DYQSNJ', 226), (0, 'WPIUQD', 145));
-
-commit;
-
 -- Inserimento di una nuova richiesta
 
-create or replace function InserisciRichiesta(dip text, _articolo integer[], _quantita integer[])
+create or replace function InserisciRichiesta(dip char(6), _articolo integer[], _quantita integer[])
   returns void 
   language plpgsql as
 $$
@@ -114,10 +112,31 @@ declare
 	codice integer;
 begin
 	insert into RichiestaAcquisto(Dipartimento) values (dip);
-	-- TODO check array length
 	select prossimonumero-1 into codice from ProssimoCodiceRichiesta where Dipartimento=dip;
-	insert into Include(Dipartimento, NumeroRichiesta, Articolo, Quantita);
-	select dip, codice, unnest(_articolo), unnest(_quantita);
+
+	
+	if array_length(_articolo, 1) = 0 then
+		raise exception 'Specificare almeno un articolo';
+	end if;
+
+	if array_length(_quantita, 1) = 0 then
+		insert into Include(Dipartimento, NumeroRichiesta, Articolo, Quantita)
+			select dip, codice, unnest(_articolo), 1;
+	elseif array_length(_articolo, 1) = array_length(_quantita, 1) then
+		insert into Include(Dipartimento, NumeroRichiesta, Articolo, Quantita)
+			select dip, codice, unnest(_articolo), unnest(_quantita);
+	else
+		raise exception 'Gli array hanno cardinalità diverse';
+	end if;
 end;
 $$;
+
+-- Visualizzazione degli articoli contenuti in una richiesta d'acquisto
+
+select * from RichiestaAcquisto inner join Include on RichiestaAcquisto.Dipartimento = Include.Dipartimento and RichiestaAcquisto.Numero = Include.NumeroRichiesta;
+
+
+-- Calcolo della spesa mensile dei dipartimenti
+
+-- Calcolo della spesa complessiva dell’ente in un intervallo di tempo (funzione?)
 
