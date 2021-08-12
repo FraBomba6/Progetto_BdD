@@ -68,7 +68,7 @@ select * from Include inner join Ordine on Include.Ordine=Ordine.Codice;
 
 -- Inserimento di un nuovo ordine
 
-create or replace function NuovoOrdine(fornitore text, _articolo integer[], _richiesta integer[], _dipartimento text[])
+create or replace function InserisciOrdine(fornitore text, _articolo integer[], _richiesta integer[], _dipartimento text[])
   returns void 
   language plpgsql as
 $$
@@ -76,12 +76,12 @@ declare
 	codice integer;
 begin
 
-	if array_length(_articolo, 1) == 0 then
+	if array_length(_articolo, 1) = 0 then
 		raise exception 'Ogni vettore deve contenere almeno un elemento';
 	end if;
 
-	if array_length(_articolo, 1) == array_length(_richiesta, 1) AND
-	   array_length(_richiesta, 1) == array_length(_dipartimento, 1) then
+	if array_length(_articolo, 1) = array_length(_richiesta, 1) AND
+	   array_length(_richiesta, 1) = array_length(_dipartimento, 1) then
 
 		insert into Ordine(Fornitore) values (NuovoOrdine.Fornitore);
 
@@ -137,5 +137,18 @@ select * from RichiestaAcquisto inner join Include on RichiestaAcquisto.Dipartim
 
 -- Calcolo della spesa mensile dei dipartimenti
 
+select include.dipartimento as "dipartimento", count(*) as "richieste", sum(prezzounitario*quantita) as "spesa"
+from include inner join richiestaacquisto
+on richiestaacquisto.dipartimento = include.dipartimento and
+richiestaacquisto.numero = include.numerorichiesta
+where dataemissione between '2021-01-01' and '2021-02-01'
+group by include.dipartimento
+
 -- Calcolo della spesa complessiva dell’ente in un intervallo di tempo (funzione?)
 
+SELECT COUNT(DISTINCT NumeroRichiesta) AS "Richieste", 
+	   SUM(PrezzoUnitario*Quantita) AS "Spesa"
+	FROM Include AS i INNER JOIN RichiestaAcquisto AS r
+	ON r.dipartimento = i.dipartimento AND
+	   r.numero = i.numerorichiesta
+	WHERE DataEmissione BETWEEN '2021-01-01' AND '2021-02-01'

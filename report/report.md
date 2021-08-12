@@ -1265,6 +1265,7 @@ execute procedure rimuovi_ordine();
 ```
 
 |
+|
 
 Un ordine può essere, infatti, rimosso solamente se si trova in stato **annullato**. Nel caso in cui l'ordine sia nello stato **emesso**, il trigger procede autonomamente alla modifica dello stato e alla successiva cancellazione. Questo è motivato dal fatto che la cancellazione di un ordine emesso non può provocare inconsistenze nella base di dati.
 
@@ -1479,6 +1480,9 @@ create index on RichiestaAcquisto(DataEmissione);
 
 L'implementazione descritta è contenuta interamente nel file `create_db.sql` presente all'interno della directory `psqlOnDocker`.
 
+|
+|
+
 ## Produzione ed Inserimento dei dati di Mockup {#mockup}
 
 Al fine di popolare il DBMS con dati realistici e coerenti con i volumi dichiarati al punto [4.1.2](#volumi), è stato realizzato uno script Python (`psqlOnDocker/MockupDataGenerator/script.py`) che sfrutta la liberia [Faker](https://faker.readthedocs.io/en/master/).
@@ -1492,6 +1496,9 @@ Al fine di definire inserimenti validi, nel corso della generazione dei dati ven
 
 I file vengono, infine, generati all'interno della directory `psqlOnDocker/sql`.
 
+|
+|
+
 ## Generazione della base di dati
 
 Al fine di agevolare il processo di creazione e popolamento della base di dati, è stato definito un Makefile che permette, una volta istanziato il container con il comando `docker compose up -d`:
@@ -1501,7 +1508,248 @@ Al fine di agevolare il processo di creazione e popolamento della base di dati, 
 
 \newpage
 
-# Query Significative
+## Query significative 
+
+Sulla base delle operazioni frequenti individuate al punto [2.4](#op-frequenti) e al fine di agevolare l'usabilità della base di dati, si è scelto di descrivere le query SQL più significative.
+
+#### Visualizzazione di tutti gli articoli
+
+```sql
+-- Tutti gli articoli
+SELECT * FROM Articolo;
+
+-- Articoli filtrati per classe
+SELECT * FROM Articolo WHERE Classe='cancelleria';
+
+-- Articoli filtrati per descrizione
+SELECT * FROM ARTICOLO WHERE Descrizione LIKE '%penna%';
+
+-- Articoli filtrati per descrizione, classe e unità di misura
+SELECT * 
+	FROM Articolo 
+	WHERE Descrizione LIKE '%stampante%' AND
+	Classe='informatica' AND
+	UnitaDiMisura='cad';
+```
+
+|
+|
+
+#### Visualizzazione di tutti gli articoli con specifiche relative al fornitore
+
+```sql
+SELECT Articolo.Codice,
+	   Articolo.Descrizione,
+	   Articolo.UnitaDiMisura,
+	   Fornisce.PrezzoUnitario,
+	   Fornisce.Sconto,
+	   Fornisce.QuantitaMinima,
+	   Fornitore.PartitaIVA
+	FROM Articolo INNER JOIN Fornisce ON Articolo.Codice=Fornisce.Articolo
+	              INNER JOIN Fornitore ON Fornitore.PartitaIVA=Fornisce.Fornitore
+	ORDER BY Articolo.Codice ASC;
+```
+
+|
+|
+
+#### Visualizzazione di tutti gli articoli non forniti da alcun fornitore
+
+```sql
+SELECT Articolo.Codice, 
+	   Articolo.Descrizione,
+	   Articolo.UnitaDiMisura
+	FROM Articolo LEFT JOIN Fornisce ON Articolo.Codice=Fornisce.Articolo
+	WHERE Fornitore IS NULL;
+```
+
+|
+|
+
+#### Aggiornamento dello stato di un ordine
+
+```sql
+UPDATE Ordine SET Stato='spedito' WHERE Codice=2;
+
+UDPATE Ordine SET Stato='consegnato' WHERE Codice=10;
+```
+
+|
+|
+
+#### Visualizzazione delle informazioni relative ad una Richiesta d'Acquisto
+
+```sql
+-- Selezione per dipartimento e numero della richiesta
+SELECT * 
+	FROM RichiestaAcquisto 
+	WHERE Dipartimento='SIJTBK' AND 
+		  Numero=1;
+
+
+-- Selezione in un intervallo di tempo
+SELECT * 
+	FROM RichiestaAcquisto 
+	WHERE DataEmissione BETWEEN 
+		  '2020-10-01' AND '2020-11-02'
+	ORDER BY DataEmissione DESC;
+```
+
+|
+|
+
+#### Visualizzazione di tutti gli articoli contenuti in una Richiesta d'Acquisto
+
+```sql
+-- Selezione per dipartimento e numero della richiesta
+SELECT *
+	FROM Include
+	WHERE Dipartimento='SIJTBK' AND
+		  NumeroRichiesta=1;
+
+-- Selezione in un intervallo di tempo
+SELECT *
+	FROM RichiestaAcquisto INNER JOIN Include
+	ON RichiestaAcquisto.Dipartimento = Include.Dipartimento AND
+	   RichiestaAcquisto.Numero = Include.NumeroRichiesta
+	WHERE DataEmissione BETWEEN '2020-10-01' AND '2020-11-02';
+
+-- Con informazioni relative al rispettivo ordine per ogni articolo
+SELECT * FROM Include 
+	LEFT JOIN Ordine 
+	ON Include.Ordine=Ordine.Codice;
+```
+
+\newpage
+
+#### Inserimento di un nuovo ordine
+
+L'operazione di inserimento di un nuovo Ordine richiede la creazione dello stesso e, successivamente, l'aggiornamento dell'attributo **Ordine** nell'entità *Include* per tutte le entry interessate. È stata, pertanto, definita la funzione `NuovoOrdine` che, acquisendo parametri relativi al **fornitore dell'ordine** e all'insieme delle triple `(Articolo, NumeroRichiesta, Dipartimento)`, costruisce un nuovo Ordine associando gli articoli specificati. 
+
+|
+|
+
+```sql
+create or replace function InserisciOrdine(fornitore char(16), articolo integer[], 
+                                           richiesta integer[], dipartimento text[])
+  returns void 
+  language plpgsql as
+$$
+declare
+	codice integer;
+begin
+
+	if array_length(articolo, 1) = 0 then
+		raise exception 'Ogni vettore deve contenere almeno un elemento';
+	end if;
+
+	if array_length(articolo, 1) = array_length(richiesta, 1) AND
+	   array_length(richiesta, 1) = array_length(dipartimento, 1) then
+
+		INSERT INTO Ordine(Fornitore) VALUES (NuovoOrdine.Fornitore);
+
+		codice = currval('ordine_codice_seq');
+		UPDATE Include i
+			SET Ordine = codice
+			FROM (
+				select unnest(dipartimento) as Dipartimento,
+					   unnest(richiesta) as NumeroRichiesta,
+					   unnest(articolo) as Articolo 
+			 ) u
+		WHERE i.Dipartimento = u.Dipartimento and
+			  i.NumeroRichiesta = u.NumeroRichiesta and
+			  i.Articolo = u.Articolo;
+
+	else
+
+		raise exception 'Gli array hanno cardinalità diverse';
+
+	end if;
+end;
+$$;
+```
+
+\newpage
+
+#### Inserimento di una nuova Richiesta d'Acquisto
+
+Analogamente alla procedura di inserimento di un nuovo ordine, si è scelto di definire una funzione per l'inserimento di una Richiesta d'Acquisto. Questa permette l'inserimento della richiesta nell'entità *RichiestaAcquisto* e dei rispettivi articoli richiesti nell'entità *Include*.  
+
+|
+|
+
+```sql
+create or replace function InserisciRichiesta(dip char(6), articolo integer[], quantita integer[])
+  returns void 
+  language plpgsql as
+$$
+declare
+	codice integer;
+begin
+	SELECT ProssimoNumero INTO Codice FROM ProssimoCodiceRichiesta WHERE Dipartimento=dip;
+
+	if array_length(articolo, 1) IS NULL then
+
+		raise exception 'Specificare almeno un articolo';
+
+	elseif array_length(quantita, 1) IS NULL then
+
+		INSERT INTO RichiestaAcquisto(Dipartimento) VALUES (dip);
+
+		INSERT INTO Include(Dipartimento, NumeroRichiesta, Articolo, Quantita)
+			SELECT dip, codice, unnest(articolo), 1;
+
+	elseif array_length(articolo, 1) = array_length(quantita, 1) then
+
+		INSERT INTO RichiestaAcquisto(Dipartimento) VALUES (dip);
+
+		INSERT INTO Include(Dipartimento, NumeroRichiesta, Articolo, Quantita)
+			SELECT dip, codice, unnest(articolo), unnest(quantita);
+	else
+
+		raise exception 'Gli array hanno cardinalità diverse';
+
+	end if;
+end;
+$$;
+
+```
+
+\newpage
+
+#### Calcolo della spesa mensile dei dipartimenti
+
+Si definisce la query che, dato un intervallo di tempo espresso tramite **data di inizio** e **data di fine**, calcola, per ogni dipartimento, il numero di richieste d'acquisto effettuate e la spesa complessiva. 
+
+|
+|
+
+```sql
+SELECT i.Dipartimento AS "Dipartimento", 
+       COUNT(DISTINCT NumeroRichiesta) AS "Richieste", 
+	   SUM(PrezzoUnitario*Quantita) AS "Spesa"
+	FROM Include AS i INNER JOIN RichiestaAcquisto AS r
+	ON r.dipartimento = i.dipartimento AND
+	   r.numero = i.numerorichiesta
+	WHERE DataEmissione BETWEEN '2021-01-01' AND '2021-02-01'
+	GROUP BY i.Dipartimento;
+```
+|
+|
+
+#### Calcolo della spesa complessiva dell'ente in un intervallo di tempo
+
+|
+|
+
+```sql
+SELECT COUNT(DISTINCT NumeroRichiesta) AS "Richieste", 
+	   SUM(PrezzoUnitario*Quantita) AS "Spesa"
+	FROM Include AS i INNER JOIN RichiestaAcquisto AS r
+	ON r.dipartimento = i.dipartimento AND
+	   r.numero = i.numerorichiesta
+	WHERE DataEmissione BETWEEN '2021-01-01' AND '2021-02-01';
+```
 
 \newpage
 
@@ -1511,9 +1759,5 @@ Al fine di agevolare il processo di creazione e popolamento della base di dati, 
 
 # Conclusioni
 
-
-
-
-
-
+Il presente elaborato ha permesso la descrizione dell'attività di progettazione e implementazione di una base di dati relazionale a partire da un insieme di requisiti e specifiche. Sulla base dei pattern progettuali studiati, è stato possibile affrontare le fasi di Analisi dei Requisiti, Progettazione Concettuale, Progettazione Logica e la successiva Progettazione Fisica con implementazione tramite **PostgreSQL**. Infine, è stato utilizzato il DBMS al fine di produrre oppurtune interrogazioni atte ad analizzare i dati presenti, producendo opportune visualizzazioni e statistiche riassuntive tramite il linguaggio di analisi statistica **R**.  
 

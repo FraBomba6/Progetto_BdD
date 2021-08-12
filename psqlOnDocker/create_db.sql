@@ -385,7 +385,7 @@ create index on RichiestaAcquisto(DataEmissione);
 -- Funzioni
 
 
-create or replace function NuovoOrdine(fornitore text, _articolo integer[], _richiesta integer[], _dipartimento text[])
+create or replace function InserisciOrdine(fornitore text, _articolo integer[], _richiesta integer[], _dipartimento text[])
   returns void 
   language plpgsql as
 $$
