@@ -1535,7 +1535,7 @@ SELECT *
 |
 |
 
-#### Visualizzazione di tutti gli articoli con specifiche relative al fornitore
+#### Visualizzazione di tutti gli articoli con specifiche relative ai fornitori
 
 ```sql
 SELECT Articolo.Codice,
