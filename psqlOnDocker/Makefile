@@ -10,5 +10,4 @@ db:
 	@echo "Building database with mockup data insertion"
 	@echo "Edit 'db_builder' file with your configuration parameters"
 	@./db_builder
-	@echo "Done"
 
