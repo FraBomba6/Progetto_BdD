@@ -43,7 +43,7 @@ header-includes:
 
 # Introduzione
 
-Il presente elaborato espone l'attività di progettazione e implementazione di una Base di Dati relazionale, assieme all'attività di analisi dei dati ottenuti da un'applicazione della stessa. 
+Il presente elaborato espone l'attività di progettazione e implementazione di una Base di Dati relazionale, con una successiva analisi dei dati sperimentali in essa contenuti tramite apposite interrogazioni in linguaggio SQL. 
 
 \newpage
 
@@ -1491,8 +1491,10 @@ Quest'ultimo genera, per ognuna delle tabelle presenti all'interno della base di
 
 - **Differenza nella probabilità di acquisto di prodotti diversi** (Ad esempio, i prodotti di classe cancelleria sono richiesti più frequentemente rispetto a quelli di classe mobilia) 
 - **Differenze nei costi dei prodotti sulla base della classe merceologica** (Ad esempio, i prodotti dela classe elettronica hanno costi mediamente più alti rispetto a quelli della classe cancelleria)
+- **Specializzazione dei fornitori** (Si prevede che alcuni fornitori siano specializzati nella vendita di articoli appartenenti ad un sottoinsieme delle classi merceologiche precedentemente definite. Tuttavia, si considerano anche fornitori il cui listino contiene articoli appartenenti a tutte le classi merceologiche)
 
-Al fine di definire inserimenti validi, nel corso della generazione dei dati vengono, inoltre, presi in considerazione i vincoli imposti sulla base di dati e controllati dai trigger definiti in precedenza.
+Al fine di definire inserimenti validi, nel corso della generazione dei dati vengono, inoltre, presi in considerazione i vincoli imposti sulla base di dati e controllati dai trigger definiti in precedenza. Il periodo di attività dell'ente preso in considerazione è, inoltre, quello di un ipotetico anno solare (nella fattispecie, l'anno 2020).
+
 
 I file vengono, infine, generati all'interno della directory `psqlOnDocker/sql`.
 
