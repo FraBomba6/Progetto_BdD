@@ -322,9 +322,9 @@ Al fine di valutare il mantenimento o l'eliminazione delle ridondanze presenti n
 |-|:-:|-:|
 |Responsabile|E|25|
 |Dipartimento|R|30|
-|Richiesta d'Acquisto|E|2400|
+|Richiesta d'Acquisto|E|3120|
 |Articolo|E|300|
-|Ordine|E|200|
+|Ordine|E|265|
 |Fornitore|E|5|
 |Include|R|12000|
 |Fornisce|R|450|
