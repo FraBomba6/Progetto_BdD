@@ -12,7 +12,14 @@ spin(){
 		echo -en "\t ${chars:$i:1} $1" "\r"
 	  done
 	done
-	echo -e "\r\t✅"
+	wait $2
+	code=$?
+	if [[ $code -eq 0 ]]; then
+		echo -e "\r\t✅"
+	else
+		tput bold; echo "\nAn error occoured\n"; tput sgr0
+		exit 1;
+	fi
 }
 
 DB_CREATION=create_db.sql
@@ -51,8 +58,6 @@ spin Ordine $!
 spin Include $! 
 
 echo; echo;
-
-clear;
 
 echo -e "Bye\n"
 
