@@ -1,6 +1,5 @@
 # %%
 import datetime
-import pandas
 import querygenerator
 from faker import Faker
 import random
