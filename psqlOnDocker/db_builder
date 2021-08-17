@@ -1,5 +1,20 @@
 #!/bin/bash
 
+clear;
+
+chars="/-\|"
+
+spin(){
+	while kill -0 $2 > /dev/null 2>&1; 
+	do
+	  for (( i=0; i<${#chars}; i++ )); do
+		sleep 0.5
+		echo -en "\t ${chars:$i:1} $1" "\r"
+	  done
+	done
+	echo -e "\r\t✅"
+}
+
 DB_CREATION=create_db.sql
 MOCKUP_DATA=./sql
 DATABASE=ufficioacquisti
@@ -16,34 +31,28 @@ tput bold; echo -en "\rBuilding database"; tput sgr0
 
 tput bold; echo -en "\rMockup Data Insertion\n\n"; tput sgr0
 
-echo -en "\t🕛 Responsabile"
-(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Responsabile.sql") > /dev/null
-echo -e "\r\t✅"
-echo -en "\t🕛 Dipartimento"
-(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Dipartimento.sql") > /dev/null
-echo -e "\r\t✅"
-echo -en "\t🕛 Articolo"
-(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Articolo.sql") > /dev/null
-echo -e "\r\t✅"
-echo -en "\t🕛 Fornitore"
-(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Fornitore.sql") > /dev/null
-echo -e "\r\t✅"
-echo -en "\t🕛 RecapitoTelefonico"
-(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/RecapitoTelefonico.sql") > /dev/null
-echo -e "\r\t✅"
-echo -en "\t🕛 Fornisce"
-(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Fornisce.sql") > /dev/null
-echo -e "\r\t✅"
-echo -en "\t🕛 RichiestaAcquisto"
-(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/RichiestaAcquisto.sql") > /dev/null
-echo -e "\r\t✅"
-echo -en "\t🕛 Ordine"
-(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Ordine.sql") > /dev/null
-echo -e "\r\t✅"
-echo -en "\t🕛 Include"
-(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Include.sql") > /dev/null
-echo -e "\r\t✅"
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Responsabile.sql") > /dev/null &
+spin Reponsabile $!
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Dipartimento.sql") > /dev/null &
+spin Dipartimento $!
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Articolo.sql") > /dev/null &
+spin Articolo $!
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Fornitore.sql") > /dev/null &
+spin Fornitore $!
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/RecapitoTelefonico.sql") > /dev/null &
+spin RecapitoTelefonico $!
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Fornisce.sql") > /dev/null &
+spin Fornisce $!
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/RichiestaAcquisto.sql") > /dev/null &
+spin Fornisce $!
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Ordine.sql") > /dev/null &
+spin Ordine $! 
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Include.sql") > /dev/null &
+spin Include $! 
 
 echo; echo;
 
+clear;
+
 echo -e "Bye\n"
+

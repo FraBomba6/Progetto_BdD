@@ -141,7 +141,7 @@ def getInclude(dipartimento, numeroRichiesta, articoloInclude):
 volumi = {
     'responsabile': 25,
     'dipartimento': 30,
-    'richiestaAcquisto': 2400,
+    'richiestaAcquisto': 3120,
     'articolo': 300,
     'fornitore': 5,
     'fornisce': 450
@@ -160,7 +160,7 @@ for i in range(volumi['dipartimento']):
 def getProbabilityVector():
     vector = []
     for dip in range(volumi['dipartimento']):
-        vector.append(0.75)
+        vector.append(0.90)
     return vector
 
 
@@ -174,8 +174,23 @@ ricSetFatte = 0
 mediaRic = 0
 settimane = 1
 giorno = 1
-today = datetime.date.today()
-start = today - datetime.timedelta(days=280)
+# today = datetime.date.today()
+# start = today - datetime.timedelta(days=280)
+noWorkDays = [
+    datetime.date(2020, 1, 1),
+    datetime.date(2020, 1, 6),
+    datetime.date(2020, 4, 12),
+    datetime.date(2020, 4, 13),
+    datetime.date(2020, 4, 25),
+    datetime.date(2020, 5, 1),
+    datetime.date(2020, 6, 2),
+    datetime.date(2020, 8, 15),
+    datetime.date(2020, 11, 1),
+    datetime.date(2020, 12, 8),
+    datetime.date(2020, 12, 25),
+    datetime.date(2020, 12, 26)
+]
+start = datetime.date(2020, 1, 1)
 weekDelta = datetime.timedelta(days=7)
 dayDelta = datetime.timedelta(days=1)
 while len(listaRichiestaAcquisto) != volumi['richiestaAcquisto']:
@@ -195,22 +210,26 @@ while len(listaRichiestaAcquisto) != volumi['richiestaAcquisto']:
     else:
         mediaRic = targetSettimanale
 
-    giorno = 1
-    while giorno <= 7 and ricSetFatte < targetSettimanale:
+    giorno = start.isoweekday()
+    while giorno <= 5 and ricSetFatte < targetSettimanale:
         dayDelta = datetime.timedelta(days=giorno)
-        for dip in range(volumi['dipartimento']):
-            if ricSetFatte >= targetSettimanale:
-                break
-            if decision(probability_vector[dip]):
-                listaRichiestaAcquisto.append(getRichiestaAcquisto(listaDipartimento[dip]['Codice'], (start + dayDelta).strftime('%Y-%m-%d')))
-                probability_vector[dip] = probability_vector[dip] / 2
-                ricSetFatte += 1
+        if start + dayDelta not in noWorkDays:
+            for dip in range(volumi['dipartimento']):
+                if ricSetFatte >= targetSettimanale:
+                    break
+                if decision(probability_vector[dip]):
+                    listaRichiestaAcquisto.append(getRichiestaAcquisto(listaDipartimento[dip]['Codice'], (start + dayDelta).strftime('%Y-%m-%d')))
+                    probability_vector[dip] = probability_vector[dip] / 2
+                    ricSetFatte += 1
         giorno += 1
-
     ricSetFatte = 0
     settimane += 1
     probability_vector = getProbabilityVector()
-    start += weekDelta
+
+    if start == datetime.date(2020, 1, 1):
+        start += datetime.timedelta(days=5)
+    else:
+        start += weekDelta
 
 listaArticolo = []
 for i in range(volumi['articolo']):
@@ -274,26 +293,22 @@ tabelle = {
         'Include': listaInclude
     }
 
-
-for tabella, listaEntry in tabelle.items():
-    queries = []
-    for entry in listaEntry:
-        if tabella == 'Articolo':
-            entry.pop('Codice')
-        queries.append(querygenerator.build_from_json(tabella, entry))
-    querygenerator.make_sql(tabella, queries)
-
 # %%
 codiceOrdine = 1
 listaOrdine = []
 
 # Generate Ordine
-today = datetime.date.today()
-start = today - datetime.timedelta(days=280)
-weekDelta = datetime.timedelta(days=7)
+# today = datetime.date.today()
+# start = today - datetime.timedelta(days=280)
+start = datetime.date(2020, 1, 1)
 
-while start <= today + weekDelta:
-    orderDay = start + weekDelta
+while start <= datetime.date(2020, 12, 31):
+    if start == datetime.date(2020, 1, 1):
+        orderDay = start + datetime.timedelta(days=5)
+    else:
+        orderDay = start + weekDelta
+    while orderDay in noWorkDays:
+        orderDay += dayDelta
     print(f"Week from {start} to {orderDay}")
     richiesteValide = []
     for richiesta in listaRichiestaAcquisto:
@@ -333,9 +348,10 @@ while start <= today + weekDelta:
                         listaInclude[i]['Ordine'] = ordiniSettimanali[articolo[1]]
                         break
 
-    start += weekDelta
-
-df_include = pandas.DataFrame().from_records(listaInclude)
+    if start == datetime.date(2020, 1, 1):
+        start += datetime.timedelta(days=5)
+    else:
+        start += weekDelta
 
 # %%
 for entryInclude in listaInclude:
@@ -365,12 +381,14 @@ for key, value in tabelle.items():
     print(f"{key}: {len(value)}")
 
 # %%
-queries = []
-for entry in listaOrdine:
-    entry.pop('Codice')
-    queries.append(querygenerator.build_from_json('Ordine', entry))
-querygenerator.make_sql('Ordine', queries)
-queries = []
-for entry in listaInclude:
-    queries.append(querygenerator.build_from_json('Include', entry))
-querygenerator.make_sql('Include', queries)
+for tabella, listaEntry in tabelle.items():
+    queries = []
+    for entry in listaEntry:
+        if tabella == 'Articolo':
+            entry.pop('Codice')
+        elif tabella == 'RichiestaAcquisto':
+            entry.pop('Numero')
+        elif tabella == 'Ordine':
+            entry.pop('Codice')
+        queries.append(querygenerator.build_from_json(tabella, entry))
+    querygenerator.make_sql(tabella, queries)

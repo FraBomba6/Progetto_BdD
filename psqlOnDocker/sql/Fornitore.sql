@@ -1,10 +1,10 @@
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('NN53033397263','750 Angela Ports Apt. 935
-New Samantha, NH 49831','john27@bradley-bennett.info','0364569125393');
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('RL67727814220','95099 Erik Course Apt. 106
-Brooksland, FL 02894','tiffanyfuentes@kelly-mason.org','5222540543816');
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('DJ44396948250','46215 Davis Motorway
-North Andrea, TN 44653','michael86@thompson.com','9976832576196');
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('ZK14193720659','00331 Jeremy Groves
-South Isabelside, KS 11574','lonnieperry@knapp.com','2262955256639');
-INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('LN63883889708','062 Brandon Lane
-New Beverlyhaven, FL 51870','heidisherman@campbell-rogers.biz','7613484559803');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('RT87446152732','938 Brady Circles
+North Ryanton, IA 10568','williamsfrank@soto.com','4473335560048');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('TD21911754546','50226 Patricia Drive Suite 917
+East Andrew, MO 24407','lopezchristopher@whitehead.info','4445274265391');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('FM78131620196','8614 Baxter Park
+South Steven, ID 44632','andreasingh@morris.com','5272784054067');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('PR20012563270','2437 Parker Locks Suite 698
+Davidland, PA 10044','cynthia22@keith.com','8007797732321');
+INSERT INTO Fornitore(PartitaIVA,Indirizzo,Email,FAX) VALUES ('RL79689498459','5783 Kyle Vista Apt. 813
+East Michaelville, NE 06216','mbrady@goodman.com','6886739287317');

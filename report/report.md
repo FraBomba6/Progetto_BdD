@@ -322,9 +322,9 @@ Al fine di valutare il mantenimento o l'eliminazione delle ridondanze presenti n
 |-|:-:|-:|
 |Responsabile|E|25|
 |Dipartimento|R|30|
-|Richiesta d'Acquisto|E|2400|
+|Richiesta d'Acquisto|E|3120|
 |Articolo|E|300|
-|Ordine|E|200|
+|Ordine|E|265|
 |Fornitore|E|5|
 |Include|R|12000|
 |Fornisce|R|450|
@@ -1510,7 +1510,7 @@ Al fine di agevolare il processo di creazione e popolamento della base di dati, 
 
 ## Query significative 
 
-Sulla base delle operazioni frequenti individuate al punto [2.4](#op-frequenti) e al fine di agevolare l'usabilità della base di dati, si è scelto di descrivere le query SQL più significative.
+Sulla base delle operazioni frequenti individuate al punto [2.4](#op-frequenti) e al fine di agevolare le interrogazioni alla base di dati, vengono di seguito descritte le query significative in linguaggio SQL.
 
 #### Visualizzazione di tutti gli articoli
 
@@ -1759,5 +1759,5 @@ SELECT COUNT(DISTINCT NumeroRichiesta) AS "Richieste",
 
 # Conclusioni
 
-Il presente elaborato ha permesso la descrizione dell'attività di progettazione e implementazione di una base di dati relazionale a partire da un insieme di requisiti e specifiche. Sulla base dei pattern progettuali studiati, è stato possibile affrontare le fasi di Analisi dei Requisiti, Progettazione Concettuale, Progettazione Logica e la successiva Progettazione Fisica con implementazione tramite **PostgreSQL**. Infine, è stato utilizzato il DBMS al fine di produrre oppurtune interrogazioni atte ad analizzare i dati presenti, producendo opportune visualizzazioni e statistiche riassuntive tramite il linguaggio di analisi statistica **R**.  
+Il presente elaborato ha permesso la descrizione dell'attività di progettazione e implementazione di una base di dati relazionale a partire da un insieme di requisiti e specifiche. Sulla base dei pattern progettuali studiati, sono state affrontate le fasi di Analisi dei Requisiti, Progettazione Concettuale, Progettazione Logica e la successiva Progettazione Fisica con implementazione tramite **PostgreSQL**. Infine, tramite il linguaggio **R**, è stato interrogato il DBMS al fine di produrre opportune visualizzazioni e statistiche riassuntive atte ad analizzare i dati presenti.
 
