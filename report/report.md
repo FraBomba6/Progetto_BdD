@@ -1164,15 +1164,15 @@ begin
     end if;
 
     SELECT Fornitore 
-		INTO forn
-		FROM Ordine 
-		WHERE Codice = new.Ordine;
+	INTO forn
+	FROM Ordine 
+	WHERE Codice = new.Ordine;
 
     SELECT COUNT(*)
-    	INTO n
-    	FROM Fornisce
-    	WHERE (Fornisce.Articolo = new.Articolo) AND 
-		      (forn = Fornisce.Fornitore);
+    INTO n
+    FROM Fornisce
+    WHERE Fornisce.Articolo = new.Articolo 
+		  AND forn = Fornisce.Fornitore;
 
     if n = 0 then
         raise notice 'Prodotto non valido per fornitore';
@@ -1209,15 +1209,15 @@ begin
         currentOrder = new.Ordine;
 
         SELECT Fornitore 
-			INTO currentSupplier 
-			FROM Ordine 
-			WHERE Codice = currentOrder;
+		INTO currentSupplier 
+		FROM Ordine 
+		WHERE Codice = currentOrder;
         
 		SELECT PrezzoUnitario, Sconto
-        	INTO price, discount
-        	FROM Fornisce
-        	WHERE Fornitore = currentSupplier AND
-				  Articolo = new.Articolo;
+        INTO price, discount
+        FROM Fornisce
+        WHERE Fornitore = currentSupplier
+			  AND Articolo = new.Articolo;
         
 		finalPrice = price * (1 - discount / 100);
         new.PrezzoUnitario = finalPrice;
@@ -1251,8 +1251,8 @@ begin
     end if;
 
     UPDATE Include 
-		SET Ordine=NULL 
-		WHERE Ordine=old.Codice;
+	SET Ordine=NULL 
+	WHERE Ordine=old.Codice;
 
     return old;
 end;
@@ -1286,9 +1286,9 @@ declare
 begin
 
 	UPDATE RichiestaAcquisto 
-		SET NumeroArticoli = NumeroArticoli + new.Quantita 
-		WHERE Dipartimento=new.Dipartimento AND 
-		      Numero=new.NumeroRichiesta;
+	SET NumeroArticoli = NumeroArticoli + new.Quantita 
+	WHERE Dipartimento=new.Dipartimento
+		  AND Numero=new.NumeroRichiesta;
 
 	return new;
 end;
@@ -1310,9 +1310,9 @@ declare
 	n_art integer;
 begin
 	UPDATE RichiestaAcquisto 
-		SET NumeroArticoli = NumeroArticoli - old.Quantita 
-		WHERE Dipartimento=old.Dipartimento AND 
-		      Numero=old.NumeroRichiesta;
+	SET NumeroArticoli = NumeroArticoli - old.Quantita 
+	WHERE Dipartimento=old.Dipartimento
+		  AND Numero=old.NumeroRichiesta;
 	return old;
 end;
 $$;
@@ -1337,14 +1337,14 @@ declare
 begin
 
 	UPDATE RichiestaAcquisto 
-		SET NumeroArticoli = NumeroArticoli - old.Quantita 
-		WHERE Dipartimento=old.Dipartimento AND 
-			  Numero=old.NumeroRichiesta;
+	SET NumeroArticoli = NumeroArticoli - old.Quantita 
+	WHERE Dipartimento=old.Dipartimento
+		  AND Numero=old.NumeroRichiesta;
 
 	UPDATE RichiestaAcquisto 
-		SET NumeroArticoli = NumeroArticoli + new.Quantita 
-		WHERE Dipartimento=new.Dipartimento AND 
-			  Numero=new.NumeroRichiesta;
+	SET NumeroArticoli = NumeroArticoli + new.Quantita 
+	WHERE Dipartimento=new.Dipartimento
+		  AND Numero=new.NumeroRichiesta;
 
 	return new;
 end;
@@ -1375,15 +1375,15 @@ begin
     end if;
 
     SELECT Fornitore 
-		INTO forn 
-		FROM Ordine 
-		WHERE Codice = new.Ordine;
+	INTO forn 
+	FROM Ordine 
+	WHERE Codice = new.Ordine;
 
     SELECT QuantitaMinima
-		INTO q
-		FROM Fornisce
-		WHERE (Fornisce.Articolo = new.Articolo) AND
-	          (forn = Fornisce.Fornitore);
+	INTO q
+	FROM Fornisce
+	WHERE (Fornisce.Articolo = new.Artic
+	      AND (forn = Fornisce.Fornitore);
 
     if new.Quantita < q then
         raise notice 'La quantità minima ordinable non è soddisfatta';
@@ -1438,9 +1438,9 @@ declare
 begin
 
     SELECT ProssimoNumero 
-		INTO n 
-		FROM ProssimoCodiceRichiesta 
-		WHERE Dipartimento = new.Dipartimento;
+	INTO n 
+	FROM ProssimoCodiceRichiesta 
+	WHERE Dipartimento = new.Dipartimento;
 
     if n is null then
         raise notice 'Errore: dipartimento non valido';
@@ -1449,8 +1449,8 @@ begin
         new.numero := n;
 
         UPDATE ProssimoCodiceRichiesta 
-			SET ProssimoNumero = n+1 
-			WHERE Dipartimento = new.Dipartimento;
+		SET ProssimoNumero = n+1 
+		WHERE Dipartimento = new.Dipartimento;
 
         return new;
     end if;
@@ -1528,10 +1528,10 @@ SELECT * FROM ARTICOLO WHERE Descrizione LIKE '%penna%';
 
 -- Articoli filtrati per descrizione, classe e unità di misura
 SELECT * 
-	FROM Articolo 
-	WHERE Descrizione LIKE '%stampante%' AND
-	Classe='informatica' AND
-	UnitaDiMisura='cad';
+FROM Articolo 
+WHERE Descrizione LIKE '%stampante%'
+      AND Classe='informatica'
+	  AND UnitaDiMisura='cad';
 ```
 
 |
@@ -1547,9 +1547,9 @@ SELECT Articolo.Codice,
 	   Fornisce.Sconto,
 	   Fornisce.QuantitaMinima,
 	   Fornitore.PartitaIVA
-	FROM Articolo INNER JOIN Fornisce ON Articolo.Codice=Fornisce.Articolo
-	              INNER JOIN Fornitore ON Fornitore.PartitaIVA=Fornisce.Fornitore
-	ORDER BY Articolo.Codice ASC;
+FROM Articolo INNER JOIN Fornisce ON Articolo.Codice=Fornisce.Articolo
+	          INNER JOIN Fornitore ON Fornitore.PartitaIVA=Fornisce.Fornitore
+ORDER BY Articolo.Codice ASC;
 ```
 
 |
@@ -1561,8 +1561,8 @@ SELECT Articolo.Codice,
 SELECT Articolo.Codice, 
 	   Articolo.Descrizione,
 	   Articolo.UnitaDiMisura
-	FROM Articolo LEFT JOIN Fornisce ON Articolo.Codice=Fornisce.Articolo
-	WHERE Fornitore IS NULL;
+FROM Articolo LEFT JOIN Fornisce ON Articolo.Codice=Fornisce.Articolo
+WHERE Fornitore IS NULL;
 ```
 
 |
@@ -1584,17 +1584,16 @@ UDPATE Ordine SET Stato='consegnato' WHERE Codice=10;
 ```sql
 -- Selezione per dipartimento e numero della richiesta
 SELECT * 
-	FROM RichiestaAcquisto 
-	WHERE Dipartimento='SIJTBK' AND 
-		  Numero=1;
+FROM RichiestaAcquisto 
+WHERE Dipartimento='SIJTBK'
+	  AND Numero=1;
 
 
 -- Selezione in un intervallo di tempo
 SELECT * 
-	FROM RichiestaAcquisto 
-	WHERE DataEmissione BETWEEN 
-		  '2020-10-01' AND '2020-11-02'
-	ORDER BY DataEmissione DESC;
+FROM RichiestaAcquisto 
+WHERE DataEmissione BETWEEN '2020-10-01' AND '2020-11-02'
+ORDER BY DataEmissione DESC;
 ```
 
 |
@@ -1605,21 +1604,21 @@ SELECT *
 ```sql
 -- Selezione per dipartimento e numero della richiesta
 SELECT *
-	FROM Include
-	WHERE Dipartimento='SIJTBK' AND
-		  NumeroRichiesta=1;
+FROM Include
+WHERE Dipartimento='SIJTBK'
+      AND NumeroRichiesta=1;
 
 -- Selezione in un intervallo di tempo
 SELECT *
-	FROM RichiestaAcquisto INNER JOIN Include
-	ON RichiestaAcquisto.Dipartimento = Include.Dipartimento AND
-	   RichiestaAcquisto.Numero = Include.NumeroRichiesta
-	WHERE DataEmissione BETWEEN '2020-10-01' AND '2020-11-02';
+FROM RichiestaAcquisto INNER JOIN Include
+     ON RichiestaAcquisto.Dipartimento = Include.Dipartimento
+   		AND RichiestaAcquisto.Numero = Include.NumeroRichiesta
+WHERE DataEmissione BETWEEN '2020-10-01' AND '2020-11-02';
 
 -- Con informazioni relative al rispettivo ordine per ogni articolo
 SELECT * FROM Include 
-	LEFT JOIN Ordine 
-	ON Include.Ordine=Ordine.Codice;
+LEFT JOIN Ordine 
+ON Include.Ordine=Ordine.Codice;
 ```
 
 \newpage
@@ -1651,16 +1650,17 @@ begin
 		INSERT INTO Ordine(Fornitore) VALUES (NuovoOrdine.Fornitore);
 
 		codice = currval('ordine_codice_seq');
+
 		UPDATE Include i
-			SET Ordine = codice
-			FROM (
-				select unnest(dipartimento) as Dipartimento,
-					   unnest(richiesta) as NumeroRichiesta,
-					   unnest(articolo) as Articolo 
-			 ) u
-		WHERE i.Dipartimento = u.Dipartimento and
-			  i.NumeroRichiesta = u.NumeroRichiesta and
-			  i.Articolo = u.Articolo;
+		SET Ordine = codice
+		FROM (
+			SELECT UNNEST(Dipartimento) as Dipartimento,
+				   UNNEST(Richiesta) as NumeroRichiesta,
+				   UNNEST(Articolo) as Articolo 
+		) u
+		WHERE i.Dipartimento = u.Dipartimento 
+			  AND i.NumeroRichiesta = u.NumeroRichiesta 
+			  AND i.Articolo = u.Articolo;
 
 	else
 
@@ -1699,14 +1699,14 @@ begin
 		INSERT INTO RichiestaAcquisto(Dipartimento) VALUES (dip);
 
 		INSERT INTO Include(Dipartimento, NumeroRichiesta, Articolo, Quantita)
-			SELECT dip, codice, unnest(articolo), 1;
+		SELECT dip, codice, unnest(articolo), 1;
 
 	elseif array_length(articolo, 1) = array_length(quantita, 1) then
 
 		INSERT INTO RichiestaAcquisto(Dipartimento) VALUES (dip);
 
 		INSERT INTO Include(Dipartimento, NumeroRichiesta, Articolo, Quantita)
-			SELECT dip, codice, unnest(articolo), unnest(quantita);
+		SELECT dip, codice, unnest(articolo), unnest(quantita);
 	else
 
 		raise exception 'Gli array hanno cardinalità diverse';
@@ -1730,11 +1730,10 @@ Si definisce la query che, dato un intervallo di tempo espresso tramite **data d
 SELECT i.Dipartimento AS "Dipartimento", 
        COUNT(DISTINCT NumeroRichiesta) AS "Richieste", 
 	   SUM(PrezzoUnitario*Quantita) AS "Spesa"
-	FROM Include AS i INNER JOIN RichiestaAcquisto AS r
-	ON r.dipartimento = i.dipartimento AND
-	   r.numero = i.numerorichiesta
-	WHERE DataEmissione BETWEEN '2021-01-01' AND '2021-02-01'
-	GROUP BY i.Dipartimento;
+FROM Include AS i INNER JOIN RichiestaAcquisto AS r
+	 ON r.dipartimento = i.dipartimento AND r.numero = i.numerorichiesta
+WHERE DataEmissione BETWEEN '2021-01-01' AND '2021-02-01'
+GROUP BY i.Dipartimento;
 ```
 |
 |
@@ -1747,10 +1746,9 @@ SELECT i.Dipartimento AS "Dipartimento",
 ```sql
 SELECT COUNT(DISTINCT NumeroRichiesta) AS "Richieste", 
 	   SUM(PrezzoUnitario*Quantita) AS "Spesa"
-	FROM Include AS i INNER JOIN RichiestaAcquisto AS r
-	ON r.dipartimento = i.dipartimento AND
-	   r.numero = i.numerorichiesta
-	WHERE DataEmissione BETWEEN '2021-01-01' AND '2021-02-01';
+FROM Include AS i INNER JOIN RichiestaAcquisto AS r
+	 ON r.dipartimento = i.dipartimento AND r.numero = i.numerorichiesta
+WHERE DataEmissione BETWEEN '2021-01-01' AND '2021-02-01';
 ```
 
 \newpage
@@ -1767,7 +1765,7 @@ Per una migliore visualizzione, i grafici ad alta risoluzione sono disponibili a
 
 \newpage
 
-### Distribuzione delle classi merceologiche
+## Distribuzione delle classi merceologiche
 
 A partire dalla seguente interrogazione è stato possibile visualizzare la distribuzione di tutti gli articoli sulla base della loro classe merceologica. Come atteso, sulla base delle modalità di produzione dei dati di mockup impiegate, si osserva una prevalenza degli articoli di **cancelleria**. 
 
@@ -1797,7 +1795,7 @@ GROUP BY Classe;
 \newpage
 
 
-### Distribuzione degli articoli per ogni fornitore
+## Distribuzione degli articoli per ogni fornitore
 
 A partire dall'interrogazione seguente, è stato prodotto un barplot atto a raffigurare la distribuzione degli articoli forniti da ognuno dei fornitori, con un'ulteriore suddivisione basata sulle diverse classi merceologiche.
 
@@ -1825,7 +1823,7 @@ GROUP BY Fornitore, Classe;
 
 \newpage
 
-### Confronto della spesa dei dipartimenti
+## Confronto della spesa dei dipartimenti
 
 A partire dall'interrogazione seguente, è stato prodotto un barplot atto a raffigurare, per ogni dipartimento, la spesa effettuata per articoli appartenenti alle varie classi merceologiche definite, nell'anno solare considerato. 
 
@@ -1854,7 +1852,7 @@ GROUP BY Dipartimento, Classe;
 
 \newpage
 
-### Spesa totale per classe merceologica 
+## Spesa totale per classe merceologica 
 
 
 A partire dall'interrogazione seguente, è stato prodotto un barplot che raffigura la spesa complessiva nel corso dell'anno solare considerato per ognuna delle classi merceologiche. Si osserva come i prodotti di classe *informatica* siano quelli che hanno comportato la spesa maggiore, mentre articoli di altre classi hanno comportato una spesa più simile fra loro. Ciò è ragionevole immaginando che prodotti appartenenti alla classe informatica abbiano un costo maggiore di articoli di, ad esempio, cancelleria.
@@ -1901,7 +1899,7 @@ GROUP BY Classe;
 
 \newpage 
 
-### Numero di richieste d'acquisto effettuate dai dipartimenti a suddivisione trimestrale
+## Richieste d'acquisto trimestrali effettuate dai dipartimenti
 
 A partire dall'interrogazione seguente, è stato prodotto un barplot atto a raffigurare, per ognuno dei dipartimenti, il numero di richieste d'acquisto effettuate trimestralmente.
 
@@ -1934,7 +1932,7 @@ ORDER BY Trimestre, NumeroRichieste;
 
 \newpage
 
-### Numero di richieste d'acquisto mensili 
+## Numero di richieste d'acquisto mensili 
 
 A partire dall'interrogazione seguente, è stato prodotto un barplot atto a raffigurare la quantità di richieste d'acquisto effettuate per ogni mese dell'anno solare. Si osserva, in particolare, come i mesi di gennaio e settembre siano stati quelli con maggior numero di richieste.
 
@@ -1963,7 +1961,7 @@ ORDER BY Mese;
 
 \newpage
 
-### Spesa dei dipartimento nel mese di giugno
+## Spesa dei dipartimento nel mese di giugno
 
 A partire dall'interrogazione seguente, è stato prodotto un barplot che raffigura la spesa effettuata da ogni dipartimento nel corso del mese di giugno. Si osserva, in particolare, come il dipartimento `WITCIO` sia quello che ha richiesto la spesa maggiore. Modificando opportunamente la condizione della query SQL, è possibile riprodurre il diagramma per qualunque altro mese dell'anno solare.
 
@@ -1973,7 +1971,8 @@ A partire dall'interrogazione seguente, è stato prodotto un barplot che raffigu
 ```sql
 SELECT i.Dipartimento, SUM((Quantita * PrezzoUnitario)) Spesa
 FROM Include i
-    JOIN (SELECT Dipartimento, Numero, DataEmissione FROM RichiestaAcquisto) r ON r.Dipartimento = i.Dipartimento AND r.Numero = i.NumeroRichiesta
+    JOIN (SELECT Dipartimento, Numero, DataEmissione FROM RichiestaAcquisto) r 
+	ON r.Dipartimento = i.Dipartimento AND r.Numero = i.NumeroRichiesta
 WHERE EXTRACT(MONTH FROM DataEmissione) = 6
 GROUP BY i.Dipartimento
 ORDER BY i.Dipartimento;
@@ -1994,7 +1993,7 @@ ORDER BY i.Dipartimento;
 
 \newpage
 
-### Spesa giornaliera dei dipartimenti
+## Spesa giornaliera dei dipartimenti
 
 A partire dall'interrogazione seguente, è stato prodotto un boxplot che raffigura la distribuzione della spesa giornaliera da parte di ogni dipartimento.
 
@@ -2004,7 +2003,8 @@ A partire dall'interrogazione seguente, è stato prodotto un boxplot che raffigu
 ```sql
 SELECT i.Dipartimento, NumeroRichiesta, SUM((Quantita * PrezzoUnitario)) Spesa
 FROM Include i
-    JOIN (SELECT Dipartimento, Numero, DataEmissione FROM RichiestaAcquisto) r ON r.Dipartimento = i.Dipartimento AND r.Numero = i.NumeroRichiesta
+    JOIN (SELECT Dipartimento, Numero, DataEmissione FROM RichiestaAcquisto) r 
+	ON r.Dipartimento = i.Dipartimento AND r.Numero = i.NumeroRichiesta
 GROUP BY i.Dipartimento, i.NumeroRichiesta
 ORDER BY i.Dipartimento, i.NumeroRichiesta;
 ```
