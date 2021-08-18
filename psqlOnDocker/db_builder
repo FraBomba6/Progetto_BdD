@@ -1,12 +1,42 @@
 #!/bin/bash
 
-chars="/-\|"
 
+# +-------------------+
+# | FILL VARIABLES    |
+# | ACCORDING TO YOUR |
+# | PREFERENCES		  |
+# +-------------------+
+
+# db creation script
+DB_CREATION_SCRIPT=create_db.sql
+# sql file for mockup data insertion 
+MOCKUP_DATA=./sql  
+# database name
+DATABASE=ufficioacquisti
+# datbase password
+export PGPASSWORD="bdd2021"
+
+
+# ===============================
+
+# Functions
+
+chars="/-\|" # for spinner
+
+# Checks if exit code is ok
+check_exit(){
+	if [[ $1 -ne 0 ]]; then
+		tput bold; echo "\nAn error occoured\n"; tput sgr0
+		exit 1;
+	fi
+}
+
+# Spinner while waiting
 spin(){
 	while kill -0 $2 > /dev/null 2>&1; 
 	do
 	  for (( i=0; i<${#chars}; i++ )); do
-		sleep 0.5
+		sleep 0.3
 		echo -en "\t ${chars:$i:1} $1" "\r"
 	  done
 	done
@@ -20,38 +50,68 @@ spin(){
 	fi
 }
 
-DB_CREATION=create_db.sql
-MOCKUP_DATA=./sql
-DATABASE=ufficioacquisti
-export PGPASSWORD="bdd2021"
 
 echo; 
 
+# +-----------+
+# | CREATE DB |  (eventually, drops previous db)
+# +-----------+
+
 tput bold; echo -en "\rCreating db"; tput sgr0
-(psql -U postgres -h localhost -p 15000 -c "drop database if exists $DATABASE") > /dev/null 2>&1
+(psql -U postgres -h localhost -p 15000 -c "drop database if exists $DATABASE") > /dev/null
+check_exit $?
 (createdb -U postgres -h localhost -p 15000 $DATABASE) > /dev/null
+check_exit $?
+
+
+# +-------------------+
+# | BUILDING DATABASE |
+# +-------------------+
 
 tput bold; echo -en "\rBuilding database"; tput sgr0
-(psql -U postgres -h localhost -p 15000 -d $DATABASE -f $DB_CREATION) > /dev/null
+(psql -U postgres -h localhost -p 15000 -d $DATABASE -f $DB_CREATION_SCRIPT) > /dev/null
+check_exit $?
+
+
+# +-------------+
+# | MOCKUP DATA |
+# +-------------+
 
 tput bold; echo -en "\rMockup Data Insertion\n\n"; tput sgr0
 
+# Responsabile
 (psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Responsabile.sql") > /dev/null &
 spin Reponsabile $!
+
+# Dipartimento
 (psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Dipartimento.sql") > /dev/null &
 spin Dipartimento $!
+
+# Articolo
 (psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Articolo.sql") > /dev/null &
 spin Articolo $!
+
+# Fornitore
 (psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Fornitore.sql") > /dev/null &
 spin Fornitore $!
+
+# RecapitoTelefonico
 (psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/RecapitoTelefonico.sql") > /dev/null &
 spin RecapitoTelefonico $!
+
+# Fornisce
 (psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Fornisce.sql") > /dev/null &
 spin Fornisce $!
+
+# Richiesta Acquisto
 (psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/RichiestaAcquisto.sql") > /dev/null &
 spin RichiestaAcquisto $!
+
+# Ordine
 (psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Ordine.sql") > /dev/null &
 spin Ordine $! 
+
+# Include
 (psql -U postgres -h localhost -p 15000 -d $DATABASE -f "$MOCKUP_DATA/Include.sql") > /dev/null &
 spin Include $! 
 
