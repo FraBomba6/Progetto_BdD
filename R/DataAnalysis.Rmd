@@ -28,6 +28,8 @@ con <- dbConnect(
   password = "bdd2021"
 )
 ```
+
+
 ```{r Distribuzione delle classi}
 distribuzione_classi <- dbGetQuery(con, "select classe, count(*)/(sum(count(*)) over()) as frequenza from articolo group by classe;")
 
@@ -46,8 +48,13 @@ ggplot(distribuzione_classi, aes(x = 1, y = frequenza, fill = classe)) +
   theme_void() +
   theme(legend.position = "none")
 
+```
+
+
+```{r Salvataggio plot}
 ggsave("./R/analysisPlots/distribuzione_classi.png", width = 7.5)
 ```
+
 ```{r Distribuzione dei fornitori per gli articoli}
 distribuzione_articoli_fornitore <- dbGetQuery(con, "select fornitore, classe, count(*) as frequenza from fornisce as f join (select codice, classe from articolo) as a on f.articolo = a.codice group by fornitore, classe;")
 
@@ -59,9 +66,12 @@ ggplot(distribuzione_articoli_fornitore, aes(x = reorder(fornitore, -frequenza, 
   labs(fill = "Classi merceologiche") +
   scale_fill_manual(values = custom_colours)
 
-ggsave("./R/analysisPlots/distribuzione_articoli_fornitore.png", width = 7.5)
-
 ```
+
+```{r Salvataggio plot}
+ggsave("./R/analysisPlots/distribuzione_articoli_fornitore.png", width = 7.5)
+```
+
 ```{r Confronto della spesa per dipartimento in base alla classe}
 spesa_dipartimento_classe <- dbGetQuery(con, "select dipartimento, classe, sum(quantita * prezzounitario) as spesa from include i join (select codice, classe from articolo) a on i.articolo = a.codice group by dipartimento, classe;")
 
@@ -72,8 +82,13 @@ ggplot(spesa_dipartimento_classe, aes(x = dipartimento, y = spesa, fill = classe
   xlab("Fornitore") +
   ylab("Spesa [€]") +
   labs(fill = "Classi merceologiche")
+
+```
+
+```{r Salvataggio plot}
 ggsave("./R/analysisPlots/spesa_dipartimento_classe.png")
 ```
+
 ```{r Divisione della spesa totale dei dipartimenti in base alla classe merceologica}
 spesa_classe <- dbGetQuery(con, "select classe, sum((quantita * prezzounitario)/1000000) as spesa, sum((quantita * prezzounitario)/1000000)/(sum(sum((quantita * prezzounitario)/1000000)) over()) as frequenza from include i join (select codice, classe from articolo) a on i.articolo = a.codice group by classe;")
 
@@ -84,8 +99,13 @@ ggplot(spesa_classe, aes(x = reorder(classe, -spesa), y = spesa, fill = classe))
   xlab("Classi merceologiche") +
   ylab("Spesa [milioni di €]") +
   labs(fill = "Classi merceologiche")
-ggsave("./R/analysisPlots/spesa_classe.png", width = 7.5)
+```
 
+```{r Salvataggio plot}
+ggsave("./R/analysisPlots/spesa_classe.png", width = 7.5)
+```
+
+```{r Divisione della spesa totale dei dipartimenti in base alla classe merceologica}
 spesa_classe <- spesa_classe %>%
   arrange(classe) %>%
   mutate(
@@ -100,8 +120,12 @@ ggplot(spesa_classe, aes(x = 1, y = frequenza, fill = classe)) +
   scale_fill_manual(values = custom_colours) +
   theme_void() +
   theme(legend.position = "none")
+```
+
+```{r Salvataggio plot}
 ggsave("./R/analysisPlots/spesa_classe_pie.png")
 ```
+
 ```{r Richieste effettuate ogni trimestre dai dipartimenti}
 richieste_dipartimento_trimestre <- dbGetQuery(
         con,
@@ -152,9 +176,12 @@ ggplot(richieste_dipartimento_trimestre, aes(fill = dipartimento, x = trimestre,
   xlab("Trimestre") +
   ylab("Numero di richieste") +
   labs(fill = "Dipartimento")
+```
 
+```{r Salvataggio plot}
 ggsave("./R/analysisPlots/richieste_dipartimento_trimestre.png")
 ```
+
 ```{r Richieste effettuate ogni mese}
 richieste_mensili <- dbGetQuery(con, "select extract(month from dataemissione) mese, count(*) numerorichieste from richiestaacquisto group by mese order by mese;")
 
@@ -164,8 +191,12 @@ ggplot(richieste_mensili, aes(x = factor(mese), y = numerorichieste, fill = fact
   xlab("Mese") +
   ylab("Numero di richieste") +
   labs(fill = "Mese")
+```
+
+```{r Salvataggio plot}
 ggsave("./R/analysisPlots/richieste_mensili.png")
 ```
+
 ```{r}
 spesa_dipartimenti_giugno <- dbGetQuery(
         con,
@@ -185,8 +216,13 @@ ggplot(spesa_dipartimenti_giugno, aes(fill = dipartimento, x = reorder(dipartime
   xlab("Dipartimento") +
   ylab("Spesa [€]") +
   labs(fill = "Dipartimento")
+```
+
+```{r Salvataggio plot}
 ggsave("./R/analysisPlots/spesa_dipartimento_giugno.png")
 ```
+
+
 ```{r  Spesa giornagliera dei dipartimenti nell'anno 2020}
 spesa_giornagliera_dipartimenti <- dbGetQuery(
         con,
@@ -205,5 +241,9 @@ ggplot(spesa_giornagliera_dipartimenti, aes(fill = dipartimento, x = reorder(dip
   xlab("Dipartimento") +
   ylab("Spesa [€]") +
   labs(fill = "Dipartimento")
+
+```
+
+```{r Salvataggio plot}
 ggsave("./R/analysisPlots/spesa_giornagliera_dipartimenti.png")
 ```
