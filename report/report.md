@@ -81,7 +81,7 @@ seguente insieme di requisiti:
 
 \
 
-Sulla base di quanto riportato, si procede alla formulazione di un glossario che permette la definizione univoca dei concetti esposti. 
+Sulla base di quanto riportato, si procede alla formulazione di un glossario che permetta la definizione univoca dei concetti esposti. 
 
 \newpage
 
@@ -101,7 +101,7 @@ La terminologia individuata appartente al dominio di interesse e correlata alla 
 \\ \hline
 Dipartimento & Sottosezione organizzativa dell'ente &   & Responsabile, Richiesta d'acquisto     
 \\ \hline
-Responsabile & Persona incaricata delle responsabilità relativa ad uno o più dipartimenti &    & Dipartimento                          \\ \hline
+Responsabile & Persona incaricata delle responsabilità relative ad uno o più dipartimenti &    & Dipartimento                          \\ \hline
 Richiesta d'acquisto & Documento, formulato da un dipartimento, riportante i riferimenti agli articoli da ordinare, con annesse specifiche & Richiesta & Dipartimento, Articolo             \\ \hline
 Articolo & Elemento atomico richiedibile ed ordinabile &   & Richiesta d'acquisto, Listino, Ordine 
 \\ \hline
@@ -173,7 +173,7 @@ A seguito dell'identificazione e organizzazione delle terminologie riportate nel
 \multicolumn{1}{|c|}{\textbf{Listino}}
 \\ \hline
 \begin{itemize}
-\item Comprendente uno o piu` articoli
+\item Comprendente uno o più articoli
 \newline
 \item Per ciascun articolo appartenente ad un dato listino siano specificati il codice articolo, il prezzo unitario, il quantitativo minimo d’ordine e lo sconto applicato
 \end{itemize}
@@ -192,7 +192,7 @@ A seguito dell'identificazione e organizzazione delle terminologie riportate nel
 
 ## Individuazione dei principali requisiti operazionali {#op-frequenti}
 
-Sulla base dei requisiti individuati, si descrivono le principali operazioni, con rispettiva frequenza, sui dati. Si considera, per dare consistenza al conteggio, un ente costituito da trenta dipartimenti e associato a cinque fornitori diversi. 
+Sulla base dei requisiti individuati, si descrivono le principali operazioni sui dati, con rispettiva frequenza. Si considera, per dare consistenza al conteggio, un ente costituito da trenta dipartimenti e associato a cinque fornitori diversi. 
 
 \
 \
@@ -305,17 +305,17 @@ Si osserva come la partecipazione dell'entità *Ordine* alla relazione ternaria 
 
 ### Analisi dei cicli
 
-Come specificato precedentemente, l'unico ciclo presente nello schema ER coinvolge le entità **Ordine**, **Articolo** e **Fornitore**. Un ordine, infatti, deve essere rivolto ad uno specifico fornitore e, pertanto, gli articoli contenuti devono necessariamente provenire tutti dallo stesso fornitore.
+Come specificato precedentemente, l'unico ciclo presente nello schema ER coinvolge le entità **Ordine**, **Articolo** e **Fornitore**. Un ordine contiene degli articoli e viene evaso da uno specifico fornitore. Gli articoli devono essere forniti dal fornitore che evade l'ordine.
 
-Considerato il fatto che il medesimo articolo possa essere fornito da più fornitori, al fine di poter strutturare un ordine è necessario sapere il fornitore che lo evaderà e gli articoli in esso contenuti. Non è, pertanto, possibile effettuare un'eliminazione del ciclo senza la conseguente perdita di informazione necessaria al corretto comportamento della Base di Dati. Pertanto, il ciclo viene mantenuto e vincolato sulla base delle osservazioni effettuate al punto [3.2](#vincoli).
+Pertanto, il ciclo viene mantenuto e vincolato sulla base delle osservazioni effettuate al punto [3.2](#vincoli).
 
 ### Attributi derivabili {#volumi}
 
 Al fine di valutare il mantenimento o l'eliminazione delle ridondanze presenti nel diagramma ER proposto, si definisce, di seguito, la tavola dei volumi di entità e relazioni presenti nella Base di Dati. Si considera quanto segue:
 
-- La stato della base di dati dopo un anno di attività;
-- Richieste d'acquisto che coinvolgono mediamente 5 articoli e soddisfatte da 3 ordini;
-- Ordini che contengono, in media, 60 articoli;
+- La stato della base di dati dopo un anno di attività
+- Richieste d'acquisto che coinvolgono mediamente 5 articoli e soddisfatte da 3 ordini
+- Ordini che contengono, in media, 60 articoli
 - Ordini che soddisfano mediamente 12 richieste d'acquisto.
 
 |**Concetto**|**Tipo**|**Volume**|
@@ -478,7 +478,7 @@ Sulla base dei risultati ottenuti si sceglie, quindi, di mantenere l'attributo d
 
 ## Eliminazione delle generalizzazioni
 
-Non essendovi relazioni di generalizzazione nel diagramma concettuale proposto al punto [3.1](#er-v1), non è stato necessario apportare modifiche rivolte all'eliminazione di eventuali relazioni di generalizzazione.
+Non essendovi relazioni di generalizzazione nel diagramma concettuale proposto al punto [3.1](#er-v1), non è stato necessario apportare modifiche rivolte alla loro eliminazione.
 
 ## Partizionamento ed accorpamento di entità e associazioni
 
@@ -488,9 +488,9 @@ Il diagramma presenta una relazione binaria **Fornisce** che coinvolge le entit�
 
 ### Reifica delle relazioni ternarie
 
-Il diagramma ER presenta una relazione ternaria **Include** che coinvolge le entità **Richiesta d'Acquisto**, **Articolo** e **Ordine**. In particolare, la partecipazione delle entità Richiesta d'Acquisto e Articolo è di tipo `(1, N)`, mentre quella dell'entità Ordine è `(0, N)`: questo perché una richiesta non può essere vuota e un articolo può essere contenuto in una o più richieste, mentre un articolo appartenente ad una richiesta può non essere necessariamente incluso in un ordine. 
+Il diagramma ER presenta una relazione ternaria **Include** che coinvolge le entità **Richiesta d'Acquisto**, **Articolo** e **Ordine**. In particolare, la partecipazione delle entità Richiesta d'Acquisto e Articolo è di tipo `(1, N)`, mentre quella dell'entità Ordine è `(0, N)`: questo perché una richiesta non può essere vuota e un articolo può essere contenuto in una o più richieste, mentre un articolo appartenente ad una richiesta può non essere necessariamente soddisfatto da un ordine. 
 
-Al fine di eliminare la relazione ternaria, si sceglie di reificarla ad entità in relazione con **Richiesta d'Acquisto**, **Articolo** ed **Ordine**, avente come attributi quelli precedentemente individuati rispetto alla relazione.
+Al fine di eliminare la relazione ternaria, si sceglie di reificarla ad entità, in relazione con **Richiesta d'Acquisto**, **Articolo** ed **Ordine** ed avente come attributi quelli precedentemente individuati rispetto alla relazione.
 
 ### Valutazione degli attributi composti
 
@@ -502,9 +502,9 @@ Il diagramma presenta un attributo multivalore *Recapiti Telefonici* in riferime
 
 \newpage
 
-### Ristrutturazione del diagramma ER
+### Ristrutturazione del diagramma ER {#er-v2}
 
-Sulla base delle analisi e osservazioni effettuate, si provvede alla ristrutturazione del diagramma proposto al punto [3.1](#er-v1). Ne consegue, la seguente rappresentazione: 
+Sulla base delle analisi e osservazioni effettuate, si provvede alla ristrutturazione del diagramma proposto al punto [3.1](#er-v1). Ne consegue la seguente rappresentazione: 
 
 \begin{figure}[H]
 \centering
@@ -590,7 +590,7 @@ Partendo dal diagramma ER ristrutturato, è stato prodotto il corrispondente sch
 ```
 
 
-### Traduzione di Relazioni Uno a molti
+### Traduzione di Relazioni Uno a Molti
 
 *I vincoli espressi di seguito costituiscono un'integrazione rispetto a quelli introdotti precedentemente.*
 
@@ -674,9 +674,9 @@ Gli indici presi in considerazione sono i seguenti:
 - Indicizzazione sull'attributo **Ordine** dell'entità *Include*
 - Indicizzazione sull'attributo **DataRichiesta** dell'entità *RichiestaAcquisto*
 
-Nel primo caso, è stato osservato come l'indicizzazione di chiavi primarie composite in PostgreSQL avvenga anche su sottoinsiemi della stessa. Pertanto, considerata l'appartenenza di Dipartimento e NumeroRichiesta alla chiave primaria di RichiestaAcquisto, non risulterebbe conveniente l'aggiunta di un ulteriore indice sui due soli attributi. Il DBMS sfrutterebbe, in ogni caso, l'indicizzazione della chiave primaria. Si sceglie, pertanto, di non implementare tale indice all'interno della base di dati.
+Nel primo caso, è stato osservato come l'indicizzazione di chiavi primarie composite in PostgreSQL avvenga anche su sottoinsiemi delle stesse. Pertanto, considerata l'appartenenza di Dipartimento e NumeroRichiesta alla chiave primaria di RichiestaAcquisto, non risulterebbe conveniente l'aggiunta di un ulteriore indice sui due soli attributi. Il DBMS sfrutterebbe, in ogni caso, l'indicizzazione della chiave primaria. Si sceglie, pertanto, di non implementare tale indice all'interno della base di dati.
 
-Nel secondo e terzo caso, invece, si sceglie di procedere al confronto in presenza e assenza degli indici. L'indicizzazione dell'entità *Include* sull'attributo **Ordine** permetterebbe, infatti, una più efficiente ricerca degli articoli contenuti in un determinato Ordine, mentre quella dell'entità *RichiestaAcquisto* sull'attributo **DataEmissione** permetterebbe una più veloce ricerca delle Richieste d'Acquisto effettuate in un determinato intervallo di tempo, utile durante la computazione di statistiche e metriche mensili, semestrali e annualli da parte dell'ente pubblico.
+Nel secondo e terzo caso, invece, si sceglie di procedere al confronto in presenza e assenza degli indici. L'indicizzazione dell'entità *Include* sull'attributo **Ordine** permetterebbe, infatti, una più efficiente ricerca degli articoli contenuti in un determinato Ordine, mentre quella dell'entità *RichiestaAcquisto* sull'attributo **DataEmissione** permetterebbe una più veloce ricerca delle Richieste d'Acquisto effettuate in un determinato intervallo di tempo, utile durante la computazione di statistiche e metriche mensili, trimestrali e annualli da parte dell'ente pubblico.
 
 I test sono stati condotti sui dati di Mockup (la cui produzione viene descritta successivamente), realizzati nel rispetto dei volumi descritti al punto [4.1.2](#volumi) al fine di poter condurre operazioni di test e di analisi sulla base di dati.
 
@@ -1478,7 +1478,7 @@ create index on RichiestaAcquisto(DataEmissione);
 
 |
 
-L'implementazione descritta è contenuta interamente nel file `create_db.sql` presente all'interno della directory `psqlOnDocker`.
+L'implementazione descritta è contenuta interamente nel file `psqlOnDocker/create_db.sql`.
 
 |
 |
@@ -1493,7 +1493,7 @@ Quest'ultimo genera, per ognuna delle tabelle presenti all'interno della base di
 - **Differenze nei costi dei prodotti sulla base della classe merceologica** (Ad esempio, i prodotti dela classe elettronica hanno costi mediamente più alti rispetto a quelli della classe cancelleria)
 - **Specializzazione dei fornitori** (Si prevede che alcuni fornitori siano specializzati nella vendita di articoli appartenenti ad un sottoinsieme delle classi merceologiche precedentemente definite. Tuttavia, si considerano anche fornitori il cui listino contiene articoli appartenenti a tutte le classi merceologiche)
 
-Al fine di definire inserimenti validi, nel corso della generazione dei dati vengono, inoltre, presi in considerazione i vincoli imposti sulla base di dati e controllati dai trigger definiti in precedenza. Il periodo di attività dell'ente preso in considerazione è, inoltre, quello di un ipotetico anno solare (nella fattispecie, l'anno 2020).
+Al fine di definire inserimenti validi, nel corso della generazione dei dati vengono, inoltre, presi in considerazione i vincoli imposti sulla base di dati e controllati dai trigger definiti in precedenza. Il periodo di attività dell'ente preso in considerazione è quello di un ipotetico anno solare (nella fattispecie, l'anno 2020).
 
 
 I file vengono, infine, generati all'interno della directory `psqlOnDocker/sql`.
@@ -1503,10 +1503,14 @@ I file vengono, infine, generati all'interno della directory `psqlOnDocker/sql`.
 
 ## Generazione della base di dati
 
-Al fine di agevolare il processo di creazione e popolamento della base di dati, è stato definito un Makefile che permette, una volta istanziato il container con il comando `docker compose up -d`:
+Al fine di agevolare il processo di creazione e popolamento della base di dati, è stato definito un Makefile che permette, una volta istanziato il container (con il comando `docker compose up -d`):
 
-- La generazione dei dati di mockup (`make mockup`)
+- La generazione dei dati di mockup (`make mockup`) \footnotemark
 - La creazione e il popolamento della base di dati (`make db`)
+
+```{=latex}
+\footnotetext{La cartella psqlOnDocker/sql presenta al suo interno i dati di mockup già prodotti e utilizzati per le operazioni di testing.}
+```
 
 \newpage
 
@@ -1757,11 +1761,9 @@ WHERE DataEmissione BETWEEN '2021-01-01' AND '2021-02-01';
 
 In seguito all'implementazione della base di dati e all'inserimento dei dati di mockup appositamente generati, è stato possibile produrre un'analisi dei dati con rispettive visualizzazioni grafiche a partire da opportune interrogazioni in linguaggio SQL.
 
-come al punto [5.1](#indici),
-
 A tal fine, è stato prodotto un notebook in linguaggio **R Markdown** situato al percorso file (`R/DataAnalysis.Rmd`) che utilizza la libreria [RPostgreSQL](https://cran.r-project.org/web/packages/RPostgreSQL/index.html) assieme ad ulteriori librerie quali [dplyr](https://cran.r-project.org/web/packages/dplyr/index.html) e [ggplot2](https://ggplot2.tidyverse.org/) per la manipolazione dei dati e la produzione di opportune visualizzazioni.
 
-Per una migliore visualizzione, i grafici ad alta risoluzione sono disponibili al percorso file `R/analysisPlots`.
+Per una migliore visualizzazione, i grafici ad alta risoluzione sono disponibili al percorso file `R/analysisPlots`.
 
 \newpage
 
@@ -1855,7 +1857,7 @@ GROUP BY Dipartimento, Classe;
 ## Spesa totale per classe merceologica 
 
 
-A partire dall'interrogazione seguente, è stato prodotto un barplot che raffigura la spesa complessiva nel corso dell'anno solare considerato per ognuna delle classi merceologiche. Si osserva come i prodotti di classe *informatica* siano quelli che hanno comportato la spesa maggiore, mentre articoli di altre classi hanno comportato una spesa più simile fra loro. Ciò è ragionevole immaginando che prodotti appartenenti alla classe informatica abbiano un costo maggiore di articoli di, ad esempio, cancelleria.
+A partire dall'interrogazione seguente, è stato prodotto un barplot che raffigura la spesa complessiva, nel corso dell'anno solare considerato, per ognuna delle classi merceologiche. Si osserva come i prodotti di classe *informatica* siano quelli che hanno richiesto la spesa maggiore, mentre articoli di altre classi hanno comportato una spesa più simile fra loro. Ciò è ragionevole immaginando che prodotti appartenenti alla classe informatica abbiano un costo maggiore rispetto ad articoli di, ad esempio, cancelleria.
 
 
 ```sql
@@ -1961,7 +1963,7 @@ ORDER BY Mese;
 
 \newpage
 
-## Spesa dei dipartimento nel mese di giugno
+## Spesa dei dipartimenti nel mese di giugno
 
 A partire dall'interrogazione seguente, è stato prodotto un barplot che raffigura la spesa effettuata da ogni dipartimento nel corso del mese di giugno. Si osserva, in particolare, come il dipartimento `WITCIO` sia quello che ha richiesto la spesa maggiore. Modificando opportunamente la condizione della query SQL, è possibile riprodurre il diagramma per qualunque altro mese dell'anno solare.
 
@@ -2026,5 +2028,5 @@ ORDER BY i.Dipartimento, i.NumeroRichiesta;
 
 # Conclusioni
 
-Il presente elaborato ha permesso la descrizione dell'attività di progettazione e implementazione di una base di dati relazionale a partire da un insieme di requisiti e specifiche. Sulla base dei pattern progettuali studiati, sono state affrontate le fasi di Analisi dei Requisiti, Progettazione Concettuale, Progettazione Logica e la successiva Progettazione Fisica con implementazione tramite **PostgreSQL**. Infine, tramite il linguaggio **R**, è stato interrogato il DBMS al fine di produrre opportune visualizzazioni e statistiche riassuntive atte ad analizzare i dati presenti.
+Il presente elaborato ha permesso la descrizione dell'attività di progettazione e implementazione di una base di dati relazionale a partire da un insieme di requisiti e specifiche. Sulla base dei pattern progettuali studiati, sono state affrontate le fasi di Analisi dei Requisiti, Progettazione Concettuale, Progettazione Logica e la successiva Progettazione Fisica con implementazione tramite **PostgreSQL**. Infine, tramite il linguaggio **R**, è stato interrogato il DBMS al fine di produrre opportune visualizzazioni e statistiche riassuntive atte ad analizzare i dati in esso contenuti.
 
