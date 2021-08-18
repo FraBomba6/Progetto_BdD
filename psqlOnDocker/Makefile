@@ -4,7 +4,7 @@ MOCKUP := MockupDataGenerator
 
 mockup:
 	@python3 ./$(MOCKUP)/script.py
-	@echo "Mockup data built at folder $(MOCKUP)/sql"
+	@echo "Mockup data built at folder psqlOnDocker/sql"
 
 db:
 	@echo "Building database with mockup data insertion"
