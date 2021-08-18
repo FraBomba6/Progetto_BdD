@@ -14,7 +14,8 @@ library("scales")
 library("ggrepel")
 library("stringr")
 
-custom_colours <- c("cancelleria" = "#463480", "pulizia" = "#32658e", "libri" = "#218e8d", "informatica" = "#33b67a", "elettronica" = "#8dd645", "mobilia" = "#fde725")
+custom_class_colours <- c("cancelleria" = "#463480", "pulizia" = "#32658e", "libri" = "#218e8d", "informatica" = "#33b67a", "elettronica" = "#8dd645", "mobilia" = "#fde725")
+custom_department_colours <- c("#5a54b6", "#cd7d2d", "#006d10", "#ff7f5f", "#900019", "#ff86de", "#02d691", "#abfb8a", "#ff5b98", "#d07b00", "#56007f", "#c1a700", "#76a700", "#00279e", "#d10086", "#ed9e00", "#fd7dff", "#7671ff", "#e70045", "#cc69ff", "#99ff5d", "#ffdc0f", "#ff45db", "#eeef09", "#00cc34", "#97e200", "#7400b8", "#a0ff33", "#f2000d", "#d936ea")
 ```
 
 ```{r Connection setup}
@@ -44,7 +45,7 @@ ggplot(distribuzione_classi, aes(x = 1, y = frequenza, fill = classe)) +
   geom_col() +
   coord_polar("y", start = 0) +
   geom_label(aes(label = paste0(str_to_title(classe), "\n", percent(frequenza)), y = pos), size = 4, nudge_x = 1) +
-  scale_fill_manual(values = custom_colours) +
+  scale_fill_manual(values = custom_class_colours) +
   theme_void() +
   theme(legend.position = "none")
 
@@ -64,7 +65,7 @@ ggplot(distribuzione_articoli_fornitore, aes(x = reorder(fornitore, -frequenza, 
   ylab("Numero articoli forniti") +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 40), expand = c(0, 0), limits = c(0, 220)) +
   labs(fill = "Classi merceologiche") +
-  scale_fill_manual(values = custom_colours)
+  scale_fill_manual(values = custom_class_colours)
 
 ```
 
@@ -94,7 +95,7 @@ spesa_classe <- dbGetQuery(con, "select classe, sum((quantita * prezzounitario)/
 
 ggplot(spesa_classe, aes(x = reorder(classe, -spesa), y = spesa, fill = classe)) +
   geom_col() +
-  scale_fill_manual(values = custom_colours) +
+  scale_fill_manual(values = custom_class_colours) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 40), expand = c(0, 0)) +
   xlab("Classi merceologiche") +
   ylab("Spesa [milioni di €]") +
@@ -117,7 +118,7 @@ ggplot(spesa_classe, aes(x = 1, y = frequenza, fill = classe)) +
   geom_col() +
   coord_polar("y", start = 0) +
   geom_label(aes(label = paste0(str_to_title(classe), "\n", percent(frequenza)), y = pos), size = 4, nudge_x = 1) +
-  scale_fill_manual(values = custom_colours) +
+  scale_fill_manual(values = custom_class_colours) +
   theme_void() +
   theme(legend.position = "none")
 ```
@@ -139,39 +140,10 @@ richieste_dipartimento_trimestre <- dbGetQuery(
           group by dipartimento, trimestre
            order by trimestre, numeroRichieste;
         ")
-myPalette <- c("#5a54b6",
-               "#cd7d2d",
-               "#006d10",
-               "#ff7f5f",
-               "#900019",
-               "#ff86de",
-               "#02d691",
-               "#abfb8a",
-               "#ff5b98",
-               "#d07b00",
-               "#56007f",
-               "#c1a700",
-               "#76a700",
-               "#00279e",
-               "#d10086",
-               "#ed9e00",
-               "#fd7dff",
-               "#7671ff",
-               "#e70045",
-               "#cc69ff",
-               "#99ff5d",
-               "#ffdc0f",
-               "#ff45db",
-               "#eeef09",
-               "#00cc34",
-               "#97e200",
-               "#7400b8",
-               "#a0ff33",
-               "#f2000d",
-               "#d936ea")
+
 ggplot(richieste_dipartimento_trimestre, aes(fill = dipartimento, x = trimestre, y = numerorichieste)) +
   geom_col(position = "dodge") +
-  scale_fill_manual(values = myPalette) +
+  scale_fill_manual(values = custom_department_colours) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 20), expand = c(0, 0)) +
   xlab("Trimestre") +
   ylab("Numero di richieste") +
@@ -211,7 +183,7 @@ spesa_dipartimenti_giugno <- dbGetQuery(
 
 ggplot(spesa_dipartimenti_giugno, aes(fill = dipartimento, x = reorder(dipartimento, -spesa), y = spesa)) +
   geom_col() +
-  scale_fill_manual(values = myPalette) +
+  scale_fill_manual(values = custom_department_colours) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 40), expand = c(0, 0)) +
   xlab("Dipartimento") +
   ylab("Spesa [€]") +
@@ -223,7 +195,7 @@ ggsave("./R/analysisPlots/spesa_dipartimento_giugno.png")
 ```
 
 
-```{r  Spesa giornagliera dei dipartimenti nell'anno 2020}
+```{r  Spesa giornaliera dei dipartimenti nell'anno 2020}
 spesa_giornagliera_dipartimenti <- dbGetQuery(
         con,
         "
@@ -234,9 +206,9 @@ spesa_giornagliera_dipartimenti <- dbGetQuery(
         order by i.dipartimento, i.numerorichiesta;
       ")
 
-ggplot(spesa_giornagliera_dipartimenti, aes(fill = dipartimento, x = reorder(dipartimento, -spesa), y = spesa)) +
+ggplot(spesa_giornaliera_dipartimenti, aes(fill = dipartimento, x = reorder(dipartimento, -spesa), y = spesa)) +
   geom_boxplot() +
-  scale_fill_manual(values = myPalette) +
+  scale_fill_manual(values = custom_department_colours) +
   scale_y_continuous(breaks = scales::pretty_breaks(n = 40), expand = c(0, 0)) +
   xlab("Dipartimento") +
   ylab("Spesa [€]") +
@@ -245,5 +217,5 @@ ggplot(spesa_giornagliera_dipartimenti, aes(fill = dipartimento, x = reorder(dip
 ```
 
 ```{r Salvataggio plot}
-ggsave("./R/analysisPlots/spesa_giornagliera_dipartimenti.png")
+ggsave("./R/analysisPlots/spesa_giornaliera_dipartimenti.png")
 ```
