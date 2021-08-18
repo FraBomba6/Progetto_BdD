@@ -190,7 +190,9 @@ A seguito dell'identificazione e organizzazione delle terminologie riportate nel
 \end{table}
 ```
 
-## Individuazione dei principali requisiti operazionali {#op-frequenti}
+\newpage 
+
+## Individuazione dei principali requisiti operazionali {#opfrequenti}
 
 Sulla base dei requisiti individuati, si descrivono le principali operazioni sui dati, con rispettiva frequenza. Si considera, per dare consistenza al conteggio, un ente costituito da trenta dipartimenti e associato a cinque fornitori diversi. 
 
@@ -329,7 +331,7 @@ Al fine di valutare il mantenimento o l'eliminazione delle ridondanze presenti n
 |Include|R|15600|
 |Fornisce|R|450|
 
-Si fa riferimento, inoltre, alle operazioni frequenti riportate al punto [2.4](#op-frequenti).
+Si fa riferimento, inoltre, alle operazioni frequenti riportate al punto [2.4](#opfrequenti).
 
 Si effettua, quindi, un'analisi delle ridondanze in merito agli attributi derivati **Data di Consegna** della relazione **Include** e **Numero Articoli** dell'entità **Richiesta d'Acquisto**. 
 
@@ -608,7 +610,7 @@ Partendo dal diagramma ER ristrutturato, è stato prodotto il corrispondente sch
 		\end{itemize}
 	\item \textbf{I-R} e \textbf{I-A}
 		\begin{itemize}
-			\item Codificate precedentemente in quanto Include è un'entità debole) 
+			\item Codificate precedentemente in quanto Include è un'entità debole
 		\end{itemize}
 	\item \textbf{I-O}
 		\begin{itemize}
@@ -618,7 +620,7 @@ Partendo dal diagramma ER ristrutturato, è stato prodotto il corrispondente sch
 		\end{itemize}
 	\item \textbf{A-F} e \textbf{F-F}
 		\begin{itemize}
-			\item Codificate precedentemente in quanto Fornisce è un'entità debole) 
+			\item Codificate precedentemente in quanto Fornisce è un'entità debole
 		\end{itemize}
 	\item \textbf{Evade}
 		\begin{itemize}
@@ -662,7 +664,7 @@ Sulla base delle osservazioni effettuate, si provvede alla rappresentazione del 
 
 ## Osservazioni sugli indici {#indici}
 
-Al fine di introdurre un miglioramento delle prestazioni, si valuta l'inserimento di ulteriori indici confrontando la variazione delle prestazione sia in operazioni di **ricerca** che in operazioni di **modifica**. L'indicizzazione permette, infatti, un tempo di lookup inferiore durante query di selezione ma può causare l'aumento dei tempi di esecuzione delle query di modifica e inserimento sulla stessa tabella. Si rende, pertanto, necessario un confronto atto a stabilire le variazioni che i tempi di esecuzione subiscono in entrambi i casi. 
+Al fine di introdurre un miglioramento delle prestazioni, si valuta l'inserimento di ulteriori indici confrontando la variazione delle prestazioni sia in operazioni di **ricerca** che in operazioni di **modifica**. L'indicizzazione permette, infatti, un tempo di lookup inferiore durante query di selezione ma può causare l'aumento dei tempi di esecuzione delle query di modifica e inserimento sulla stessa tabella. Si rende, pertanto, necessario un confronto atto a stabilire le variazioni che i tempi di esecuzione subiscono in entrambi i casi. 
 
 A tal fine, è stato utilizzato il comando `EXPLAIN ANALYZE [statement]`, che permette di ottenere informazioni sull'**execution plan** e sui tempi di esecuzione richiesti da una query. È stato, inoltre, impostato ad `OFF` l'attributo `enable seqscan` al fine di discoraggiare il query planner all'utilizzo di scan sequenziali che invaliderebbero i confronti fra operazioni su tabelle in assenza e presenza di indici. 
 
@@ -799,6 +801,9 @@ EXPLAIN ANALYSE
 		Articolo=102;
 ```
 
+|
+|
+
 Si osserva quanto segue:
 
 - Nel caso di **query di selezione** i tempi di esecuzione migliorano notevolmente in presenza di un indice
@@ -918,6 +923,9 @@ EXPLAIN ANALYSE
 	INSERT INTO RichiestaAcquisto(Dipartimento) 
 	VALUES ('ZXTSNW')
 ```
+
+|
+|
 
 Si osserva quanto segue:
 
@@ -1126,11 +1134,6 @@ create table Include
 | WPIUQD      |   3			   |
 | $\cdots$    |   $\cdots$     |
 
-|
-|
-
-L'aggiornamento dei campi al suo interno è permesso dai trigger descritti al punto successivo.
-
 ```sql
 create table ProssimoCodiceRichiesta
 (
@@ -1141,6 +1144,8 @@ create table ProssimoCodiceRichiesta
     ProssimoNumero integer default 1
 );
 ```
+
+L'aggiornamento dei campi al suo interno è permesso dai trigger descritti al punto successivo.
 
 \newpage
 
@@ -1238,6 +1243,17 @@ execute procedure calcola_prezzo_finale();
 
 #### Verifica della possibile rimozione di un Ordine
 
+```{=latex}
+\leavevmode \newline
+```
+
+Un ordine può essere rimosso solamente se si trova in stato **annullato**. Nel caso in cui l'ordine sia nello stato **emesso**, il trigger procede autonomamente alla modifica dello stato e alla successiva cancellazione. Questo è motivato dal fatto che la cancellazione di un ordine emesso non può provocare inconsistenze nella base di dati.
+
+Nel caso in cui l'ordine si trovi in uno degli stati rimanenti, la procedura di cancellazione non viene consentita e viene delegata all'utente della base di dati la responsabilità relativa alla modifica dello stato dell'ordine al fine di consentirne la cancellazione.
+
+|
+|
+
 ```sql
 create or replace function rimuovi_ordine()
     returns trigger
@@ -1263,13 +1279,6 @@ create trigger rimuovi_ordine
     for each row
 execute procedure rimuovi_ordine();
 ```
-
-|
-|
-
-Un ordine può essere, infatti, rimosso solamente se si trova in stato **annullato**. Nel caso in cui l'ordine sia nello stato **emesso**, il trigger procede autonomamente alla modifica dello stato e alla successiva cancellazione. Questo è motivato dal fatto che la cancellazione di un ordine emesso non può provocare inconsistenze nella base di dati.
-
-Nel caso in cui l'ordine si trovi in uno degli stati rimanenti, la procedura di cancellazione non viene consentita e viene delegata all'utente della base di dati la responsabilità relativa alla modifica dello stato dell'ordine al fine di consentirne la cancellazione.
 
 \newpage
 
@@ -1490,7 +1499,7 @@ Al fine di popolare il DBMS con dati realistici e coerenti con i volumi dichiara
 Quest'ultimo genera, per ognuna delle tabelle presenti all'interno della base di dati, un omonimo file **sql** contenente le query di inserimento. Al fine di rendere i dati quanto più verosimili ed analizzabili, sono stati presi in considerazione aspetti quali: 
 
 - **Differenza nella probabilità di acquisto di prodotti diversi** (Ad esempio, i prodotti di classe cancelleria sono richiesti più frequentemente rispetto a quelli di classe mobilia) 
-- **Differenze nei costi dei prodotti sulla base della classe merceologica** (Ad esempio, i prodotti dela classe elettronica hanno costi mediamente più alti rispetto a quelli della classe cancelleria)
+- **Differenze nei costi dei prodotti sulla base della classe merceologica** (Ad esempio, i prodotti della classe elettronica hanno costi mediamente più alti rispetto a quelli della classe cancelleria)
 - **Specializzazione dei fornitori** (Si prevede che alcuni fornitori siano specializzati nella vendita di articoli appartenenti ad un sottoinsieme delle classi merceologiche precedentemente definite. Tuttavia, si considerano anche fornitori il cui listino contiene articoli appartenenti a tutte le classi merceologiche)
 
 Al fine di definire inserimenti validi, nel corso della generazione dei dati vengono, inoltre, presi in considerazione i vincoli imposti sulla base di dati e controllati dai trigger definiti in precedenza. Il periodo di attività dell'ente preso in considerazione è quello di un ipotetico anno solare (nella fattispecie, l'anno 2020).
@@ -1516,7 +1525,7 @@ Al fine di agevolare il processo di creazione e popolamento della base di dati, 
 
 ## Query significative 
 
-Sulla base delle operazioni frequenti individuate al punto [2.4](#op-frequenti) e al fine di agevolare le interrogazioni alla base di dati, vengono di seguito descritte le query significative in linguaggio SQL.
+Sulla base delle operazioni frequenti individuate al punto [2.4](#opfrequenti) e al fine di agevolare le interrogazioni verso la base di dati, vengono di seguito descritte le query significative in linguaggio SQL. Ulteriore query vengono, inoltre, impiegate nella fase di analisi dei dati, presentata al capitolo successivo.
 
 #### Visualizzazione di tutti gli articoli
 
@@ -1577,11 +1586,10 @@ WHERE Fornitore IS NULL;
 ```sql
 UPDATE Ordine SET Stato='spedito' WHERE Codice=2;
 
-UDPATE Ordine SET Stato='consegnato' WHERE Codice=10;
+UPDATE Ordine SET Stato='consegnato' WHERE Codice=10;
 ```
 
-|
-|
+\newpage
 
 #### Visualizzazione delle informazioni relative ad una Richiesta d'Acquisto
 
@@ -1629,7 +1637,11 @@ ON Include.Ordine=Ordine.Codice;
 
 #### Inserimento di un nuovo ordine
 
-L'operazione di inserimento di un nuovo Ordine richiede la creazione dello stesso e, successivamente, l'aggiornamento dell'attributo **Ordine** nell'entità *Include* per tutte le entry interessate. È stata, pertanto, definita la funzione `NuovoOrdine` che, acquisendo parametri relativi al **fornitore dell'ordine** e all'insieme delle triple `(Articolo, NumeroRichiesta, Dipartimento)`, costruisce un nuovo Ordine associando gli articoli specificati. 
+```{=latex}
+\leavevmode \newline
+```
+
+L'operazione di inserimento di un nuovo Ordine richiede la creazione dello stesso e, successivamente, l'aggiornamento dell'attributo **Ordine** nell'entità *Include* per tutte le entry interessate. È stata, pertanto, definita la funzione `InserisciOrdine` che, acquisendo parametri relativi al **fornitore dell'ordine** e all'insieme delle triple `(Articolo, NumeroRichiesta, Dipartimento)`, costruisce un nuovo Ordine associando gli articoli specificati. 
 
 |
 |
@@ -1679,6 +1691,10 @@ $$;
 
 #### Inserimento di una nuova Richiesta d'Acquisto
 
+```{=latex}
+\leavevmode \newline
+```
+
 Analogamente alla procedura di inserimento di un nuovo ordine, si è scelto di definire una funzione per l'inserimento di una Richiesta d'Acquisto. Questa permette l'inserimento della richiesta nell'entità *RichiestaAcquisto* e dei rispettivi articoli richiesti nell'entità *Include*.  
 
 |
@@ -1725,10 +1741,11 @@ $$;
 
 #### Calcolo della spesa mensile dei dipartimenti
 
-Si definisce la query che, dato un intervallo di tempo espresso tramite **data di inizio** e **data di fine**, calcola, per ogni dipartimento, il numero di richieste d'acquisto effettuate e la spesa complessiva. 
+```{=latex}
+\leavevmode \newline
+```
 
-|
-|
+Si definisce la query che, dato un intervallo di tempo espresso tramite **data di inizio** e **data di fine**, calcola, per ogni dipartimento, il numero di richieste d'acquisto effettuate e la spesa complessiva. 
 
 ```sql
 SELECT i.Dipartimento AS "Dipartimento", 
@@ -1857,7 +1874,7 @@ GROUP BY Dipartimento, Classe;
 ## Spesa totale per classe merceologica 
 
 
-A partire dall'interrogazione seguente, è stato prodotto un barplot che raffigura la spesa complessiva, nel corso dell'anno solare considerato, per ognuna delle classi merceologiche. Si osserva come i prodotti di classe *informatica* siano quelli che hanno richiesto la spesa maggiore, mentre articoli di altre classi hanno comportato una spesa più simile fra loro. Ciò è ragionevole immaginando che prodotti appartenenti alla classe informatica abbiano un costo maggiore rispetto ad articoli di, ad esempio, cancelleria.
+A partire dall'interrogazione seguente, è stato prodotto un barplot che raffigura la spesa complessiva, nel corso dell'anno solare considerato, per ognuna delle classi merceologiche. Si osserva come i prodotti di classe *informatica* siano quelli che hanno richiesto la spesa maggiore, mentre articoli di altre classi hanno comportato una spesa più simile fra loro. Ciò è ragionevole immaginando che prodotti appartenenti alla classe informatica abbiano un costo maggiore rispetto ad articoli di, ad esempio, cancelleria. Il parameto `1000000` è stato utilizzato come divisore al fine di normalizzare i risultati ottenuti.
 
 
 ```sql
