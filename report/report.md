@@ -5,7 +5,7 @@ author: |
         | Andrea Cantarutti (141808)
         | Lorenzo Bellina (142544)
 		| Alessandro Fabris (142520)
-date: "01/05/2021"
+date: "11/08/2021"
 output:
 header-includes:
   - \usepackage{amsmath}
@@ -660,7 +660,7 @@ Sulla base delle osservazioni effettuate, si provvede alla rappresentazione del 
 
 # Progettazione Fisica
 
-## Osservazioni sugli indici
+## Osservazioni sugli indici {#indici}
 
 Al fine di introdurre un miglioramento delle prestazioni, si valuta l'inserimento di ulteriori indici confrontando la variazione delle prestazione sia in operazioni di **ricerca** che in operazioni di **modifica**. L'indicizzazione permette, infatti, un tempo di lookup inferiore durante query di selezione ma può causare l'aumento dei tempi di esecuzione delle query di modifica e inserimento sulla stessa tabella. Si rende, pertanto, necessario un confronto atto a stabilire le variazioni che i tempi di esecuzione subiscono in entrambi i casi. 
 
@@ -1756,6 +1756,271 @@ SELECT COUNT(DISTINCT NumeroRichiesta) AS "Richieste",
 \newpage
 
 # Analisi dei dati
+
+In seguito all'implementazione della base di dati e all'inserimento dei dati di mockup appositamente generati, è stato possibile produrre un'analisi dei dati con rispettive visualizzazioni grafiche a partire da opportune interrogazioni in linguaggio SQL.
+
+come al punto [5.1](#indici),
+
+A tal fine, è stato prodotto un notebook in linguaggio **R Markdown** situato al percorso file (`R/DataAnalysis.Rmd`) che utilizza la libreria [RPostgreSQL](https://cran.r-project.org/web/packages/RPostgreSQL/index.html) assieme ad ulteriori librerie quali [dplyr](https://cran.r-project.org/web/packages/dplyr/index.html) e [ggplot2](https://ggplot2.tidyverse.org/) per la manipolazione dei dati e la produzione di opportune visualizzazioni.
+
+Per una migliore visualizzione, i grafici ad alta risoluzione sono disponibili al percorso file `R/analysisPlots`.
+
+\newpage
+
+### Distribuzione delle classi merceologiche
+
+A partire dalla seguente interrogazione è stato possibile visualizzare la distribuzione di tutti gli articoli sulla base della loro classe merceologica. Come atteso, sulla base delle modalità di produzione dei dati di mockup impiegate, si osserva una prevalenza degli articoli di **cancelleria**. 
+
+|
+|
+
+```sql
+SELECT Classe, 
+	   COUNT(*)/(SUM(COUNT(*)) OVER()) AS Frequenza 
+FROM Articolo 
+GROUP BY Classe;
+```
+
+|
+|
+
+\begin{figure}[H]
+\centering
+\footnotemark
+\includegraphics[width=435px]{../R/analysisPlots/distribuzione_classi.png}
+\end{figure}
+
+```{=latex}
+\footnotetext{R/analysisPlots/distribuzione\_classi.png }
+```
+
+\newpage
+
+
+### Distribuzione degli articoli per ogni fornitore
+
+A partire dall'interrogazione seguente, è stato prodotto un barplot atto a raffigurare la distribuzione degli articoli forniti da ognuno dei fornitori, con un'ulteriore suddivisione basata sulle diverse classi merceologiche.
+
+|
+|
+
+```sql
+SELECT Fornitore, Classe, COUNT(*) AS Frequenza
+FROM Fornisce f
+    JOIN (SELECT Codice, Classe FROM Articolo) a ON f.Articolo = a.Codice
+GROUP BY Fornitore, Classe;
+```
+|
+|
+
+\begin{figure}[H]
+\centering
+\footnotemark
+\includegraphics[width=380px]{../R/analysisPlots/distribuzione_articoli_fornitore.png}
+\end{figure}
+
+```{=latex}
+\footnotetext{R/analysisPlots/distribuzione\_articoli\_fornitore.png }
+```
+
+\newpage
+
+### Confronto della spesa dei dipartimenti
+
+A partire dall'interrogazione seguente, è stato prodotto un barplot atto a raffigurare, per ogni dipartimento, la spesa effettuata per articoli appartenenti alle varie classi merceologiche definite, nell'anno solare considerato. 
+
+|
+|
+
+```sql
+SELECT Dipartimento, Classe, SUM(Quantita * Prezzounitario) AS SPESA
+FROM Include i
+    JOIN (SELECT Codice, Classe FROM Articolo) a ON i.Articolo = a.Codice
+GROUP BY Dipartimento, Classe;
+```
+
+|
+|
+
+\begin{figure}[H]
+\centering
+\footnotemark
+\includegraphics[width=515px]{../R/analysisPlots/spesa_dipartimento_classe.png}
+\end{figure}
+
+```{=latex}
+\footnotetext{R/analysisPlots/spesa\_dipartimento\_classe.png }
+```
+
+\newpage
+
+### Spesa totale per classe merceologica 
+
+
+A partire dall'interrogazione seguente, è stato prodotto un barplot che raffigura la spesa complessiva nel corso dell'anno solare considerato per ognuna delle classi merceologiche. Si osserva come i prodotti di classe *informatica* siano quelli che hanno comportato la spesa maggiore, mentre articoli di altre classi hanno comportato una spesa più simile fra loro. Ciò è ragionevole immaginando che prodotti appartenenti alla classe informatica abbiano un costo maggiore di articoli di, ad esempio, cancelleria.
+
+
+```sql
+SELECT Classe, 
+       SUM((Quantita * PrezzoUnitario)/1000000) AS Spesa, 
+	   SUM(
+	   		(Quantita * PrezzoUnitario)/1000000) / 
+	   		(SUM(SUM((Quantita * PrezzoUnitario)/1000000)
+	   ) OVER()) AS Frequenza
+FROM Include i
+    JOIN (SELECT Codice, Classe FROM Articolo) a ON i.articolo = a.codice
+GROUP BY Classe;
+```
+
+\begin{figure}[H]
+\centering
+\footnotemark
+\includegraphics[width=370px]{../R/analysisPlots/spesa_classe.png}
+\end{figure}
+
+```{=latex}
+\footnotetext{R/analysisPlots/spesa\_classe.png }
+```
+
+\newpage
+
+È stato, inoltre, prodotto un diagramma a torta basato sulla stessa interrogazione SQL, che rappresenta le frequenze relative delle spese effettuate per ognuna delle classi merceologiche.
+
+|
+|
+
+\begin{figure}[H]
+\centering
+\footnotemark
+\includegraphics[width=450px]{../R/analysisPlots/spesa_classe_pie.png}
+\end{figure}
+
+```{=latex}
+\footnotetext{R/analysisPlots/spesa\_classe\_pie.png }
+```
+
+\newpage 
+
+### Numero di richieste d'acquisto effettuate dai dipartimenti a suddivisione trimestrale
+
+A partire dall'interrogazione seguente, è stato prodotto un barplot atto a raffigurare, per ognuno dei dipartimenti, il numero di richieste d'acquisto effettuate trimestralmente.
+
+|
+|
+
+```sql
+SELECT Dipartimento, COUNT(*) NumeroRichieste, CASE
+    WHEN EXTRACT(MONTH FROM DataEmissione) < 4 THEN 1
+    WHEN EXTRACT(MONTH FROM dataemissione) < 7 THEN 2
+    WHEN EXTRACT(MONTH FROM dataemissione) < 10 THEN 3
+    ELSE 4 END Trimestre
+FROM RichiestaAcquisto
+GROUP BY Dipartimento, Trimestre
+ORDER BY Trimestre, NumeroRichieste;
+```
+
+|
+|
+
+\begin{figure}[H]
+\centering
+\footnotemark
+\includegraphics[width=525px]{../R/analysisPlots/richieste_dipartimento_trimestre.png}
+\end{figure}
+
+```{=latex}
+\footnotetext{R/analysisPlots/richieste\_dipartimento\_trimestre.png}
+```
+
+\newpage
+
+### Numero di richieste d'acquisto mensili 
+
+A partire dall'interrogazione seguente, è stato prodotto un barplot atto a raffigurare la quantità di richieste d'acquisto effettuate per ogni mese dell'anno solare. Si osserva, in particolare, come i mesi di gennaio e settembre siano stati quelli con maggior numero di richieste.
+
+|
+|
+
+```sql
+SELECT EXTRACT(MONTH FROM DataEmissione) Mese, COUNT(*) NumeroRichieste
+FROM RichiestaAcquisto
+GROUP BY Mese
+ORDER BY Mese;
+```
+
+|
+|
+
+\begin{figure}[H]
+\centering
+\footnotemark
+\includegraphics[width=520px]{../R/analysisPlots/richieste_mensili.png}
+\end{figure}
+
+```{=latex}
+\footnotetext{R/analysisPlots/richieste\_mensili.png}
+```
+
+\newpage
+
+### Spesa dei dipartimento nel mese di giugno
+
+A partire dall'interrogazione seguente, è stato prodotto un barplot che raffigura la spesa effettuata da ogni dipartimento nel corso del mese di giugno. Si osserva, in particolare, come il dipartimento `WITCIO` sia quello che ha richiesto la spesa maggiore. Modificando opportunamente la condizione della query SQL, è possibile riprodurre il diagramma per qualunque altro mese dell'anno solare.
+
+|
+|
+
+```sql
+SELECT i.Dipartimento, SUM((Quantita * PrezzoUnitario)) Spesa
+FROM Include i
+    JOIN (SELECT Dipartimento, Numero, DataEmissione FROM RichiestaAcquisto) r ON r.Dipartimento = i.Dipartimento AND r.Numero = i.NumeroRichiesta
+WHERE EXTRACT(MONTH FROM DataEmissione) = 6
+GROUP BY i.Dipartimento
+ORDER BY i.Dipartimento;
+```
+
+|
+|
+
+\begin{figure}[H]
+\centering
+\footnotemark
+\includegraphics[width=520px]{../R/analysisPlots/spesa_dipartimento_giugno.png}
+\end{figure}
+
+```{=latex}
+\footnotetext{R/analysisPlots/spesa\_dipartimento\_giugno.png}
+```
+
+\newpage
+
+### Spesa giornaliera dei dipartimenti
+
+A partire dall'interrogazione seguente, è stato prodotto un boxplot che raffigura la distribuzione della spesa giornaliera da parte di ogni dipartimento.
+
+|
+|
+
+```sql
+SELECT i.Dipartimento, NumeroRichiesta, SUM((Quantita * PrezzoUnitario)) Spesa
+FROM Include i
+    JOIN (SELECT Dipartimento, Numero, DataEmissione FROM RichiestaAcquisto) r ON r.Dipartimento = i.Dipartimento AND r.Numero = i.NumeroRichiesta
+GROUP BY i.Dipartimento, i.NumeroRichiesta
+ORDER BY i.Dipartimento, i.NumeroRichiesta;
+```
+
+|
+|
+
+\begin{figure}[H]
+\centering
+\footnotemark
+\includegraphics[width=520px]{../R/analysisPlots/spesa_giornaliera_dipartimenti.png}
+\end{figure}
+
+```{=latex}
+\footnotetext{R/analysisPlots/spesa\_giornaliera\_dipartimenti.png}
+```
 
 \newpage
 
