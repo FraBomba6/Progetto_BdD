@@ -173,8 +173,6 @@ ricSetFatte = 0
 mediaRic = 0
 settimane = 1
 giorno = 1
-# today = datetime.date.today()
-# start = today - datetime.timedelta(days=280)
 noWorkDays = [
     datetime.date(2020, 1, 1),
     datetime.date(2020, 1, 6),
@@ -296,9 +294,6 @@ tabelle = {
 codiceOrdine = 1
 listaOrdine = []
 
-# Generate Ordine
-# today = datetime.date.today()
-# start = today - datetime.timedelta(days=280)
 start = datetime.date(2020, 1, 1)
 
 while start <= datetime.date(2020, 12, 31):

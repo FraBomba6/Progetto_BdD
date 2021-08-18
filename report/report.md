@@ -324,9 +324,9 @@ Al fine di valutare il mantenimento o l'eliminazione delle ridondanze presenti n
 |Dipartimento|R|30|
 |Richiesta d'Acquisto|E|3120|
 |Articolo|E|300|
-|Ordine|E|265|
+|Ordine|E|260|
 |Fornitore|E|5|
-|Include|R|12000|
+|Include|R|15600|
 |Fornisce|R|450|
 
 Si fa riferimento, inoltre, alle operazioni frequenti riportate al punto [2.4](#op-frequenti).
