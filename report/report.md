@@ -87,7 +87,7 @@ Sulla base di quanto riportato, si procede alla formulazione di un glossario che
 
 ## Glossario
 
-La terminologia individuata appartente al dominio di interesse e correlata alla strutturazione della Base di Dati è presentata di seguito: 
+La terminologia individuata appartenente al dominio di interesse e correlata alla strutturazione della Base di Dati è presentata di seguito: 
 
 ```{=latex}
 % glossario dei termini
@@ -183,7 +183,7 @@ A seguito dell'identificazione e organizzazione delle terminologie riportate nel
 \begin{itemize}
 \item Ogni ordine sia identificato univocamente da un codice ordine e sia caratterizzato dalla data di emissione, dal fornitore a cui viene inviato, dall’insieme degli articoli ordinati, con l’indicazione, per ciascuno di essi, della quantità ordinata, e dalla data prevista di consegna
 \newline
-\item Si assuma che un ordine possa fondere insieme piu` richieste d’acquisto dei dipartimenti
+\item Si assuma che un ordine possa fondere insieme più richieste d’acquisto dei dipartimenti
 \end{itemize}
 \\ \hline
 \end{tabular}
@@ -222,7 +222,7 @@ Sulla base dei requisiti individuati, si descrivono le principali operazioni sui
 
 ## Criteri per la rappresentazione dei concetti
 
-Sulla base del documento di specifiche, si inviduano i criteri opportuni per la rappresentazione dei concetti descritti.
+Sulla base del documento di specifiche, si individuano i criteri opportuni per la rappresentazione dei concetti descritti.
 
 ```{=latex}
 
@@ -1000,7 +1000,7 @@ create type stato_ordine as enum (
 
 ### Creazione delle tabelle
 
-Di seguito, sono state definite le tabelle (con rispettivi vincoli di chiave primaria e chiave esterna) sulla base di quando descritto dal diagramma relazionale presentato al punto [4.6](#relazionale).
+Di seguito, sono state definite le tabelle (con rispettivi vincoli di chiave primaria e chiave esterna) sulla base di quanto descritto dal diagramma relazionale presentato al punto [4.6](#relazionale).
 
 ```sql
 
@@ -1525,7 +1525,7 @@ Al fine di agevolare il processo di creazione e popolamento della base di dati, 
 
 ## Query significative 
 
-Sulla base delle operazioni frequenti individuate al punto [2.4](#opfrequenti) e al fine di agevolare le interrogazioni verso la base di dati, vengono di seguito descritte le query significative in linguaggio SQL. Ulteriore query vengono, inoltre, impiegate nella fase di analisi dei dati, presentata al capitolo successivo.
+Sulla base delle operazioni frequenti individuate al punto [2.4](#opfrequenti) e al fine di agevolare le interrogazioni verso la base di dati, vengono di seguito descritte le query significative in linguaggio SQL. Ulteriori query vengono, inoltre, impiegate nella fase di analisi dei dati, presentata al capitolo successivo.
 
 #### Visualizzazione di tutti gli articoli
 
