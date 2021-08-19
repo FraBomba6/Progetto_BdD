@@ -70,4 +70,4 @@ I file sql generati **sovrascriveranno** quelli già presenti all'interno della 
 
 I dati di Mockup sono stati analizzati all'interno del notebook **RMarkdown** presente al percorso file `R/DataAnalysis.Rmd`. I grafici sono stati, inoltre, prodotti in formato `.png` all'interno della directory `R/analysisPlots`. 
 
-Un'ulteriore analisi è stata svolta al fine di individuare valutare l'inserimento di ulteriori indici all'interno della base di dati. Quest'ultima è stata descritta all'interno del file `R/IndexEval.R`. Analogamente, i grafici sono stati prodotti all'interno della directory `R/plots` e i dati raccolti sono stati serializzati in formato `.csv` all'interno della directory `R/csv`.
+Un'ulteriore analisi è stata svolta al fine di valutare l'inserimento di ulteriori indici all'interno della base di dati. Quest'ultima è stata descritta all'interno del file `R/IndexEval.R`. Analogamente, i grafici sono stati prodotti all'interno della directory `R/plots` e i dati raccolti sono stati serializzati in formato `.csv` all'interno della directory `R/csv`.
