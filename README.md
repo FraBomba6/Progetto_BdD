@@ -1,16 +1,43 @@
 # Progetto Basi di Dati - Ufficio Acquisti di un ente pubblico
 
-Progetto di laboratorio del corso di Basi di Dati e Laboratorio dell'Università degli Studi di Udine A.A. 2020/2021, relativo alla progettazione di una base di dati per l'**ufficio acquisti di un ente pubblico**. La consegna originale è disponibile al file `Consegna.pdf` (*Esercizio 3*).
+This repository contains the work developed by Francesco Bombassei De Bona, Andrea Cantarutti, Lorenzo Bellina and Alessandro Fabris for Database course at the [University of Udine](https://www.uniud.it/it), held by [Angelo Montanari](https://users.dimi.uniud.it/~angelo.montanari/index.php) and [Dario Della Monica](https://users.dimi.uniud.it/~dario.dellamonica/). 
 
-## Progettazione e sviluppo della Base di Dati
+The aim of the project was **designing** and **implementing** a [Relational database](https://en.wikipedia.org/wiki/Relational_database) for a specific domain of interest, according to a given set of requirements.
 
-L'attività progettuale è stata descritta nel report (contenuto in formato pdf e markdown all'interno della cartella `report`). I diagrammi prodotti e riportati all'interno del report sono accessibili, in formato `.drawio` e `.png`, all'interno della directory `ER`. 
+## Repository Structure
 
-## Creazione della base di dati
+### Complete Report
 
-Per fini analitici o di testing, è sufficiente:
+A detailed report, written in Italian and based on the following points:
 
-1. **Localizzarsi nella directory psqlOnDocker**
+- Requirements Analysis
+- Conceptual Design
+- Logical Design
+- Physical Design
+- Implementation
+- Usage
+- Queries
+- Data Analysis
+
+can be found at the path `report/report.pdf`.
+
+### Diagrams
+
+The ER and Logical diagrams can be found inside the `ER` directory as `.png` and `.drawio` files.
+
+### Data and Index Analysis
+
+Both the **indexes evalutation** and the **mockup data analysis** were written in [R Language](https://www.r-project.org/) and can be found inside the directory `R`, together with the plots produced and `.csv` files.
+
+### Implementation
+
+The **implementation** and **mockup data generation** files can be found at the `psqlOnDocker` directory. We chose to use [PostgreSQL](https://www.postgresql.org/) as our [DBMS](https://it.wikipedia.org/wiki/Database_management_system).
+
+## Database generation
+
+In order to analyse or test our work, you can:
+
+1. **Locate inside psqlOnDocker folder**
 
 ```bash
 
@@ -18,7 +45,7 @@ cd psqlOnDocker/
 
 ```
 
-2. **Eseguire il docker container e attenderne l'inizializzazione**
+2. **Run the docker container and wait for its initialisation**
 
 ```docker
 
@@ -27,7 +54,7 @@ docker compose up
 
 ``` 
 
-3. **Creare il database**
+3. **Run the database creation script**
 
 ```bash
 
@@ -35,20 +62,26 @@ make db
 
 ```
 
-È possibile, successivamente, accedere al database tramite le seguenti credenziali
+You can, then, access the database as root using the following credentials:
 
 | **Parametro** | **Valore**  |
 |---------------|-------------|
-|  Indirizzo    | `localhost` |
-|  Porta        | `15000`     |
-|  Utente       | `postgres`  |
+|  Address      | `localhost` |
+|  Port         | `15000`     |
+|  User         | `postgres`  |
 |  Password     | `bdd2021`   |
 
-## Creazione dei dati di mockup
 
-È possibile effettuare una nuova generazione dei dati di mockup tramite il seguente procedimento: 
+Keep in mind that you'll have to install:
 
-1. **Localizzarsi nella directory psqlOnDocker**
+- [Docker](https://docs.docker.com/get-docker/)
+- [PosgtreSQL](https://www.postgresql.org/download/)
+
+## Generate new mockup data
+
+If you want to re-generate mockup data, you can:
+
+1. **Locate inside the psqlOnDocker folder**
 
 ```bash
 
@@ -56,7 +89,7 @@ cd psqlOnDocker/
 
 ```
 
-2. **Lanciare la generazione**
+2. **Run the MockupDataGenerator script**
 
 ```bash
 
@@ -64,10 +97,11 @@ make mockup
 
 ```
 
-I file sql generati **sovrascriveranno** quelli già presenti all'interno della directory `psqlOnDocker/sql`
+The SQL files generated will **overwrite** the ones actually located inside the `psqlOnDocker/sql` directory. Keep also in mind that you'll have to install [Python](https://www.python.org/downloads/) with [pip](https://pypi.org/project/pip/) and the [Faker Library](https://pypi.org/project/Faker/) (by running `pip3 install Faker`).
 
-## Analisi dei dati
+## Data Analysis
 
-I dati di Mockup sono stati analizzati all'interno del notebook **RMarkdown** presente al percorso file `R/DataAnalysis.Rmd`. I grafici sono stati, inoltre, prodotti in formato `.png` all'interno della directory `R/analysisPlots`. 
+Mockup data had been analysed inside a [RMarkdown](https://rmarkdown.rstudio.com/) notebook which can be found at the path `R/DataAnalysis.Rmd`. Moreover, all the plots had been exported as `.png` files inside the directory `R/analysisPlots`.
 
-Un'ulteriore analisi è stata svolta al fine di valutare l'inserimento di ulteriori indici all'interno della base di dati. Quest'ultima è stata descritta all'interno del file `R/IndexEval.R`. Analogamente, i grafici sono stati prodotti all'interno della directory `R/plots` e i dati raccolti sono stati serializzati in formato `.csv` all'interno della directory `R/csv`.
+Another analysis was performed in order to evaluate the usage of specific [Database indexes](https://en.wikipedia.org/wiki/Database_index). The code can be found at the path `R/IndexEval.R`. All the data (as `.csv` files) and plots had been exported respectively to the `R/csv` and `R/plots` directories. 
+

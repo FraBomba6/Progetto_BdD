@@ -26,7 +26,7 @@ chars="/-\|" # for spinner
 # Checks if exit code is ok
 check_exit(){
 	if [[ $1 -ne 0 ]]; then
-		tput bold; echo "\nAn error occoured\n"; tput sgr0
+		tput bold; echo -e "\nAn error occoured\n"; tput sgr0
 		exit 1;
 	fi
 }
@@ -36,7 +36,7 @@ spin(){
 	while kill -0 $2 > /dev/null 2>&1; 
 	do
 	  for (( i=0; i<${#chars}; i++ )); do
-		sleep 0.3
+		sleep 0.2
 		echo -en "\t ${chars:$i:1} $1" "\r"
 	  done
 	done
@@ -45,7 +45,7 @@ spin(){
 	if [[ $code -eq 0 ]]; then
 		echo -e "\r\t✅"
 	else
-		tput bold; echo "\nAn error occoured\n"; tput sgr0
+		tput bold; echo -e "\nAn error occoured\n"; tput sgr0
 		exit 1;
 	fi
 }
@@ -58,7 +58,7 @@ echo;
 # +-----------+
 
 tput bold; echo -en "\rCreating db"; tput sgr0
-(psql -U postgres -h localhost -p 15000 -c "drop database if exists $DATABASE") > /dev/null
+(psql -U postgres -h localhost -p 15000 -c "drop database if exists $DATABASE") > /dev/null 2>&1
 check_exit $?
 (createdb -U postgres -h localhost -p 15000 $DATABASE) > /dev/null
 check_exit $?
