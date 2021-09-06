@@ -1,4 +1,4 @@
-# Progetto Basi di Dati - Ufficio Acquisti di un ente pubblico
+# Database Project - Purchasing department of a Public Institution
 
 This repository contains the work developed by Francesco Bombassei De Bona, Andrea Cantarutti, Lorenzo Bellina and Alessandro Fabris for Database course at the [University of Udine](https://www.uniud.it/it), held by [Angelo Montanari](https://users.dimi.uniud.it/~angelo.montanari/index.php) and [Dario Della Monica](https://users.dimi.uniud.it/~dario.dellamonica/). 
 
