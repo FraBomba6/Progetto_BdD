@@ -1,4 +1,4 @@
-# Database Project - Purchasing department of a Public Institution
+# Database Project - Purchasing Department of a Public Authority 
 
 This repository contains the work developed by Francesco Bombassei De Bona, Andrea Cantarutti, Lorenzo Bellina and Alessandro Fabris for the Database course at the [University of Udine](https://www.uniud.it/it), held by [Angelo Montanari](https://users.dimi.uniud.it/~angelo.montanari/index.php) and [Dario Della Monica](https://users.dimi.uniud.it/~dario.dellamonica/). 
 
@@ -86,7 +86,7 @@ Keep in mind that you'll have to install:
 
 If you want to interact with the database once created, here's the actual **Logical Diagram** in order to help you structuring your queries. 
 
-<img src="./ER/Logical.png" width="75%" align="center"/>
+<img src="./ER/Logical_bg.png" width="75%" align="center"/>
 
 ## How to examine the SQL code that creates the database
 
